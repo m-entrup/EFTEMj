@@ -28,16 +28,20 @@
 
 package de.m_entrup.EFTEMj_SR_EELS;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 import de.m_entrup.EFTEMj_lib.EFTEMj_Debug;
 import ij.IJ;
 import ij.Prefs;
+import ij.gui.GenericDialog;
 import ij.plugin.PlugIn;
 
 public class SR_EELS_Import implements PlugIn {
 
 	private String databasePath;
+	private final String fileTypeToImport = ".dm3";
 
 	@Override
 	public void run(final String arg) {
@@ -86,8 +90,39 @@ public class SR_EELS_Import implements PlugIn {
 	}
 
 	private ArrayList<String> selectFiles(final String path) {
-		// TODO Auto-generated method stub
-		return null;
+		final File folder = new File(path);
+		final String[] list = folder.list();
+		final GenericDialog gd = new GenericDialog("Select files");
+		int counter = 0;
+		for (int i = 0; i < list.length; i++) {
+			if (new File(path + list[i]).isFile()) {
+				counter++;
+				if (list[i].endsWith(fileTypeToImport) & !list[i].contains(
+					"-exclude"))
+				{
+					gd.addCheckbox(list[i], true);
+				}
+				else {
+					gd.addCheckbox(list[i], false);
+				}
+			}
+		}
+		if (counter < 1) {
+			IJ.showMessage("Script aborted", "There are no files to import in\n" +
+				path);
+			return null;
+		}
+		gd.showDialog();
+		if (gd.wasCanceled()) {
+			return null;
+		}
+		final ArrayList<String> files = new ArrayList<String>();
+		for (int i = 0; i < counter; i++) {
+			if (gd.getNextBoolean()) {
+				files.add(list[i]);
+			}
+		}
+		return files;
 	}
 
 	private ParameterSet getParameters(final String path) {
