@@ -30,6 +30,7 @@ package de.m_entrup.EFTEMj_SR_EELS;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.m_entrup.EFTEMj_lib.EFTEMj_Debug;
@@ -126,8 +127,49 @@ public class SR_EELS_Import implements PlugIn {
 	}
 
 	private ParameterSet getParameters(final String path) {
-		// TODO Auto-generated method stub
-		return null;
+		final Pattern patternDate = Pattern.compile("(\\d{8})");
+		final Pattern patternSM = Pattern.compile("(?:SM|SpecMag)(\\d{2,3})");
+		final Pattern patternQSinK7 = Pattern.compile(
+			"/QSinK7\\s?[\\s|=]\\s?(-?\\+?\\d{1,3})%?");
+		final ParameterSet parameters = new ParameterSet();
+
+		Matcher matcher = patternDate.matcher(path);
+		/*
+		 * The while loop is used to find the last match of the given RegExp.
+		 * Index 0 of the array is the complete match. All following indices reference the groups.
+		 */
+		while (matcher.find()) {
+			parameters.date = matcher.group();
+		}
+		matcher = patternSM.matcher(path);
+		while (matcher.find()) {
+			parameters.SpecMag = matcher.group();
+		}
+		matcher = patternQSinK7.matcher(path);
+		while (matcher.find()) {
+			parameters.QSinK7 = matcher.group();
+		}
+		final GenericDialog gd = new GenericDialog("Set parameters");
+		gd.addStringField("date:", parameters.date);
+		gd.addStringField("SpecMag:", parameters.SpecMag);
+		gd.addStringField("QSinK7:", parameters.QSinK7);
+		gd.addStringField("comment:", parameters.comment);
+		gd.showDialog();
+		if (gd.wasCanceled()) {
+			return null;
+		}
+		else {
+			parameters.date = gd.getNextString();
+			parameters.SpecMag = gd.getNextString();
+			parameters.QSinK7 = gd.getNextString();
+			parameters.comment = gd.getNextString();
+			/*
+			 * We replace space by underscore to easily recordnice the complete comment.
+			 * This is usefull wehn further processing is done.
+			 */
+			parameters.comment = parameters.comment.replace(" ", "_");
+		}
+		return parameters;
 	}
 
 	private void saveFiles(final String path, final ArrayList<String> files,
@@ -143,9 +185,9 @@ public class SR_EELS_Import implements PlugIn {
 
 	private class ParameterSet {
 
-		String date;
-		String QSinK7;
-		String comment;
-		String SpecMag;
+		String date = "";
+		String QSinK7 = "";
+		String comment = "";
+		String SpecMag = "";
 	}
 }
