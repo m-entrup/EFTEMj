@@ -32,7 +32,7 @@ import de.m_entrup.EFTEMj_lib.EFTEMj_Debug;
 import ij.IJ;
 import ij.plugin.PlugIn;
 
-public class SR_EELS_ImportCharacterisation implements PlugIn {
+public class SR_EELS_Import implements PlugIn {
 
 	@Override
 	public void run(final String arg) {
@@ -40,7 +40,7 @@ public class SR_EELS_ImportCharacterisation implements PlugIn {
 	}
 
 	public static void main(final String[] args) {
-		EFTEMj_Debug.debug(SR_EELS_ImportCharacterisation.class);
+		EFTEMj_Debug.debug(SR_EELS_Import.class);
 	}
 
 }
