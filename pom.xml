@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+		http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>sc.fiji</groupId>
+		<artifactId>pom-fiji</artifactId>
+		<version>16.0.0</version>
+	</parent>
+
+	<groupId>de.m-entrup</groupId>
+	<artifactId>pom-EFTEMj</artifactId>
+	<version>0.1.0</version>
+	<packaging>pom</packaging>
+
+	<name>EFTEMj</name>
+	<description>A collection of plugins used for analyse data from Energy Filtering TransmissionElectronMicroscopy (EFTEM).</description>
+	<url>https://github.com/m-entrup/EFTEMj</url>
+	<inceptionYear>2015</inceptionYear>
+	<organization />
+	<licenses>
+		<license>
+			<name>BSD 2-Clause</name>
+			<url>http://opensource.org/licenses/BSD-2-Clause</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>m-entrup</id>
+			<name>Michael Entrup</name>
+			<email>mail@m-entrup.de</email>
+			<url>http://www.m-entrup</url>
+			<organization>WWU Münster</organization>
+			<organizationUrl>http://www.uni-muenster.de/</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>+2</timezone>
+		</developer>
+	</developers>
+
+	<repositories>
+		<!-- NB: for project parent -->
+		<repository>
+			<id>imagej.public</id>
+			<url>http://maven.imagej.net/content/groups/public</url>
+		</repository>
+	</repositories>
+
+	<scm>
+		<connection>scm:git:git://github.com/m-entrup/EFTEMj</connection>
+		<developerConnection>scm:git:git@github.com:m-entrup/EFTEMj</developerConnection>
+		<tag>HEAD</tag>
+		<url>https://github.com/m-entrup/EFTEMj</url>
+	</scm>
+
+	<issueManagement>
+		<url>https://github.com/EFTEMj/m-entrup/issues</url>
+		<system>GitHub Issues</system>
+	</issueManagement>
+
+	<ciManagement />
+
+	<properties>
+		<jar.finalName>${project.artifactId}_-${project.version}</jar.finalName>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>ij</artifactId>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<!-- http://stackoverflow.com/questions/13040788/how-to-elimate-the-maven-enforcer-plugin-goal-enforce-is-ignored-by-m2e-wa -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-enforcer-plugin</artifactId>
+										<versionRange>[1.0.0,)</versionRange>
+										<goals>
+											<goal>enforce</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+</project>
