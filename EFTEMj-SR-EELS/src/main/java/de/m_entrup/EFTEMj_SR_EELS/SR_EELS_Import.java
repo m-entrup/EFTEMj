@@ -42,8 +42,23 @@ import ij.plugin.PlugIn;
 
 public class SR_EELS_Import implements PlugIn {
 
+	/**
+	 * Path that contains the folder based database.
+	 */
 	private String databasePath;
-	private final String fileTypeToImport = ".dm3";
+	/**
+	 * File types that can be imported. ".dm3" is the default value. It can be
+	 * overwritten by an entry in IJ_Prefs.txt.
+	 * <p>
+	 * Append the following line to IJ_Prefs.txt. to add support for ".tif" and
+	 * ".tiff":
+	 *
+	 * <pre>
+	 * .EFTEMj.SR-EELS.fileTypesToImport=.dm3;.tif;.tiff
+	 * </pre>
+	 * </p>
+	 */
+	private String[] fileTypeToImport = { ".dm3", ".test" };
 
 	@Override
 	public void run(final String arg) {
@@ -51,17 +66,24 @@ public class SR_EELS_Import implements PlugIn {
 		 * Read path to database from IJ_Prefs.txt or ask the user to set the path.
 		 */
 		IJ.showStatus("Loading path of database from IJ_Prefs.txt.");
-		databasePath = Prefs.get(SR_EELS_PrefsKeys.characterisationDatabasePath
-			.getValue(), null);
+		databasePath = Prefs.get(SR_EELS_PrefsKeys.databasePath.getValue(), null);
 		if (databasePath == null) {
 			databasePath = IJ.getDirectory("Set the path to the database...");
 			if (databasePath == null) {
 				IJ.showStatus("Path to database not set.");
 				return;
 			}
-			Prefs.set(SR_EELS_PrefsKeys.characterisationDatabasePath.getValue(),
-				databasePath);
+			Prefs.set(SR_EELS_PrefsKeys.databasePath.getValue(), databasePath);
 			Prefs.savePreferences();
+		}
+		/*
+		 * Read files to be imported from IJ_Prefs.txt.
+		 */
+		IJ.showStatus("Loading supported file types from IJ_Prefs.txt.");
+		final String fileTypes = Prefs.get(SR_EELS_PrefsKeys.fileTypesToImport
+			.getValue(), null);
+		if (fileTypes != null) {
+			fileTypeToImport = fileTypes.split(";");
 		}
 		/*
 		 *  Step 1
@@ -101,11 +123,9 @@ public class SR_EELS_Import implements PlugIn {
 		final GenericDialog gd = new GenericDialog("Select files");
 		int counter = 0;
 		for (int i = 0; i < list.length; i++) {
-			if (new File(path + list[i]).isFile()) {
+			if (new File(path + list[i]).isFile() & checkFileType(list[i])) {
 				counter++;
-				if (list[i].endsWith(fileTypeToImport) & !list[i].contains(
-					"-exclude"))
-				{
+				if (!list[i].contains("-exclude")) {
 					gd.addCheckbox(list[i], true);
 				}
 				else {
@@ -114,8 +134,13 @@ public class SR_EELS_Import implements PlugIn {
 			}
 		}
 		if (counter < 1) {
+			final StringBuilder strBuilder = new StringBuilder();
+			strBuilder.append(fileTypeToImport[0]);
+			for (int i = 1; i < fileTypeToImport.length; i++) {
+				strBuilder.append(";" + fileTypeToImport[i]);
+			}
 			IJ.showMessage("Script aborted", "There are no files to import in\n" +
-				path);
+				path + "\nSupported file types:\n" + strBuilder.toString());
 			return null;
 		}
 		gd.showDialog();
@@ -129,6 +154,14 @@ public class SR_EELS_Import implements PlugIn {
 			}
 		}
 		return files;
+	}
+
+	private boolean checkFileType(final String string) {
+		boolean isType = false;
+		for (final String type : fileTypeToImport) {
+			if (string.endsWith(type)) isType = true;
+		}
+		return isType;
 	}
 
 	private ParameterSet getParameters(final String path) {
@@ -209,9 +242,16 @@ public class SR_EELS_Import implements PlugIn {
 		}
 	}
 
-	private String pad(final int num, final int size) {
-		String s = num + "";
-		while (s.length() < size)
+	/**
+	 * Adding zeroes in front of the {@link Integer} to match the given length.
+	 *
+	 * @param number to convert.
+	 * @param length of the created {@link String}.
+	 * @return
+	 */
+	private String pad(final int number, final int length) {
+		String s = number + "";
+		while (s.length() < length)
 			s = "0" + s;
 		return s;
 	}

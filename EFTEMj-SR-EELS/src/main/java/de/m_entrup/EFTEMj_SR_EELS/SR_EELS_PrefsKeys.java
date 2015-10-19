@@ -45,7 +45,8 @@ public enum SR_EELS_PrefsKeys {
 		offsetLoss("offsetLoss"), offsetAbsolute("offsetAbsolute"), cameraWidth(
 			"cameraWidth"), cameraHeight("cameraHeight"), dispersionEloss(
 				"dispersionEloss."), dispersionSettings("dispersionSettings."), none(
-					""), characterisationDatabasePath("characterisationDatabasePath");
+					""), databasePath("databasePath"), fileTypesToImport(
+						"fileTypesToImport");
 
 	/**
 	 * <code>EFTEMj.PREFS_PREFIX + "SR-EELS.".<code>
@@ -76,7 +77,8 @@ public enum SR_EELS_PrefsKeys {
 			case dispersionEloss:
 			case cameraHeight:
 			case cameraWidth:
-			case characterisationDatabasePath:
+			case databasePath:
+			case fileTypesToImport:
 			case none:
 			default:
 				return PREFS_PREFIX + value;
