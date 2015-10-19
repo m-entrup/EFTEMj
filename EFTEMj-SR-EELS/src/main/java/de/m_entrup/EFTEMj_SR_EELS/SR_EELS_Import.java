@@ -35,6 +35,7 @@ import java.util.regex.Pattern;
 
 import de.m_entrup.EFTEMj_lib.EFTEMj_Debug;
 import ij.IJ;
+import ij.ImagePlus;
 import ij.Prefs;
 import ij.gui.GenericDialog;
 import ij.plugin.PlugIn;
@@ -52,9 +53,12 @@ public class SR_EELS_Import implements PlugIn {
 		IJ.showStatus("Loading path of database from IJ_Prefs.txt.");
 		databasePath = Prefs.get(SR_EELS_PrefsKeys.characterisationDatabasePath
 			.getValue(), null);
-		if (databasePath != null) {
+		if (databasePath == null) {
 			databasePath = IJ.getDirectory("Set the path to the database...");
-			if (databasePath != null) return;
+			if (databasePath == null) {
+				IJ.showStatus("Path to database not set.");
+				return;
+			}
 			Prefs.set(SR_EELS_PrefsKeys.characterisationDatabasePath.getValue(),
 				databasePath);
 			Prefs.savePreferences();
@@ -63,21 +67,22 @@ public class SR_EELS_Import implements PlugIn {
 		 *  Step 1
 		 *  Select the folder to import from.
 		 */
-		String path;
+		String inputPath;
 		IJ.showStatus("Loading files for import.");
-		if ((path = IJ.getDirectory("Characterisation files...")) == null) return;
+		if ((inputPath = IJ.getDirectory("Characterisation files...")) == null)
+			return;
 		/*
 		 *  Step 2
 		 *  Show list of files to select from.
 		 */
 		ArrayList<String> files;
-		if ((files = selectFiles(path)) == null) return;
+		if ((files = selectFiles(inputPath)) == null) return;
 		/*
 		 *  Step 3
 		 *  Show a dialog to amend the parameters
 		 */
 		ParameterSet parameters;
-		if ((parameters = getParameters(path)) == null) return;
+		if ((parameters = getParameters(inputPath)) == null) return;
 		/*
 		 *  Step 4
 		 *  Import files to the database.
@@ -85,9 +90,9 @@ public class SR_EELS_Import implements PlugIn {
 		if (parameters.date != null & parameters.SpecMag != null &
 			parameters.QSinK7 != null)
 		{
-			saveFiles(path, files, parameters);
+			saveFiles(inputPath, files, parameters);
 		}
-		IJ.showStatus("Finished importing from " + path);
+		IJ.showStatus("Finished importing from " + inputPath);
 	}
 
 	private ArrayList<String> selectFiles(final String path) {
@@ -131,6 +136,8 @@ public class SR_EELS_Import implements PlugIn {
 		final Pattern patternSM = Pattern.compile("(?:SM|SpecMag)(\\d{2,3})");
 		final Pattern patternQSinK7 = Pattern.compile(
 			"/QSinK7\\s?[\\s|=]\\s?(-?\\+?\\d{1,3})%?");
+		final Pattern patternQSinK7Alternative = Pattern.compile(
+			"(-?\\+?\\d{1,3})%?");
 		final ParameterSet parameters = new ParameterSet();
 
 		Matcher matcher = patternDate.matcher(path);
@@ -143,11 +150,17 @@ public class SR_EELS_Import implements PlugIn {
 		}
 		matcher = patternSM.matcher(path);
 		while (matcher.find()) {
-			parameters.SpecMag = matcher.group();
+			parameters.SpecMag = matcher.group(1);
 		}
 		matcher = patternQSinK7.matcher(path);
 		while (matcher.find()) {
 			parameters.QSinK7 = matcher.group();
+		}
+		if (parameters.QSinK7 == "") {
+			matcher = patternQSinK7Alternative.matcher(path);
+			while (matcher.find()) {
+				parameters.QSinK7 = matcher.group();
+			}
 		}
 		final GenericDialog gd = new GenericDialog("Set parameters");
 		gd.addStringField("date:", parameters.date);
@@ -164,19 +177,43 @@ public class SR_EELS_Import implements PlugIn {
 			parameters.QSinK7 = gd.getNextString();
 			parameters.comment = gd.getNextString();
 			/*
-			 * We replace space by underscore to easily recordnice the complete comment.
-			 * This is usefull wehn further processing is done.
+			 * We replace space by underscore to easily recognize the complete comment.
+			 * This is useful when further processing is done.
 			 */
 			parameters.comment = parameters.comment.replace(" ", "_");
 		}
 		return parameters;
 	}
 
-	private void saveFiles(final String path, final ArrayList<String> files,
+	private void saveFiles(final String inputPath, final ArrayList<String> files,
 		final ParameterSet parameters)
 	{
-		// TODO Auto-generated method stub
+		String output = databasePath + "SM" + parameters.SpecMag + "/" +
+			parameters.QSinK7 + "/" + parameters.date;
+		if (parameters.comment != "") {
+			output += " " + parameters.comment;
+		}
+		output += "/";
+		final File folder = new File(output);
+		if (folder.exists()) {
+			IJ.showMessage("Script aborted", "This data set already exists\n" + folder
+				.toString().replace(databasePath, ""));
+			return;
+		}
+		folder.mkdirs();
+		for (int index = 0; index < files.size();) {
+			final ImagePlus imp = IJ.openImage(inputPath + files.get(index));
+			IJ.run(imp, "Rotate 90 Degrees Left", "");
+			IJ.save(imp, output + "Cal_" + pad(++index, 2) + ".tif");
+			imp.close();
+		}
+	}
 
+	private String pad(final int num, final int size) {
+		String s = num + "";
+		while (s.length() < size)
+			s = "0" + s;
+		return s;
 	}
 
 	public static void main(final String[] args) {
