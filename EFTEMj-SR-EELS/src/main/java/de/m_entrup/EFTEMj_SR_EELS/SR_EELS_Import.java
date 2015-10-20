@@ -30,6 +30,7 @@ package de.m_entrup.EFTEMj_SR_EELS;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,6 +41,20 @@ import ij.Prefs;
 import ij.gui.GenericDialog;
 import ij.plugin.PlugIn;
 
+/**
+ * A plugin to import SR-EELS files into a folder based database.
+ * <p>
+ * The folder structure is based on recording parameters (SpecMag, QSinK7 and
+ * date). The parameters are extracted from the full path of the selected files
+ * by using regular expressions.
+ * </p>
+ * <p>
+ * The imported files are saved as tif. They are rotated 90° left to show energy
+ * loss on the x-axis and lateral information on the y-axis.
+ * </p>
+ *
+ * @author Michael Entrup b. Epping <mail@m-entrup.de>
+ */
 public class SR_EELS_Import implements PlugIn {
 
 	/**
@@ -58,7 +73,9 @@ public class SR_EELS_Import implements PlugIn {
 	 * </pre>
 	 * </p>
 	 */
-	private String[] fileTypeToImport = { ".dm3", ".test" };
+	private String[] fileTypeToImport = { ".dm3" };
+	private boolean importAsCalibration = false;
+	private boolean automaticImport = false;
 
 	@Override
 	public void run(final String arg) {
@@ -101,18 +118,46 @@ public class SR_EELS_Import implements PlugIn {
 		if ((files = selectFiles(inputPath)) == null) return;
 		/*
 		 *  Step 3
+		 *  Import calibration or import individual SR-EELS measurements
 		 *  Show a dialog to amend the parameters
 		 */
-		ParameterSet parameters;
-		if ((parameters = getParameters(inputPath)) == null) return;
-		/*
-		 *  Step 4
-		 *  Import files to the database.
-		 */
-		if (parameters.date != null & parameters.SpecMag != null &
-			parameters.QSinK7 != null)
-		{
-			saveFiles(inputPath, files, parameters);
+		if (importAsCalibration) {
+			/*
+			 * Step 3.1
+			 * Show a dialog to amend the parameters
+			 */
+			ParameterSet parameters;
+			if ((parameters = getParameters(inputPath, true)) == null) return;
+			/*
+			 *  Step 3.2
+			 *  Import files to the database.
+			 */
+			if (parameters.date != null & parameters.SpecMag != null &
+				parameters.QSinK7 != null)
+			{
+				saveFiles(inputPath, files, parameters);
+			}
+		}
+		else {
+
+			for (final String file : files) {
+				/*
+				 * Step 3.1
+				 * Show a dialog to amend the parameters
+				 */
+				ParameterSet parameters;
+				if ((parameters = getParameters(inputPath + file, false)) == null)
+					return;
+				/*
+				 *  Step 3.2
+				 *  Import files to the database.
+				 */
+				if (parameters.date != null & parameters.SpecMag != null &
+					parameters.QSinK7 != null & parameters.fileName != null)
+				{
+					saveFile(inputPath, file, parameters);
+				}
+			}
 		}
 		IJ.showStatus("Finished importing from " + inputPath);
 	}
@@ -121,10 +166,14 @@ public class SR_EELS_Import implements PlugIn {
 		final File folder = new File(path);
 		final String[] list = folder.list();
 		final GenericDialog gd = new GenericDialog("Select files");
+		gd.addMessage("Files:");
+		final boolean[] shown = new boolean[list.length];
+		Arrays.fill(shown, false);
 		int counter = 0;
 		for (int i = 0; i < list.length; i++) {
 			if (new File(path + list[i]).isFile() & checkFileType(list[i])) {
 				counter++;
+				shown[i] = true;
 				if (!list[i].contains("-exclude")) {
 					gd.addCheckbox(list[i], true);
 				}
@@ -143,16 +192,21 @@ public class SR_EELS_Import implements PlugIn {
 				path + "\nSupported file types:\n" + strBuilder.toString());
 			return null;
 		}
+		gd.addMessage("Options:");
+		gd.addCheckbox("Import as calibration", false);
 		gd.showDialog();
 		if (gd.wasCanceled()) {
 			return null;
 		}
 		final ArrayList<String> files = new ArrayList<String>();
-		for (int i = 0; i < counter; i++) {
-			if (gd.getNextBoolean()) {
-				files.add(list[i]);
+		for (int i = 0; i < list.length; i++) {
+			if (shown[i] == true) {
+				if (gd.getNextBoolean()) {
+					files.add(list[i]);
+				}
 			}
 		}
+		importAsCalibration = gd.getNextBoolean();
 		return files;
 	}
 
@@ -164,15 +218,17 @@ public class SR_EELS_Import implements PlugIn {
 		return isType;
 	}
 
-	private ParameterSet getParameters(final String path) {
+	private ParameterSet getParameters(final String path,
+		final boolean importCalibration)
+	{
 		final Pattern patternDate = Pattern.compile("(\\d{8})");
 		final Pattern patternSM = Pattern.compile("(?:SM|SpecMag)(\\d{2,3})");
 		final Pattern patternQSinK7 = Pattern.compile(
-			"/QSinK7\\s?[\\s|=]\\s?(-?\\+?\\d{1,3})%?");
+			"QSinK7\\s?[\\s|=]\\s?(-?\\+?\\d{1,3})%?");
 		final Pattern patternQSinK7Alternative = Pattern.compile(
 			"(-?\\+?\\d{1,3})%?");
+		final Pattern patternFileName = Pattern.compile("/([^/]+)\\..+$");
 		final ParameterSet parameters = new ParameterSet();
-
 		Matcher matcher = patternDate.matcher(path);
 		/*
 		 * The while loop is used to find the last match of the given RegExp.
@@ -187,33 +243,54 @@ public class SR_EELS_Import implements PlugIn {
 		}
 		matcher = patternQSinK7.matcher(path);
 		while (matcher.find()) {
-			parameters.QSinK7 = matcher.group();
+			parameters.QSinK7 = matcher.group(1);
 		}
 		if (parameters.QSinK7 == "") {
 			matcher = patternQSinK7Alternative.matcher(path);
 			while (matcher.find()) {
-				parameters.QSinK7 = matcher.group();
+				parameters.QSinK7 = matcher.group(1);
 			}
+		}
+		if (importAsCalibration == false) {
+			matcher = patternFileName.matcher(path);
+			while (matcher.find()) {
+				parameters.fileName = matcher.group(1);
+			}
+			parameters.fileName = parameters.date + "_" + parameters.fileName;
 		}
 		final GenericDialog gd = new GenericDialog("Set parameters");
 		gd.addStringField("date:", parameters.date);
 		gd.addStringField("SpecMag:", parameters.SpecMag);
 		gd.addStringField("QSinK7:", parameters.QSinK7);
-		gd.addStringField("comment:", parameters.comment);
-		gd.showDialog();
-		if (gd.wasCanceled()) {
-			return null;
+		if (importCalibration) {
+			gd.addStringField("comment:", parameters.comment);
 		}
 		else {
-			parameters.date = gd.getNextString();
-			parameters.SpecMag = gd.getNextString();
-			parameters.QSinK7 = gd.getNextString();
-			parameters.comment = gd.getNextString();
-			/*
-			 * We replace space by underscore to easily recognize the complete comment.
-			 * This is useful when further processing is done.
-			 */
-			parameters.comment = parameters.comment.replace(" ", "_");
+			gd.addStringField("file name:", parameters.fileName);
+			gd.addCheckbox("automatic import", automaticImport);
+		}
+		if (automaticImport == false | importAsCalibration == true) {
+			gd.showDialog();
+			if (gd.wasCanceled()) {
+				return null;
+			}
+			else {
+				parameters.date = gd.getNextString();
+				parameters.SpecMag = gd.getNextString();
+				parameters.QSinK7 = gd.getNextString();
+				if (importCalibration) {
+					parameters.comment = gd.getNextString();
+				}
+				else {
+					parameters.fileName = gd.getNextString();
+					automaticImport = gd.getNextBoolean();
+				}
+				/*
+				 * We replace space by underscore to easily recognize the complete comment.
+				 * This is useful when further processing is done.
+				 */
+				parameters.comment = parameters.comment.replace(" ", "_");
+			}
 		}
 		return parameters;
 	}
@@ -223,7 +300,7 @@ public class SR_EELS_Import implements PlugIn {
 	{
 		String output = databasePath + "SM" + parameters.SpecMag + "/" +
 			parameters.QSinK7 + "/" + parameters.date;
-		if (parameters.comment != "") {
+		if (parameters.comment.length() > 0) {
 			output += " " + parameters.comment;
 		}
 		output += "/";
@@ -240,6 +317,23 @@ public class SR_EELS_Import implements PlugIn {
 			IJ.save(imp, output + "Cal_" + pad(++index, 2) + ".tif");
 			imp.close();
 		}
+	}
+
+	private void saveFile(final String inputPath, final String file,
+		final ParameterSet parameters)
+	{
+		final String output = databasePath + "SM" + parameters.SpecMag + "/" +
+			parameters.QSinK7 + "/";
+		final File folder = new File(output);
+		folder.mkdirs();
+		if (new File(output + parameters.fileName + ".tif").exists()) {
+			IJ.log("Skipping " + file + " - file already exists in database.");
+			return;
+		}
+		final ImagePlus imp = IJ.openImage(inputPath + file);
+		IJ.run(imp, "Rotate 90 Degrees Left", "");
+		IJ.save(imp, output + parameters.fileName + ".tif");
+		imp.close();
 	}
 
 	/**
@@ -262,9 +356,10 @@ public class SR_EELS_Import implements PlugIn {
 
 	private class ParameterSet {
 
-		String date = "";
-		String QSinK7 = "";
-		String comment = "";
 		String SpecMag = "";
+		String QSinK7 = "";
+		String date = "";
+		String comment = "";
+		String fileName = "";
 	}
 }
