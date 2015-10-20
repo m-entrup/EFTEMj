@@ -341,7 +341,7 @@ public class SR_EELS_Import implements PlugIn {
 	 *
 	 * @param number to convert.
 	 * @param length of the created {@link String}.
-	 * @return
+	 * @return a {@link String} that matches the given length.
 	 */
 	private String pad(final int number, final int length) {
 		String s = number + "";
