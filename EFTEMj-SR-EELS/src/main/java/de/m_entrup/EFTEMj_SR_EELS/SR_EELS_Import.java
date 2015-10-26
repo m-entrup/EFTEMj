@@ -274,23 +274,21 @@ public class SR_EELS_Import implements PlugIn {
 			if (gd.wasCanceled()) {
 				return null;
 			}
-			else {
-				parameters.date = gd.getNextString();
-				parameters.SpecMag = gd.getNextString();
-				parameters.QSinK7 = gd.getNextString();
-				if (importCalibration) {
-					parameters.comment = gd.getNextString();
-				}
-				else {
-					parameters.fileName = gd.getNextString();
-					automaticImport = gd.getNextBoolean();
-				}
-				/*
-				 * We replace space by underscore to easily recognize the complete comment.
-				 * This is useful when further processing is done.
-				 */
-				parameters.comment = parameters.comment.replace(" ", "_");
+			parameters.date = gd.getNextString();
+			parameters.SpecMag = gd.getNextString();
+			parameters.QSinK7 = gd.getNextString();
+			if (importCalibration) {
+				parameters.comment = gd.getNextString();
 			}
+			else {
+				parameters.fileName = gd.getNextString();
+				automaticImport = gd.getNextBoolean();
+			}
+			/*
+			 * We replace space by underscore to easily recognize the complete comment.
+			 * This is useful when further processing is done.
+			 */
+			parameters.comment = parameters.comment.replace(" ", "_");
 		}
 		return parameters;
 	}
