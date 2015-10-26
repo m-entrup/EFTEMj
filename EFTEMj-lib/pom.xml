@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>EFTEMj-lib</artifactId>
-	<version>0.1.0</version>
+	<version>0.2.0-SNAPSHOT</version>
 
 	<name>EFTEMj-lib</name>
 
@@ -15,7 +15,13 @@
 	<parent>
 		<groupId>de.m-entrup</groupId>
 		<artifactId>pom-EFTEMj</artifactId>
-		<version>0.1.0</version>
+		<version>1.0.0</version>
 		<relativePath>..</relativePath>
 	</parent>
+	<dependencies>
+		<dependency>
+			<groupId>gov.nist.math</groupId>
+			<artifactId>jama</artifactId>
+		</dependency>
+	</dependencies>
 </project>
