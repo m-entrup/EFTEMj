@@ -7,9 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import de.m_entrup.EFTEMj_lib.EFTEMj_Debug;
 import ij.IJ;
@@ -117,17 +114,47 @@ public class SR_EELS_Characterisation implements PlugIn {
 	{
 		final SR_EELS_CharacterisationSettings settings = results.settings;
 		final ArrayList<String> images = settings.images;
-		final ExecutorService executorService = Executors.newFixedThreadPool(Runtime
-			.getRuntime().availableProcessors());
 		for (int i = 0; i < images.size(); i++) {
-			executorService.execute(new SR_EELS_CharacterisationTask(results, i));
-		}
-		executorService.shutdown();
-		try {
-			executorService.awaitTermination(5, TimeUnit.MINUTES);
-		}
-		catch (final InterruptedException e) {
-			e.printStackTrace();
+			final String imageName = settings.images.get(i);
+			results.subResults.put(imageName, new SR_EELS_CharacterisationResult());
+			final SR_EELS_CharacterisationResult result = results.subResults.get(
+				imageName);
+			final SR_EELS_ImageObject image = new SR_EELS_ImageObject(imageName,
+				settings);
+			final ImagePlus imp = image.imp;
+			result.imp.put(imageName, imp);
+			result.width = imp.getWidth();
+			result.height = imp.getHeight();
+			int yPos = settings.energyBorderLow;
+			int xOffset = 0;
+			int roiWidth = image.width;
+//			mean = new Array();
+			while (yPos < image.height - settings.energyBorderHigh) {
+				imp.setRoi(new Rectangle(xOffset, yPos, roiWidth, settings.stepSize));
+				SR_EELS_SubImageObject subImage = new SR_EELS_SubImageObject(
+					new Duplicator().run(imp));
+				final ProfilePlot profile = new ProfilePlot(subImage.imp);
+				final double[] xValues = new double[profile.getProfile().length];
+				for (int p = 0; p < profile.getProfile().length; p++) {
+					xValues[p] = p;
+				}
+				final CurveFitter fit = new CurveFitter(xValues, profile.getProfile());
+				fit.doFit(CurveFitter.GAUSSIAN);
+				final double gaussCentre = fit.getParams()[2];
+				final double gaussSigma = fit.getParams()[3];
+				final double gaussSigmaWeighted = settings.sigmaWeight * gaussSigma /
+					Math.pow(fit.getRSquared(), 2);
+				xOffset = (int) Math.max(xOffset + Math.round(gaussCentre -
+					gaussSigmaWeighted), 0);
+				roiWidth = (int) Math.round(2 * gaussSigmaWeighted);
+				imp.setRoi(new Rectangle(xOffset, yPos, roiWidth, settings.stepSize));
+				subImage = new SR_EELS_SubImageObject(new Duplicator().run(imp));
+				subImage.xOffset = xOffset;
+				subImage.yOffset = yPos;
+				subImage.threshold = settings.threshold;
+				result.add(runCharacterisationSub(subImage, settings.useThresholding));
+				yPos += settings.stepSize;
+			}
 		}
 	}
 
@@ -362,65 +389,6 @@ public class SR_EELS_Characterisation implements PlugIn {
 			str.append("/");
 			return str.toString();
 		}
-	}
-
-	private class SR_EELS_CharacterisationTask implements Runnable {
-
-		private final int i;
-		private final SR_EELS_CharacterisationResults results;
-
-		public SR_EELS_CharacterisationTask(
-			final SR_EELS_CharacterisationResults results, final int i)
-		{
-			this.results = results;
-			this.i = i;
-		}
-
-		@Override
-		public void run() {
-			final SR_EELS_CharacterisationSettings settings = results.settings;
-			final String imageName = settings.images.get(i);
-			results.subResults.put(imageName, new SR_EELS_CharacterisationResult());
-			final SR_EELS_CharacterisationResult result = results.subResults.get(
-				imageName);
-			final SR_EELS_ImageObject image = new SR_EELS_ImageObject(imageName,
-				settings);
-			final ImagePlus imp = image.imp;
-			result.imp.put(imageName, imp);
-			result.width = imp.getWidth();
-			result.height = imp.getHeight();
-			int yPos = settings.energyBorderLow;
-			int xOffset = 0;
-			int roiWidth = image.width;
-//			mean = new Array();
-			while (yPos < image.height - settings.energyBorderHigh) {
-				imp.setRoi(new Rectangle(xOffset, yPos, roiWidth, settings.stepSize));
-				SR_EELS_SubImageObject subImage = new SR_EELS_SubImageObject(
-					new Duplicator().run(imp));
-				final ProfilePlot profile = new ProfilePlot(subImage.imp);
-				final double[] xValues = new double[profile.getProfile().length];
-				for (int p = 0; p < profile.getProfile().length; p++) {
-					xValues[p] = p;
-				}
-				final CurveFitter fit = new CurveFitter(xValues, profile.getProfile());
-				fit.doFit(CurveFitter.GAUSSIAN);
-				final double gaussCentre = fit.getParams()[2];
-				final double gaussSigma = fit.getParams()[3];
-				final double gaussSigmaWeighted = settings.sigmaWeight * gaussSigma /
-					Math.pow(fit.getRSquared(), 2);
-				xOffset = (int) Math.max(xOffset + Math.round(gaussCentre -
-					gaussSigmaWeighted), 0);
-				roiWidth = (int) Math.round(2 * gaussSigmaWeighted);
-				imp.setRoi(new Rectangle(xOffset, yPos, roiWidth, settings.stepSize));
-				subImage = new SR_EELS_SubImageObject(new Duplicator().run(imp));
-				subImage.xOffset = xOffset;
-				subImage.yOffset = yPos;
-				subImage.threshold = settings.threshold;
-				result.add(runCharacterisationSub(subImage, settings.useThresholding));
-				yPos += settings.stepSize;
-			}
-		}
-
 	}
 
 	private class SR_EELS_CharacterisationResults {
