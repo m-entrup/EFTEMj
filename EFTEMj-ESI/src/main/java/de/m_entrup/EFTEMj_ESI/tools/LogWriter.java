@@ -22,8 +22,8 @@ import ij.IJ;
  */
 public class LogWriter {
 
-	public static final String DRIFT = "Drift";
-	public static final String MAP = "Map";
+	public static final int DRIFT = 0;
+	public static final int MAP = 1;
 	private static boolean newSession = false;
 
 	/**
@@ -101,7 +101,7 @@ public class LogWriter {
 	 *          processLog {@link Vector}.
 	 * @param process The type of process (e.g. {@link LogWriter}.DRIFT)
 	 */
-	public static void writeProcessLog(final String text, final String process) {
+	public static void writeProcessLog(final String text, final int process) {
 		processLog.add(text);
 		switch (process) {
 			case DRIFT:
@@ -109,6 +109,7 @@ public class LogWriter {
 				break;
 			case MAP:
 				writeLog("Elemental mapping: " + text);
+				break;
 			default:
 				break;
 		}

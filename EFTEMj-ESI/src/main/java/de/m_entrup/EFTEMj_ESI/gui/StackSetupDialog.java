@@ -34,7 +34,7 @@ import ij.ImageStack;
 public class StackSetupDialog extends EFTEMFrame {
 
 	/**
-	 * The {@link ChangeStackListener} extends {@link OkCancelListener} and
+	 * The {@link StackSetupListener} extends {@link OkCancelListener} and
 	 * implements the OK- and Cancel-operations.
 	 */
 	private class StackSetupListener extends OkCancelListener {
@@ -59,9 +59,8 @@ public class StackSetupDialog extends EFTEMFrame {
 		 * energy loss.
 		 *
 		 * @param textFields An array of {@link JFormattedTextField} that uses the
-		 *          same index as the {@link ImagePlus} selected at
-		 *          {@link StackData}. The {@link JFormattedTextField} has to
-		 *          contain Integers only.
+		 *          same index as the selected {@link ImagePlus}. The
+		 *          {@link JFormattedTextField} has to contain Integers only.
 		 */
 		private void setELoss(final JFormattedTextField[] textFields) {
 			// new in v0.6:

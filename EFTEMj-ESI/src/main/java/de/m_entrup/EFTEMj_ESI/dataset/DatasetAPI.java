@@ -128,14 +128,14 @@ public class DatasetAPI {
 	 * array of {@link EFTEMImage}s. Additionally edgeELoss, epsilon and rLimit
 	 * are passed to {@link DatasetMapInput}.
 	 *
-	 * @param edgeELoss The energy loss where the element signal starts.
+	 * @param edgeEnergyLoss The energy loss where the element signal starts.
 	 * @param epsilon The exit condition for the MLE calculation.
 	 * @param rLimit A high-pass filter for the calculated parameters
 	 *          <code>r</code> .
 	 * @throws Exception
 	 */
-	public void createDatasetMapInput(final float edgeELoss, final float epsilon,
-		final float rLimit) throws Exception
+	public void createDatasetMapInput(final float edgeEnergyLoss,
+		final float epsilon, final float rLimit) throws Exception
 	{
 		final EFTEMImage[] array_EFTEMImages = new EFTEMImage[getStackSize()];
 		for (int i = 0; i < getStackSize(); i++) {
@@ -145,7 +145,7 @@ public class DatasetAPI {
 		}
 		Arrays.sort(array_EFTEMImages);
 		try {
-			datasetMapInput = new DatasetMapInput(array_EFTEMImages, edgeELoss,
+			datasetMapInput = new DatasetMapInput(array_EFTEMImages, edgeEnergyLoss,
 				epsilon, rLimit);
 			datasetMapResult = new DatasetMapResult();
 		}
@@ -380,21 +380,19 @@ public class DatasetAPI {
 		if (datasetStack == null) {
 			return null;
 		}
-		else {
-			final float value = datasetStack.eLossArray[n];
-			String valueFormat;
-			if (value % 1 == 0) {
-				valueFormat = "%.0f";
-			}
-			else if (10 * value % 1 == 0) {
-				valueFormat = "%.1f";
-			}
-			else {
-				valueFormat = "%.2f";
-			}
-			final String eLossStr = String.format(Locale.ENGLISH, valueFormat, value);
-			return eLossStr;
+		final float value = datasetStack.eLossArray[n];
+		String valueFormat;
+		if (value % 1 == 0) {
+			valueFormat = "%.0f";
 		}
+		else if (10 * value % 1 == 0) {
+			valueFormat = "%.1f";
+		}
+		else {
+			valueFormat = "%.2f";
+		}
+		final String eLossStr = String.format(Locale.ENGLISH, valueFormat, value);
+		return eLossStr;
 	}
 
 	/**
@@ -485,15 +483,15 @@ public class DatasetAPI {
 	}
 
 	/**
-	 * @param edgeELoss The energy loss of the ionization edge.
+	 * @param edgeEnergyLoss The energy loss of the ionization edge.
 	 * @return If the given energy loss is listed at the database the element and
 	 *         the name of the edge are written to this string.
 	 */
-	public String getPredictedEdgeLabel(final int edgeELoss) {
+	public String getPredictedEdgeLabel(final int edgeEnergyLoss) {
 		String label;
 		final LinkedHashMap<Integer, String> edges = IonisationEdges.getInstance()
 			.getEdges();
-		label = edges.get(edgeELoss);
+		label = edges.get(edgeEnergyLoss);
 		if (label == null) {
 			label = PluginMessages.getString("Label.NoEdgeFound");
 		}
@@ -779,7 +777,6 @@ public class DatasetAPI {
 	}
 
 	/**
-	 * @link DatasetMapResult}
 	 * @param imageIndex The position of the image at the array of all SNR images
 	 *          (starting at 0).
 	 * @param index <code>y * width + x</code>

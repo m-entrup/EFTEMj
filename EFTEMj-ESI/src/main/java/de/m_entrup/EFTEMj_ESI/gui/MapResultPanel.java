@@ -202,7 +202,7 @@ public class MapResultPanel extends Panel {
 	}
 
 	/**
-	 * The {@link MapResultDialog} is filled with a column for each result of the
+	 * The {@link MapResultPanel} is filled with a column for each result of the
 	 * elemental-map calculation. A column consists of 3 rows: a {@link Label} and
 	 * 2 {@link Button}. The first {@link Button} displays an image, the second
 	 * will export the image.

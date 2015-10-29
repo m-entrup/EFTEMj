@@ -46,12 +46,12 @@ public abstract class OkCancelListener implements ActionListener,
 
 	@Override
 	public void windowActivated(final WindowEvent e) {
-
+		return;
 	}
 
 	@Override
 	public void windowClosed(final WindowEvent e) {
-
+		return;
 	}
 
 	@Override
@@ -61,22 +61,22 @@ public abstract class OkCancelListener implements ActionListener,
 
 	@Override
 	public void windowDeactivated(final WindowEvent e) {
-
+		return;
 	}
 
 	@Override
 	public void windowDeiconified(final WindowEvent e) {
-
+		return;
 	}
 
 	@Override
 	public void windowIconified(final WindowEvent e) {
-
+		return;
 	}
 
 	@Override
 	public void windowOpened(final WindowEvent e) {
-
+		return;
 	}
 
 }

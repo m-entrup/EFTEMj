@@ -9,10 +9,9 @@ import de.m_entrup.EFTEMj_ESI.threading.ThreadInterface;
 /**
  * This class calculates the parameter of the background model pixel by pixel.
  * The used background model is the power law. Each instance of
- * {@link PowerLawFitCalculation} processes an image row and saves the result in
- * {@link MapData}. To calculate the background the maximum likelihood
- * estimation is used. All errors that occur during the calculation are
- * classified and logged.
+ * {@link PowerLawFitCalculation} processes an image row and saves the result.
+ * To calculate the background the maximum likelihood estimation is used. All
+ * errors that occur during the calculation are classified and logged.
  */
 public class PowerLawFitCalculation extends Thread {
 
@@ -72,8 +71,7 @@ public class PowerLawFitCalculation extends Thread {
 	 */
 	private final DatasetAPI datasetAPI = PluginAPI.getInstance().getDatasetAPI();
 	/**
-	 * This field stores the error type of each pixel before it is saved at
-	 * {@link MapData}.
+	 * This field stores the error type of each pixel before it is saved.
 	 */
 	short[] errorType;
 	/**

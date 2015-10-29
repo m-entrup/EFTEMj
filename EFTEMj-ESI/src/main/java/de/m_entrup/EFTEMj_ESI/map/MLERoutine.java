@@ -36,7 +36,7 @@ public class MLERoutine extends AbstractFitRoutine {
 	/**
 	 * <code>x + y * width</code>
 	 */
-	private int index;
+	private int currentIndex;
 
 	private final HashMap<Integer, Float> r;
 	private final HashMap<Integer, Float> a;
@@ -64,7 +64,7 @@ public class MLERoutine extends AbstractFitRoutine {
 	 */
 	@Override
 	public short calculateByPixel(final int index) {
-		this.index = index;
+		this.currentIndex = index;
 		if (isLessThanZero()) {
 			r.put(index, rLimit);
 			a.put(index, 0f);
@@ -121,44 +121,36 @@ public class MLERoutine extends AbstractFitRoutine {
 			a.put(index, 0f);
 			return PluginConstants.ERROR__NAN;
 		}
-		else {
-			// Check for a less than limit error
-			if (rn < rLimit) {
-				rn = rLimit;
-				a.put(index, 0f);
-				r.put(index, (float) rn);
-				return PluginConstants.ERROR__R_LESS_THAN_LIMIT;
-			}
-			else {
-				// Check if a can be calculated
-				final double value = sumCounts() / sumExp(rn, 0);
-				if (value < 0) {
-					a.put(index, 0f);
-					r.put(index, (float) rn);
-					return PluginConstants.ERROR__A_NOT_POSSIBLE_TO_CALCULATE;
-				}
-				else {
-					// Calculation of parameter a
-					a.put(index, (float) Math.log(value));
-					// Check for a NaN error
-					if (Double.isNaN(a.get(index))) {
-						a.put(index, 0f);
-						r.put(index, (float) rn);
-						return PluginConstants.ERROR__NAN;
-					}
-					else {
-						// calculation of a is ok
-						r.put(index, (float) rn);
-						return PluginConstants.ERROR__NON;
-					}
-				}
-			}
+		// Check for a less than limit error
+		if (rn < rLimit) {
+			rn = rLimit;
+			a.put(index, 0f);
+			r.put(index, (float) rn);
+			return PluginConstants.ERROR__R_LESS_THAN_LIMIT;
 		}
+		// Check if a can be calculated
+		final double value = sumCounts() / sumExp(rn, 0);
+		if (value < 0) {
+			a.put(index, 0f);
+			r.put(index, (float) rn);
+			return PluginConstants.ERROR__A_NOT_POSSIBLE_TO_CALCULATE;
+		}
+		// Calculation of parameter a
+		a.put(index, (float) Math.log(value));
+		// Check for a NaN error
+		if (Double.isNaN(a.get(index))) {
+			a.put(index, 0f);
+			r.put(index, (float) rn);
+			return PluginConstants.ERROR__NAN;
+		}
+		// calculation of a is ok
+		r.put(index, (float) rn);
+		return PluginConstants.ERROR__NON;
 	}
 
 	private boolean isLessThanZero() {
 		for (int i = 0; i < array_EFTEMImages.length; i++) {
-			if (array_EFTEMImages[i].getPixels()[index] < 0) {
+			if (array_EFTEMImages[i].getPixels()[currentIndex] < 0) {
 				return true;
 			}
 		}
@@ -196,7 +188,7 @@ public class MLERoutine extends AbstractFitRoutine {
 	private double sumCounts() {
 		double value = 0;
 		for (int i = 0; i < edgeIndex; i++) {
-			value += array_EFTEMImages[i].getPixels()[index];
+			value += array_EFTEMImages[i].getPixels()[currentIndex];
 		}
 		return value;
 	}
@@ -205,7 +197,7 @@ public class MLERoutine extends AbstractFitRoutine {
 	 * Calculates the sum of E_i^{exponent}.
 	 *
 	 * @param rn The value of <code>r</code> at the current iteration.
-	 * @param Can be 0, 1, or 2.
+	 * @param exponent can be 0, 1, or 2.
 	 * @return The sum of power functions.
 	 */
 	private double sumExp(final double rn, final int exponent) {
@@ -227,8 +219,8 @@ public class MLERoutine extends AbstractFitRoutine {
 		double value2 = 0;
 		for (int i = 0; i < edgeIndex; i++) {
 			value1 += Math.log(array_EFTEMImages[i].getELoss()) * array_EFTEMImages[i]
-				.getPixels()[index];
-			value2 += array_EFTEMImages[i].getPixels()[index];
+				.getPixels()[currentIndex];
+			value2 += array_EFTEMImages[i].getPixels()[currentIndex];
 		}
 		// If true this will result in 0/1
 		if (value2 == 0) value2 = 1;

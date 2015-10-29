@@ -24,22 +24,19 @@ public class Statistics {
 	/**
 	 * Creates a string with the pattern "mean / median / stdv".
 	 *
-	 * @param input Pixel array of the input image.
-	 * @param errors Pixel array of the error map.
 	 * @return "getMean / getMedian / getStdv"
 	 */
 	public String getAllAsString() {
-		final double mean = getMean();
-		final double median = getMedian();
-		final double stdv = getStdv();
+		final double meanValue = getMean();
+		final double medianValue = getMedian();
+		final double stdvValue = getStdv();
 		final String output = String.format(Locale.ENGLISH,
-			"(mean/median/stdv): %.3f / %.3f / %.3f", mean, median, stdv);
+			"(mean/median/stdv): %.3f / %.3f / %.3f", meanValue, medianValue,
+			stdvValue);
 		return output;
 	}
 
 	/**
-	 * @param input Pixel array of the input image.
-	 * @param errors Pixel array of the error map.
 	 * @return The mean of all pixels without an error.
 	 */
 	public double getMean() {
@@ -57,8 +54,6 @@ public class Statistics {
 	}
 
 	/**
-	 * @param input Pixel array of the input image.
-	 * @param errors Pixel array of the error map.
 	 * @return The median of all pixels without an error.
 	 */
 	public double getMedian() {
@@ -86,8 +81,6 @@ public class Statistics {
 	}
 
 	/**
-	 * @param input Pixel array of the input image.
-	 * @param errors Pixel array of the error map.
 	 * @return The standard deviation of all pixels without an error.
 	 */
 	public double getStdv() {

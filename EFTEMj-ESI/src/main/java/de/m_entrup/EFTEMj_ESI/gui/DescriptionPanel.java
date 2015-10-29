@@ -91,12 +91,14 @@ public class DescriptionPanel extends Panel {
 			init(message);
 		}
 
-		private void init(String message) {
+		private void init(final String message) {
 			ij.util.Java2.setSystemLookAndFeel();
 			final Container container = getContentPane();
 			container.setLayout(new BorderLayout());
-			if (message == null) message = "";
-			final JLabel label = new JLabel(message);
+			String labelStr;
+			if (message == null) labelStr = "";
+			else labelStr = message;
+			final JLabel label = new JLabel(labelStr);
 			JPanel panel = new JPanel();
 			panel.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 15));
 			panel.add(label);

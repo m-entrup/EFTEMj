@@ -489,7 +489,7 @@ public class ThreadInterface {
 
 	/**
 	 * Uses <code>threadChecker.removeThread()</code> and creates the
-	 * {@link MapResultDialog} if <code>threadChecker.isFinished() == true</code>.
+	 * {@link MapResultPanel} if <code>threadChecker.isFinished() == true</code>.
 	 */
 	public synchronized void removeThread(final int type) {
 		threadChecker.removeThread();

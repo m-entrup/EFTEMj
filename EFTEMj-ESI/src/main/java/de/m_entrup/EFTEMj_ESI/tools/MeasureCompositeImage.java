@@ -175,12 +175,11 @@ public class MeasureCompositeImage implements PlugInFilter {
 			if (meanCalcIsDone == true) {
 				return mean;
 			}
-			double mean = 0;
+			mean = 0;
 			final int pixelCount = dataFiltered.length;
 			for (int i = 0; i < pixelCount; i++) {
 				mean += 1.0 / pixelCount * dataFiltered[i];
 			}
-			this.mean = mean;
 			meanCalcIsDone = true;
 			return mean;
 		}
@@ -206,10 +205,10 @@ public class MeasureCompositeImage implements PlugInFilter {
 
 		private double getSTDV() {
 			double stdv = 0;
-			final double mean = getMean();
+			final double meanValue = getMean();
 			final int pixelCount = dataFiltered.length;
 			for (int i = 0; i < pixelCount; i++) {
-				stdv += 1.0 / pixelCount * Math.pow(dataFiltered[i] - mean, 2);
+				stdv += 1.0 / pixelCount * Math.pow(dataFiltered[i] - meanValue, 2);
 			}
 			stdv = Math.sqrt(stdv);
 			return stdv;
@@ -244,7 +243,7 @@ public class MeasureCompositeImage implements PlugInFilter {
 			}
 			final double sumOfCounts = getSumOfCounts();
 			final double median = getMedian();
-			final double mean = getMean();
+			final double meanValue = getMean();
 			final double stdv = getSTDV();
 			final float[] extremes = getExtremes();
 			result = new Vector<String>();
@@ -260,7 +259,7 @@ public class MeasureCompositeImage implements PlugInFilter {
 			result.add(String.format(Locale.ENGLISH, "Sum of counts: %.3f",
 				sumOfCounts));
 			result.add(String.format(Locale.ENGLISH, "Median: %.3f", median));
-			result.add(String.format(Locale.ENGLISH, "Mean: %.3f", mean));
+			result.add(String.format(Locale.ENGLISH, "Mean: %.3f", meanValue));
 			result.add(String.format(Locale.ENGLISH, "Standarddev.: %.3f", stdv));
 			result.add(String.format(Locale.ENGLISH,
 				"Minimum: %.3f at %.0f/%.0f%nMaximum: %.3f at %.0f/%.0f", extremes[0],

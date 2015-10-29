@@ -44,6 +44,6 @@ public class FreeThreadsPool {
 			freeThreads--;
 			return true;
 		}
-		else return false;
+		return false;
 	}
 }

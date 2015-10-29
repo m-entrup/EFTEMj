@@ -70,11 +70,11 @@ public class SNRCalculation extends Thread {
 	/**
 	 * The x coordinate of the processed pixel.
 	 */
-	private int x;
+	private int currentX;
 	/**
 	 * The y coordinate of the processed pixel.
 	 */
-	private final int y;
+	private final int currentY;
 
 	/**
 	 * The constructor creates a new instance of {@link SNRCalculation} for the
@@ -89,8 +89,8 @@ public class SNRCalculation extends Thread {
 	public SNRCalculation(final int y, final int imageIndex) {
 		super();
 		threadInterface.addThread();
-		this.x = 0;
-		this.y = y;
+		this.currentX = 0;
+		this.currentY = y;
 		this.imageIndex = imageIndex;
 		edgeIndex = datasetAPI.getEdgeIndex();
 		array_EFTEMImages = datasetAPI.getEFTEMImageArray();
@@ -105,12 +105,12 @@ public class SNRCalculation extends Thread {
 	 * Calculating the background again is faster than reading it from the saved
 	 * results, especially with a increasing number of pre-edge images.
 	 *
-	 * @param eLoss The energy loss that is used for the calculation.
+	 * @param energyLoss The energy loss that is used for the calculation.
 	 * @return The background signal.
 	 */
-	private float calcBG(final float eLoss) {
+	private float calcBG(final float energyLoss) {
 		final float bg = (float) Math.exp(aMap[index] - rMap[index] * Math.log(
-			eLoss));
+			energyLoss));
 		return bg;
 	}
 
@@ -163,23 +163,23 @@ public class SNRCalculation extends Thread {
 		final int width = datasetAPI.getWidth();
 		final float[] snr = new float[width];
 		final float[] sigma2 = new float[width];
-		for (x = 0; x < width; x++) {
-			index = x + y * width;
+		for (currentX = 0; currentX < width; currentX++) {
+			index = currentX + currentY * width;
 			if (errorValues[index] == 0) {
-				sigma2[x] = (float) sigma2();
+				sigma2[currentX] = (float) sigma2();
 				double snrAtPixel = signal[index] / Math.sqrt(signal[index] + calcBG(
-					eLoss) + sigma2[x]);
+					eLoss) + sigma2[currentX]);
 				if (Double.isNaN(snrAtPixel) | Double.isInfinite(snrAtPixel)) {
 					snrAtPixel = 0;
 				}
-				snr[x] = (float) snrAtPixel;
+				snr[currentX] = (float) snrAtPixel;
 			}
 			else {
-				snr[x] = PluginConstants.VALUE_CALCULATION_FAILED;
+				snr[currentX] = PluginConstants.VALUE_CALCULATION_FAILED;
 			}
 		}
-		datasetAPI.saveSNR(imageIndex, y * width, snr);
-		datasetAPI.saveSigma2(imageIndex, y * width, sigma2);
+		datasetAPI.saveSNR(imageIndex, currentY * width, snr);
+		datasetAPI.saveSigma2(imageIndex, currentY * width, sigma2);
 		threadInterface.removeThread(ThreadInterface.SNR);
 	}
 

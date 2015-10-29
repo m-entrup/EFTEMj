@@ -33,6 +33,7 @@ import ij.ImageJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.WindowManager;
+import ij.gui.ProgressBar;
 import ij.plugin.ImagesToStack;
 
 /**
@@ -209,8 +210,7 @@ public class MainMenu extends Frame {
 		/**
 		 * A dialog is opened to choose the {@link ImagePlus} that is used by the
 		 * plugIn. If no {@link ImagePlus} is opened an message dialog is displayed.
-		 * If only 1 {@link ImagePlus} is opened this {@link ImagePlus} is assigned
-		 * to {@link StackData}.
+		 * If only 1 {@link ImagePlus} is opened this {@link ImagePlus} is assigned.
 		 */
 		private void changeStack() {
 			if (WindowManager.getCurrentImage() == null) {
@@ -384,8 +384,8 @@ public class MainMenu extends Frame {
 		}
 
 		/**
-		 * The value of the label is changed to the short title of the
-		 * {@link ImagePlus} selected at {@link StackData}.
+		 * The value of the label is changed to the short title of the selected
+		 * {@link ImagePlus}.
 		 */
 		public void updateStackSelection() {
 			if (PluginAPI.getInstance().getDatasetAPI() == null) {
@@ -569,11 +569,11 @@ public class MainMenu extends Frame {
 	 * @param key The key that is used to map the {@link Button} at the
 	 *          {@link Hashtable} buttonTable in {@link MapResultPanel}.
 	 */
-	public void enableMapResultButton(String key) {
+	public void enableMapResultButton(final String key) {
 		if (key.startsWith("key_show")) {
 			mapResultPanel.enableButton(key);
-			key = key.substring(8);
-			mapResultPanel.enableButton("key_export" + key);
+			final String key_result = key.substring(8);
+			mapResultPanel.enableButton("key_export" + key_result);
 		}
 		else {
 			mapResultPanel.enableButton(key);
@@ -581,7 +581,7 @@ public class MainMenu extends Frame {
 	}
 
 	/**
-	 * Updates the {@link EFTEMProgressBar} at the {@link MainMenu}.
+	 * Updates the {@link ProgressBar} at the {@link MainMenu}.
 	 *
 	 * @param value A new value between 0 and 100
 	 */

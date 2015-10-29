@@ -21,7 +21,7 @@ public class DisplyProcessLogTool {
 	 * A dialog containing the current process logs is displayed. It is possible
 	 * to save the log as txt file.
 	 */
-	public static void showExportDialog(String fileName) {
+	public static void showExportDialog(final String fileName) {
 		IJ.showStatus("Finished Elemental-Mapping");
 		final GenericDialog gd = new GenericDialog(PluginMessages.getString(
 			"Titel.ProcessLog"));
@@ -47,11 +47,13 @@ public class DisplyProcessLogTool {
 		fDialog.setDirectory(IJ.getDirectory("image"));
 		// adds date and time to the file name
 		final Calendar cal = Calendar.getInstance();
-		fileName += "_" + String.format(Locale.ENGLISH, "%tF-%tR", cal, cal);
+		String extendedFileName = fileName + "_" + String.format(Locale.ENGLISH,
+			"%tF-%tR", cal, cal);
 		// remove the ':' that is not allowed as at a file name
-		final int pos = fileName.indexOf(":");
-		fileName = fileName.substring(0, pos) + fileName.substring(pos + 1);
-		fDialog.setFile(fileName + ".txt");
+		final int pos = extendedFileName.indexOf(":");
+		extendedFileName = extendedFileName.substring(0, pos) + extendedFileName
+			.substring(pos + 1);
+		fDialog.setFile(extendedFileName + ".txt");
 		fDialog.setVisible(true);
 		if (fDialog.getFile() != null) {
 			final String path = fDialog.getDirectory() + System.getProperty(

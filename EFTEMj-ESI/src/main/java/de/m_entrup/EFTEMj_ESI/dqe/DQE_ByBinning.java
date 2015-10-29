@@ -32,8 +32,8 @@ public class DQE_ByBinning {
 		this.imageTitle = imageTitle;
 		this.summary = summary;
 		progress = 0;
-		input = new Stack<>();
-		output = new Stack<>();
+		input = new Stack<DatasetDQE>();
+		output = new Stack<DatasetDQE>();
 		// Index 0 is not used.
 		outputSorted = new DatasetDQE[maxBinning + 1];
 		DatasetDQE.fp = fp;
