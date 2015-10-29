@@ -6,6 +6,7 @@ import javax.swing.UIManager;
 
 import de.m_entrup.EFTEMj_ESI.gui.MainMenu;
 import de.m_entrup.EFTEMj_ESI.tools.LogWriter;
+import de.m_entrup.EFTEMj_lib.EFTEMj_Debug;
 import ij.plugin.PlugIn;
 import ij.plugin.frame.PlugInFrame;
 
@@ -50,6 +51,10 @@ public class PluginLoader implements PlugIn {
 			mainMenu.setVisible(true);
 			mainMenu.toFront();
 		}
+	}
+
+	public static void main(final String[] args) {
+		EFTEMj_Debug.debug(PluginLoader.class);
 	}
 
 }

@@ -6,7 +6,7 @@ import java.util.ResourceBundle;
 
 public class PluginMessages {
 
-	private static final String BUNDLE_NAME = "resources.Elemental-Map"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "Elemental-Map";
 
 	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle
 		.getBundle(BUNDLE_NAME);
