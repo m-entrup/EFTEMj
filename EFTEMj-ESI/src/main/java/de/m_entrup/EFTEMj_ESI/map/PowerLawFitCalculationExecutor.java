@@ -55,9 +55,6 @@ public class PowerLawFitCalculationExecutor extends SwingWorker<Void, Void> {
 			dateAndTime + "):", LogWriter.MAP);
 		DecimalFormat decF = new DecimalFormat("#.###", DecimalFormatSymbols
 			.getInstance(Locale.ENGLISH));
-		// new DecimalFormat();
-		LogWriter.writeProcessLog("The lower limit of r is " + decF.format(
-			PowerLawFitCalculation.getRLimit()), LogWriter.MAP);
 		decF = new DecimalFormat("0.0##E0", DecimalFormatSymbols.getInstance(
 			Locale.ENGLISH));
 		LogWriter.writeProcessLog(

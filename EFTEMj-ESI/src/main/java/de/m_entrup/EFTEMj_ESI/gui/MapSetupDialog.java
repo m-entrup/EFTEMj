@@ -44,8 +44,6 @@ public class MapSetupDialog extends EFTEMFrame {
 		private void readSettings() {
 			epsilon = (float) Prefs.get(EFTEMj_Prefs.PREFS_PREFIX + ESI_PREFIX +
 				"epsilon", epsilon);
-			rLimit = (float) Prefs.get(EFTEMj_Prefs.PREFS_PREFIX + ESI_PREFIX +
-				"rLimit", rLimit);
 		}
 
 		/**
@@ -53,7 +51,6 @@ public class MapSetupDialog extends EFTEMFrame {
 		 */
 		private void writeSettings() {
 			Prefs.set(EFTEMj_Prefs.PREFS_PREFIX + ESI_PREFIX + "epsilon", epsilon);
-			Prefs.set(EFTEMj_Prefs.PREFS_PREFIX + ESI_PREFIX + "rLimit", rLimit);
 			Prefs.savePreferences();
 		}
 
@@ -75,10 +72,9 @@ public class MapSetupDialog extends EFTEMFrame {
 		protected void okOperation() {
 			eLoss = Float.valueOf(eLossField.getText());
 			epsilon = Float.valueOf(epsilonField.getText());
-			rLimit = Float.valueOf(limitField.getText());
 			try {
 				PluginAPI.getInstance().getDatasetAPI().createDatasetMapInput(eLoss,
-					epsilon, rLimit);
+					epsilon);
 			}
 			catch (final Exception e) {
 				LogWriter.showWarningAndWriteLog(e.getMessage());
@@ -128,17 +124,6 @@ public class MapSetupDialog extends EFTEMFrame {
 	 * This is the Layout used by the optionPanel.
 	 */
 	private GridBagLayout gridBagLayout;
-
-	/**
-	 * A {@link JFormattedTextField} to edit the value of rLimit.
-	 */
-	private JFormattedTextField limitField;
-
-	/**
-	 * This parameter limits the value of r. All pixel of the image that lead to a
-	 * value smaller than rLimit are ignored.
-	 */
-	private float rLimit = PluginConstants.R_LIMIT;
 
 	/**
 	 * The constructor creates a new {@link Frame} using the constructor of
@@ -260,19 +245,6 @@ public class MapSetupDialog extends EFTEMFrame {
 		this.configField(epsilonField);
 		epsilonField.setValue(epsilon);
 		addElement(epsilonField, optionPanel, 1, pos, 1, 1);
-		// Filter parameter r-limit
-		pos++;
-		final Label limitLabel = new Label(PluginMessages.getString(
-			"Label.LimitParameterR"));
-		addElement(limitLabel, optionPanel, 0, pos, 1, 1);
-		final DecimalFormat df3 = (DecimalFormat) NumberFormat.getInstance(
-			Locale.ENGLISH);
-		df3.applyPattern("0.##;-#0.##");
-		limitField = new JFormattedTextField(df3);
-		this.configField(limitField);
-		limitField.setValue(rLimit);
-		addElement(limitField, optionPanel, 1, pos, 1, 1);
-
 		return optionPanel;
 	}
 }

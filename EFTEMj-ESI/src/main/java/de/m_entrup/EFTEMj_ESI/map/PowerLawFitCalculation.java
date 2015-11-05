@@ -22,24 +22,12 @@ public class PowerLawFitCalculation extends Thread {
 	 * value.
 	 */
 	private static float epsilon = PluginConstants.EPSILON;
-	/**
-	 * The lower limit for the parameter <code>r</code>. There is a static method
-	 * to change this value.
-	 */
-	private static float rLimit = PluginConstants.R_LIMIT;
 
 	/**
 	 * @return The current value of epsilon.
 	 */
 	public static float getEpsilon() {
 		return epsilon;
-	}
-
-	/**
-	 * @return The current value of rLimit.
-	 */
-	public static float getRLimit() {
-		return rLimit;
 	}
 
 	/**
@@ -50,16 +38,6 @@ public class PowerLawFitCalculation extends Thread {
 	 */
 	public static void setEpsilon(final float newEpsilon) {
 		epsilon = newEpsilon;
-	}
-
-	/**
-	 * The r-limit is saved as a static filed so each instance can access it. This
-	 * method is used to change the value.
-	 *
-	 * @param newRLimit The new r-limit that is set by the GUI.
-	 */
-	public static void setRLimit(final float newRLimit) {
-		rLimit = newRLimit;
 	}
 
 	/**
@@ -125,10 +103,10 @@ public class PowerLawFitCalculation extends Thread {
 	private void selectTypeOfFit() {
 		switch (DEBUGCODE) {
 			case 1:
-				typeOfFit = new MLERoutine(epsilon, rLimit);
+				typeOfFit = new MLERoutine(epsilon);
 				break;
 			default:
-				typeOfFit = new MLERoutine(epsilon, rLimit);
+				typeOfFit = new MLERoutine(epsilon);
 				break;
 		}
 	}

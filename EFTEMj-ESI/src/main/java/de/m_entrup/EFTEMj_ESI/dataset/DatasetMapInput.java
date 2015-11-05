@@ -33,17 +33,14 @@ public class DatasetMapInput {
 	 * @param inputImages A sorted array of {@link EFTEMImage}s.
 	 * @param edgeELoss The energy loss where the elemental signal starts.
 	 * @param epsilon The exit condition for the MLE calculation.
-	 * @param rLimit A high-pass filter for the calculated parameter
-	 *          <code>r</code> .
 	 * @throws Exception
 	 */
 	public DatasetMapInput(final EFTEMImage[] inputImages, final float edgeELoss,
-		final float epsilon, final float rLimit) throws Exception
+		final float epsilon) throws Exception
 	{
 		this.array_InputImages = inputImages;
 		this.edgeELoss = edgeELoss;
 		PowerLawFitCalculation.setEpsilon(epsilon);
-		PowerLawFitCalculation.setRLimit(rLimit);
 		int index = 0;
 		while (index < inputImages.length) {
 			if (inputImages[index].eLoss >= edgeELoss) {

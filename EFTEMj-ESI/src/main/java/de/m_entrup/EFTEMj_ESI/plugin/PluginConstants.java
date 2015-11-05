@@ -26,20 +26,15 @@ public class PluginConstants {
 	/**
 	 * An error that is logged if the iteration does not converge.
 	 */
-	public static final short ERROR__CONVERGENCE = 240;
+	public static final short ERROR__CONVERGENCE = 220;
 	/**
 	 * An error that is logged if an interim result is NaN.
 	 */
-	public static final short ERROR__NAN = 250;
+	public static final short ERROR__NAN = 210;
 	/**
 	 * No error has occurred.
 	 */
 	public static final short ERROR__NON = 0;
-	/**
-	 * An error that is logged if the calculated r is smaller than the given
-	 * limit.
-	 */
-	public static final short ERROR__R_LESS_THAN_LIMIT = 220;
 	/**
 	 * If the signal at the current pixel of any image is less than zero, no
 	 * background fit is performed.
@@ -72,10 +67,6 @@ public class PluginConstants {
 	 * version.
 	 */
 	public static final String PATTERN_ELOSS_SHORT = "\\d*[.]?[,]?\\d+eV";
-	/**
-	 * The default value of the bottom limit of r.
-	 */
-	public static final float R_LIMIT = 2;
 	/**
 	 * This value is used to indicate that there was an error at the MLE
 	 * calculation. It is the smallest nonezero value multiplied with (-1).

@@ -130,12 +130,10 @@ public class DatasetAPI {
 	 *
 	 * @param edgeEnergyLoss The energy loss where the element signal starts.
 	 * @param epsilon The exit condition for the MLE calculation.
-	 * @param rLimit A high-pass filter for the calculated parameters
-	 *          <code>r</code> .
 	 * @throws Exception
 	 */
 	public void createDatasetMapInput(final float edgeEnergyLoss,
-		final float epsilon, final float rLimit) throws Exception
+		final float epsilon) throws Exception
 	{
 		final EFTEMImage[] array_EFTEMImages = new EFTEMImage[getStackSize()];
 		for (int i = 0; i < getStackSize(); i++) {
@@ -146,7 +144,7 @@ public class DatasetAPI {
 		Arrays.sort(array_EFTEMImages);
 		try {
 			datasetMapInput = new DatasetMapInput(array_EFTEMImages, edgeEnergyLoss,
-				epsilon, rLimit);
+				epsilon);
 			datasetMapResult = new DatasetMapResult();
 		}
 		catch (final Exception e) {

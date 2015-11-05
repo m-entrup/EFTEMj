@@ -12,11 +12,6 @@ import ij.ImageStack;
 public class MLERoutine extends AbstractFitRoutine {
 
 	/**
-	 * The lower limit for the parameter <code>r</code>. There is a static method
-	 * to change this value.
-	 */
-	private float rLimit = PluginConstants.R_LIMIT;
-	/**
 	 * The exit condition for the MLE. There is a static method to change this
 	 * value.
 	 */
@@ -48,13 +43,12 @@ public class MLERoutine extends AbstractFitRoutine {
 		a = new HashMap<Integer, Float>();
 	}
 
-	public MLERoutine(final float epsilon, final float rLimit) {
+	public MLERoutine(final float epsilon) {
 		edgeIndex = datasetAPI.getEdgeIndex();
 		array_EFTEMImages = datasetAPI.getEFTEMImageArray();
 		r = new HashMap<Integer, Float>();
 		a = new HashMap<Integer, Float>();
 		this.epsilon = epsilon;
-		this.rLimit = rLimit;
 	}
 
 	/**
@@ -66,7 +60,7 @@ public class MLERoutine extends AbstractFitRoutine {
 	public short calculateByPixel(final int index) {
 		this.currentIndex = index;
 		if (isLessThanZero()) {
-			r.put(index, rLimit);
+			r.put(index, 0f);
 			a.put(index, 0f);
 			return PluginConstants.ERROR__SIGNAL_LESS_THAN_ZERO;
 		}
@@ -91,14 +85,14 @@ public class MLERoutine extends AbstractFitRoutine {
 			rn = rn_prev - num / denum;
 			// Check for a NaN error
 			if (Double.isNaN(rn) | Double.isInfinite(rn)) {
-				r.put(index, rLimit);
+				r.put(index, 0f);
 				a.put(index, 0f);
 				return PluginConstants.ERROR__NAN;
 			}
 			// Checks for a convergence error. The combination of the 2. and 3.
 			// if statement prevents an infinite number of iterations.
 			if (Math.abs(rn_prev - rn) == diff) {
-				r.put(index, rLimit);
+				r.put(index, 0f);
 				a.put(index, 0f);
 				return PluginConstants.ERROR__CONVERGENCE;
 			}
@@ -107,7 +101,7 @@ public class MLERoutine extends AbstractFitRoutine {
 			}
 			if (convergenceCounter >= 25) {
 				// r is set to NaN to make a clean up (see below)
-				r.put(index, rLimit);
+				r.put(index, 0f);
 				a.put(index, 0f);
 				return PluginConstants.ERROR__CONVERGENCE;
 			}
@@ -117,16 +111,9 @@ public class MLERoutine extends AbstractFitRoutine {
 		// Parameter clean up:
 		// This is done to optimise the display of the parameter maps.
 		if (Double.isNaN(rn) | Double.isInfinite(rn)) {
-			r.put(index, rLimit);
+			r.put(index, 0f);
 			a.put(index, 0f);
 			return PluginConstants.ERROR__NAN;
-		}
-		// Check for a less than limit error
-		if (rn < rLimit) {
-			rn = rLimit;
-			a.put(index, 0f);
-			r.put(index, (float) rn);
-			return PluginConstants.ERROR__R_LESS_THAN_LIMIT;
 		}
 		// Check if a can be calculated
 		final double value = sumCounts() / sumExp(rn, 0);

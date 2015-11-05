@@ -600,7 +600,6 @@ public class MainMenu extends Frame {
 		mapResultDescription.setDetailedDescription(String.format(PluginMessages
 			.getString("Label.MapResultDetailedInfo"), PluginConstants.ERROR__NON,
 			PluginConstants.ERROR__SIGNAL_LESS_THAN_ZERO,
-			PluginConstants.ERROR__R_LESS_THAN_LIMIT,
 			PluginConstants.ERROR__A_NOT_POSSIBLE_TO_CALCULATE,
 			PluginConstants.ERROR__CONVERGENCE, PluginConstants.ERROR__NAN));
 		mapResultPanel = new MapResultPanel();

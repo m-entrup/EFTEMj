@@ -2,8 +2,6 @@
 package de.m_entrup.EFTEMj_ESI.threading;
 
 import java.awt.Point;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Locale;
 
@@ -294,13 +292,6 @@ public class ThreadInterface {
 				"signal is less than 0: %d pixels (%s)", errorCount, NumberFormat
 					.getPercentInstance().format((double) errorCount / pixelCount)),
 				LogWriter.MAP);
-			errorCount = errorHistogram[PluginConstants.ERROR__R_LESS_THAN_LIMIT];
-			final DecimalFormat df = new DecimalFormat("#.###", DecimalFormatSymbols
-				.getInstance(Locale.ENGLISH));
-			LogWriter.writeProcessLog(String.format(Locale.ENGLISH, "r less than " +
-				df.format(PowerLawFitCalculation.getRLimit()) + ": %d pixels (%s)",
-				errorCount, NumberFormat.getPercentInstance().format(
-					(double) errorCount / pixelCount)), LogWriter.MAP);
 			errorCount =
 				errorHistogram[PluginConstants.ERROR__A_NOT_POSSIBLE_TO_CALCULATE];
 			LogWriter.writeProcessLog(String.format(Locale.ENGLISH,
