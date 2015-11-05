@@ -454,8 +454,7 @@ public class MainMenu extends Frame {
 	 * visible.
 	 */
 	public MainMenu() {
-		super(PluginMessages.getString("Title.MainMenu") + " (Version " +
-			PluginConstants.VERSION + ")");
+		super(PluginMessages.getString("Title.MainMenu"));
 		mainMenuListener = new MainMenuListener();
 		this.setLayout(new BorderLayout(PluginConstants.LAYOUT__BORDER_LAYOUT_GAP,
 			PluginConstants.LAYOUT__BORDER_LAYOUT_GAP));

@@ -4,8 +4,6 @@ package de.m_entrup.EFTEMj_ESI.plugin;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 
-import de.m_entrup.EFTEMj_ESI.gui.MainMenu;
-
 /**
  * {@link PluginConstants} contains only constants (static final fields) that
  * can be used to configure the plugin.
@@ -83,9 +81,4 @@ public class PluginConstants {
 	 * calculation. It is the smallest nonezero value multiplied with (-1).
 	 */
 	public static final float VALUE_CALCULATION_FAILED = -Float.MIN_VALUE;
-	/**
-	 * This is the current version of the plugin. It is displayed at the title of
-	 * the {@link MainMenu}.
-	 */
-	public static final double VERSION = 0.7;
 }
