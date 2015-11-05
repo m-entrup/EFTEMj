@@ -7,11 +7,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Label;
 import java.awt.Panel;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -25,7 +20,8 @@ import de.m_entrup.EFTEMj_ESI.plugin.PluginAPI;
 import de.m_entrup.EFTEMj_ESI.plugin.PluginConstants;
 import de.m_entrup.EFTEMj_ESI.resources.PluginMessages;
 import de.m_entrup.EFTEMj_ESI.tools.LogWriter;
-import ij.IJ;
+import de.m_entrup.EFTEMj_lib.EFTEMj_Prefs;
+import ij.Prefs;
 
 /**
  * This Frame is used to setup the elemental map calculation.
@@ -34,142 +30,31 @@ import ij.IJ;
 public class MapSetupDialog extends EFTEMFrame {
 
 	/**
-	 * The {@link ConfigFileHandler} reads and writes settings of the
-	 * {@link MapSetupDialog}. The settings of the lost calculation are restored
+	 * The {@link LoadAndSaveConfig} reads and writes settings of the
+	 * {@link MapSetupDialog}. The settings of the last calculation are restored
 	 * instead of using the default settings.
 	 */
-	private class ConfigFileHandler {
+	private class LoadAndSaveConfig {
+
+		private final static String ESI_PREFIX = "ESI.";
 
 		/**
-		 * A {@link File}-object that handles th configuration file.
+		 * Read the settings of {@link MapSetupDialog} from IJ_Prefs.txt.
 		 */
-		private final File configFile;
-
-		/**
-		 * Creates an {@link File}-object. The used path is<br />
-		 * <code>IJ.getDirectory("plugins") + "Elemental-Mapping.config"</code>.
-		 */
-		private ConfigFileHandler() {
-			configFile = new File(IJ.getDirectory("plugins") +
-				"Elemental-Mapping.config");
+		private void readSettings() {
+			epsilon = (float) Prefs.get(EFTEMj_Prefs.PREFS_PREFIX + ESI_PREFIX +
+				"epsilon", epsilon);
+			rLimit = (float) Prefs.get(EFTEMj_Prefs.PREFS_PREFIX + ESI_PREFIX +
+				"rLimit", rLimit);
 		}
 
 		/**
-		 * When no configFile exits a new one is created.
+		 * Write the settings of {@link MapSetupDialog} to IJ_Prefs.txt.
 		 */
-		private void createFile() {
-			if (!configFile.exists()) {
-				try {
-					configFile.createNewFile();
-					writeSettings();
-				}
-				catch (final IOException e) {
-					LogWriter.showWarningAndWriteLog(PluginMessages.getString(
-						"MapSetup.fileError"));
-					e.printStackTrace();
-				}
-			}
-			else {
-				LogWriter.showWarningAndWriteLog(PluginMessages.getString(
-					"MapSetup.fileError"));
-			}
-		}
-
-		/**
-		 * It is checked if the configuration file exists. If it exists
-		 * <code>readSettings()</code> is called. If the file does not exist a new
-		 * one is created.<br />
-		 * Exceptions are handled by this method.
-		 */
-		private void readFromFile() {
-			if (configFile.exists()) {
-				try {
-					readSettings();
-				}
-				catch (final NumberFormatException e) {
-					LogWriter.showWarningAndWriteLog(PluginMessages.getString(
-						"MapSetup.formatError"));
-					e.printStackTrace();
-				}
-				catch (final IOException e) {
-					LogWriter.showWarningAndWriteLog(PluginMessages.getString(
-						"MapSetup.readError"));
-					e.printStackTrace();
-				}
-			}
-			else {
-				createFile();
-			}
-		}
-
-		/**
-		 * A {@link FileReader} is used to parse the configuration file line by
-		 * line. The fields of {@link MapSetupDialog} are used to store the values.
-		 *
-		 * @throws NumberFormatException If <code>parseInt(String s)</code> or
-		 *           <code>parseFloat(String s)</code> fails.
-		 * @throws IOException If the {@link FileReader} can not read the
-		 *           configFile.
-		 */
-		private void readSettings() throws NumberFormatException, IOException {
-			FileReader fr = null;
-			fr = new FileReader(configFile);
-			final BufferedReader br = new BufferedReader(fr);
-			// eLoss = Integer.parseInt(br.readLine());
-			// dqe = Float.parseFloat(br.readLine());
-			epsilon = Float.parseFloat(br.readLine());
-			rLimit = Float.parseFloat(br.readLine());
-			br.close();
-			fr.close();
-		}
-
-		/**
-		 * A {@link FileWriter} is used to write the configuration file line by
-		 * line. The fields of {@link MapSetupDialog} are used as source of the
-		 * values.
-		 *
-		 * @throws IOException If the {@link FileWriter} can not write into the
-		 *           configFile.
-		 */
-		private void writeSettings() throws IOException {
-			FileWriter fw;
-			fw = new FileWriter(configFile);
-			// fw.write(Integer.toString((int) eLoss));
-			// fw.append(System.getProperty("line.separator"));
-			// fw.write(Double.toString(dqe));
-			// fw.append(System.getProperty("line.separator"));
-			fw.write(Double.toString(epsilon));
-			fw.append(System.getProperty("line.separator"));
-			fw.write(Double.toString(rLimit));
-			fw.close();
-		}
-
-		/**
-		 * It is checked if the configuration file exists. If it exists
-		 * <code>writeSettings()</code> is called. If the file does not exist a new
-		 * one is created.<br />
-		 * Exceptions are handled by this method.
-		 */
-		private void writeToFile() {
-			if (configFile.exists()) {
-				try {
-					writeSettings();
-				}
-				catch (final NumberFormatException e) {
-					LogWriter.showWarningAndWriteLog(PluginMessages.getString(
-						"MapSetup.formatError"));
-					e.printStackTrace();
-
-				}
-				catch (final IOException e) {
-					LogWriter.showWarningAndWriteLog(PluginMessages.getString(
-						"MapSetup.readError"));
-					e.printStackTrace();
-				}
-			}
-			else {
-				createFile();
-			}
+		private void writeSettings() {
+			Prefs.set(EFTEMj_Prefs.PREFS_PREFIX + ESI_PREFIX + "epsilon", epsilon);
+			Prefs.set(EFTEMj_Prefs.PREFS_PREFIX + ESI_PREFIX + "rLimit", rLimit);
+			Prefs.savePreferences();
 		}
 
 	} // END ConfigFileHandler
@@ -199,7 +84,7 @@ public class MapSetupDialog extends EFTEMFrame {
 				LogWriter.showWarningAndWriteLog(e.getMessage());
 				return;
 			}
-			new ConfigFileHandler().writeToFile();
+			new LoadAndSaveConfig().writeSettings();
 			MapSetupDialog.this.dispose();
 			try {
 				final PowerLawFitCalculationExecutor executor =
@@ -263,8 +148,8 @@ public class MapSetupDialog extends EFTEMFrame {
 	 */
 	public MapSetupDialog() {
 		super(PluginMessages.getString("Titel.MapSetupDialog"));
-		final ConfigFileHandler fileHandler = new ConfigFileHandler();
-		fileHandler.readFromFile();
+		final LoadAndSaveConfig fileHandler = new LoadAndSaveConfig();
+		fileHandler.readSettings();
 		// NORTH: Description
 		final DescriptionPanel northPanel = new DescriptionPanel(PluginMessages
 			.getString("Label.MapSetupInfo"));
