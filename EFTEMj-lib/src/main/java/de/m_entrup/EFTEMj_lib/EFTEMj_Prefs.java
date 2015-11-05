@@ -40,12 +40,12 @@ import ij.Prefs;
  * A class that handles writing and reading of EFTEMj related properties to
  * IJ_Prefs.txt.
  *
- * @author #auMichael Entrup b. Epping <mail@m-entrup.de>
+ * @author #auMichael Entrup b. Epping
  */
 public class EFTEMj_Prefs {
 
 	/**
-	 * <code>EFTEMj.<code> Prefix for all EFTEMj related properties in
+	 * <code>EFTEMj.</code> Prefix for all EFTEMj related properties in
 	 * IJ_Prefs.txt.
 	 */
 	public static final String PREFS_PREFIX = "EFTEMj.";
