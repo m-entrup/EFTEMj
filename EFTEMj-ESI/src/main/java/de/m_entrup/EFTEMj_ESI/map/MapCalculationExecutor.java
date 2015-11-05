@@ -10,7 +10,7 @@ import ij.IJ;
 
 /**
  * After {@link BGCalculation} has finished the {@link MapCalculationExecutor}
- * can be started.<br />
+ * can be started.<br>
  * The aim of the {@link MapCalculationExecutor} is to split the calculation of
  * the elemental-map into subtasks. Each task processes 1 image.
  */

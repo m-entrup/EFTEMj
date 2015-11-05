@@ -14,7 +14,7 @@ import ij.IJ;
 
 /**
  * After {@link BGCalculation} has finished the {@link MapCalculationExecutor}
- * can be started.<br />
+ * can be started.<br>
  * The aim of {@link CoeffOfDetCalculationExecutor} is to split the calculation
  * of the coefficient of determination into subtasks. Each task processes 1
  * image row.

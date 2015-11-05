@@ -130,7 +130,8 @@ public class DatasetAPI {
 	 *
 	 * @param edgeEnergyLoss The energy loss where the element signal starts.
 	 * @param epsilon The exit condition for the MLE calculation.
-	 * @throws Exception
+	 * @throws Exception when creating new instances of {@link DatasetMapInput}
+	 *           and {@link DatasetMapResult} fails.
 	 */
 	public void createDatasetMapInput(final float edgeEnergyLoss,
 		final float epsilon) throws Exception
@@ -307,7 +308,7 @@ public class DatasetAPI {
 	/**
 	 * {@link DatasetDriftInput}
 	 *
-	 * @return The cropped reference image. This is the same as<br />
+	 * @return The cropped reference image. This is the same as<br>
 	 *         <code>getCroppedImage(referenceImageIndex)</code>.
 	 */
 	public FloatProcessor getCroppedReferenceImage() {
@@ -812,7 +813,7 @@ public class DatasetAPI {
 	}
 
 	/**
-	 * {@link DatasetStack}<br />
+	 * {@link DatasetStack}<br>
 	 * Set a new label for a specific slice. This is not a short label. It can
 	 * contain additional information about the image.
 	 *

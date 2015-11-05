@@ -22,7 +22,7 @@ import ij.gui.GUI;
 
 /**
  * The {@link DescriptionPanel} uses the {@link BoxLayout} to display a
- * {@link Label} with a short description.<br />
+ * {@link Label} with a short description.<br>
  * If you set a detailed description, a {@link Button} is added to open a dialog
  * that displays this description.
  */

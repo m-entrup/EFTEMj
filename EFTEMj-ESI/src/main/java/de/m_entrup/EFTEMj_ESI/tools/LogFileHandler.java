@@ -15,7 +15,7 @@ public class LogFileHandler {
 	private final String logEntry;
 
 	/**
-	 * Creates an {@link File}-object. The used path is<br />
+	 * Creates an {@link File}-object. The used path is<br>
 	 * <code>IJ.getDirectory("imagej")</code>.
 	 */
 	public LogFileHandler(final String logEntry) {
@@ -62,7 +62,7 @@ public class LogFileHandler {
 
 	/**
 	 * It is checked if the log file exists. If it exists <code>writeLog()</code>
-	 * is called. If the file does not exist a new one is created.<br />
+	 * is called. If the file does not exist a new one is created.<br>
 	 * Exceptions are handled by this method.
 	 */
 	public void writeToLogFile() {

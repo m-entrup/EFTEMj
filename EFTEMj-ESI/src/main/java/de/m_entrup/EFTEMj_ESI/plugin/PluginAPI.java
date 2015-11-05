@@ -8,7 +8,7 @@ import ij.ImagePlus;
 /**
  * The {@link PluginAPI} is a class using the singleton pattern. There is only
  * one instance of it. You can access it by using the method
- * <code>getInstance()</code>.<br />
+ * <code>getInstance()</code>.<br>
  * {@link PluginAPI} is used to get access to the {@link MainMenu} and the
  * {@link DatasetAPI}.
  */

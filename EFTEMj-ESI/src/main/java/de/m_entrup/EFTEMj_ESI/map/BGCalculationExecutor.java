@@ -10,7 +10,7 @@ import ij.IJ;
 
 /**
  * After {@link PowerLawFitCalculation} has finished the
- * {@link BGCalculationExecutor} can be started.<br />
+ * {@link BGCalculationExecutor} can be started.<br>
  * The aim of the {@link BGCalculationExecutor} is to split the calculation of
  * the background into subtasks. Each task processes 1 image.
  */

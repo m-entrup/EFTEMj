@@ -312,7 +312,7 @@ public class StackSetupDialog extends EFTEMFrame {
 	 * The first row shows the current name of all images that are stored in the
 	 * selected {@link ImageStack}. The second row contains one or more
 	 * {@link JFormattedTextField} that lists the current energy loss of the image
-	 * and and it allows to edit the energy loss.<br />
+	 * and and it allows to edit the energy loss.<br>
 	 * The first row has a width of 2 and the second one a width of 1.
 	 */
 	private void addELossFields() {

@@ -611,7 +611,7 @@ public class MainMenu extends Frame {
 	}
 
 	/**
-	 * Updates the components of the {@link MainMenu}:<br />
+	 * Updates the components of the {@link MainMenu}:<br>
 	 * 1. Update of the {@link StackSelectionPanel}
 	 */
 	public void updateMainMenu() {

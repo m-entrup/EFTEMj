@@ -12,12 +12,12 @@ import de.m_entrup.EFTEMj_ESI.resources.PluginMessages;
  * The {@link OkCancelListener} is a small abstract class that implements the
  * method <code>actionPerformed(ActionEvent e)</code> and handles buttons with
  * the text <code>PluginMessages.getString("Button.OK")</code> and
- * <code>PluginMessages.getString("Button.Cancel")</code>.<br />
+ * <code>PluginMessages.getString("Button.Cancel")</code>.<br>
  * Additionally it implements {@link WindowListener} to handle the closing of
  * the window. If the window is closed the Cancel-operation is called. Use the
- * following methods:<br />
+ * following methods:<br>
  * <code>this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
- * 		this.addWindowListener(listener);</code><br />
+ * 		this.addWindowListener(listener);</code><br>
  * <code>listener</code> has to extend {@link OkCancelListener}.
  */
 public abstract class OkCancelListener implements ActionListener,

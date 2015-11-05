@@ -180,7 +180,7 @@ public class MapResultPanel extends Panel {
 	 *          buttonTable with the given key.
 	 * @param pos The index of the used column.
 	 * @param exportButton <code>true</code> if it is an export-{@link Button}
-	 *          that is placed at the third row.<br />
+	 *          that is placed at the third row.<br>
 	 *          Otherwise it is a show-{@link Button} that is placed at the second
 	 *          row.
 	 */

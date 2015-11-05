@@ -23,8 +23,7 @@ public class DatasetDriftResult {
 
 	/**
 	 * When a new instance of {@link DatasetDriftResult} is created
-	 * array_correlationCoefficients is initialised. The size of the array is
-	 * <br />
+	 * array_correlationCoefficients is initialised. The size of the array is <br>
 	 * [datasetAPI.getStackSize()]*[(2*datasetAPI.getDelta()+1)^2]
 	 */
 	public DatasetDriftResult() {

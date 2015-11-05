@@ -10,7 +10,7 @@ import ij.IJ;
 
 /**
  * After {@link MapCalculation} has finished the {@link SNRCalculationExecutor}
- * can be started.<br />
+ * can be started.<br>
  * The aim of the {@link SNRCalculation} is to split the calculation of the
  * Signal-to-Noise-Ratio (SNR) into subtasks. Each task processes 1 image row.
  */

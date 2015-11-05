@@ -10,11 +10,11 @@ import de.m_entrup.EFTEMj_ESI.resources.PluginMessages;
 import ij.IJ;
 
 /**
- * The {@link LogWriter} will handle two kind of logs.<br />
+ * The {@link LogWriter} will handle two kind of logs.<br>
  * The first one will be displayed at the gui. It will be a formated
  * {@link String} on which new logs are appended. This string is cleared and
  * date and time are added if a new calculation is started. The contend of this
- * log is related to the calculation.<br />
+ * log is related to the calculation.<br>
  * the second log is written into a file. It contains all the information that
  * is displayed at the gui log. Additionally each warning message is logged to
  * simplify the search for errors and problems. Some other functions will write
