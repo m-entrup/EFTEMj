@@ -254,7 +254,7 @@ public class DatasetAPI {
 	/**
 	 * {@link DatasetMapResult}
 	 *
-	 * @return An array of all Chi�-values.
+	 * @return An array of all Chi²-values.
 	 */
 	public float[] getChi2() {
 		return datasetMapResult.chi2Map;
@@ -551,7 +551,7 @@ public class DatasetAPI {
 	/**
 	 * {@link DatasetMapResult}
 	 *
-	 * @return Sigma^2 is part of the SNR. It is calculated for each elemental-map
+	 * @return Sigma² is part of the SNR. It is calculated for each elemental-map
 	 *         and each pixel of it.
 	 */
 	public EFTEMImage[] getSigma2() {
@@ -653,7 +653,7 @@ public class DatasetAPI {
 	 * {@link DatasetMapResult}
 	 *
 	 * @param index <code>y * width + x</code>
-	 * @param array_Chi2 The Chi�-values of an image row.
+	 * @param array_Chi2 The Chi²-values of an image row.
 	 */
 	public synchronized void saveChi2(final int index, final float[] array_Chi2) {
 		for (int i = 0; i < array_Chi2.length; i++) {
@@ -751,10 +751,10 @@ public class DatasetAPI {
 	/**
 	 * {@link DatasetMapResult}
 	 *
-	 * @param imageIndex The position of the image at the array of all sigma^2
+	 * @param imageIndex The position of the image at the array of all sigma²
 	 *          images (starting at 0).
 	 * @param index <code>y * width + x</code>
-	 * @param sigma2 The sigma^2 values of an image row.
+	 * @param sigma2 The sigma² values of an image row.
 	 */
 	public synchronized void saveSigma2(final int imageIndex, final int index,
 		final float[] sigma2)

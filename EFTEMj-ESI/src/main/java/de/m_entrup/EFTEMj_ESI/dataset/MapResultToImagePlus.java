@@ -79,7 +79,7 @@ public class MapResultToImagePlus {
 
 	/**
 	 * @return A composite image containing the error map and the map of the
-	 *         <code>chi�</code>.
+	 *         <code>chi²</code>.
 	 */
 	protected ImagePlus getChi2() {
 		ImagePlus imp;
@@ -239,16 +239,16 @@ public class MapResultToImagePlus {
 			final FloatProcessor fp = new FloatProcessor(width, height,
 				array_Sigma2[i].getPixels(), null);
 			fp.resetMinAndMax();
-			stack.addSlice("Sigma^2[" + array_Sigma2[i].getELoss() + "eV] " +
+			stack.addSlice("Sigma²[" + array_Sigma2[i].getELoss() + "eV] " +
 				datasetAPI.getImagePlusShortTitle(), fp);
 		}
 		if (length == 1) {
-			imp = ImagePlusTool.createImagePlus("Sigma^2[" + array_Sigma2[0]
+			imp = ImagePlusTool.createImagePlus("Sigma²[" + array_Sigma2[0]
 				.getELoss() + "eV] " + datasetAPI.getImagePlusShortTitle(), stack,
 				true);
 		}
 		else {
-			imp = ImagePlusTool.createImagePlus("Sigma^2-Maps " + datasetAPI
+			imp = ImagePlusTool.createImagePlus("Sigma²-Maps " + datasetAPI
 				.getImagePlusShortTitle(), stack, true);
 		}
 		if (length < 2) {

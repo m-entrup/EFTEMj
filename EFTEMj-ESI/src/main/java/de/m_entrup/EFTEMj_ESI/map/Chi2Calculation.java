@@ -7,7 +7,7 @@ import de.m_entrup.EFTEMj_ESI.plugin.PluginAPI;
 import de.m_entrup.EFTEMj_ESI.threading.ThreadInterface;
 
 /**
- * This class calculates Chi� pixel by pixel. Each instance processes a single
+ * This class calculates Chi² pixel by pixel. Each instance processes a single
  * image row.
  */
 public class Chi2Calculation extends Thread {
@@ -86,7 +86,7 @@ public class Chi2Calculation extends Thread {
 	}
 
 	/**
-	 * @return The value of Chi� at the pixel at the array position
+	 * @return The value of Chi² at the pixel at the array position
 	 *         <code>index</code>.
 	 */
 	private float calculateChi2() {

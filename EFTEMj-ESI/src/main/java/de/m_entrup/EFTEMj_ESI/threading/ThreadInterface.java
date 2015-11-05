@@ -99,11 +99,11 @@ public class ThreadInterface {
 			final DatasetAPI dataset = PluginAPI.getInstance().getDatasetAPI();
 			final float[] errorMap = dataset.getErrorMap();
 			final Statistics statistics = new Statistics(dataset.getChi2(), errorMap);
-			LogWriter.writeProcessLog("Chi� " + statistics.getAllAsString(),
+			LogWriter.writeProcessLog("Chi² " + statistics.getAllAsString(),
 				LogWriter.MAP);
 			Float timeInSeconds = (float) (MyTimer.interval()) / 1000;
 			LogWriter.writeProcessLog(String.format(Locale.ENGLISH,
-				"Time required (Chi�): %.2f s", timeInSeconds), LogWriter.MAP);
+				"Time required (Chi²): %.2f s", timeInSeconds), LogWriter.MAP);
 			// TODO Create a finished() method to reduce redundancy.
 			timeInSeconds = (float) (MyTimer.stop()) / 1000;
 			LogWriter.writeProcessLog(String.format(Locale.ENGLISH,

@@ -45,7 +45,7 @@ public class DatasetMapResult {
 	 */
 	protected EFTEMImage[] array_SNR;
 	/**
-	 * The Chi� calculated by {@link Chi2Calculation}.
+	 * The Chi² calculated by {@link Chi2Calculation}.
 	 */
 	protected float[] chi2Map;
 	/**

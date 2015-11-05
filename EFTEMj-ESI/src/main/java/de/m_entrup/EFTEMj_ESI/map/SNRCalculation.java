@@ -184,10 +184,10 @@ public class SNRCalculation extends Thread {
 	}
 
 	/**
-	 * This methods calculates sigma^2. This calculation is split up in several
+	 * This methods calculates sigma². This calculation is split up in several
 	 * methods.
 	 *
-	 * @return Sigma^2
+	 * @return Sigma²
 	 */
 	private double sigma2() {
 		return Math.pow(dI(da), 2) * varA() + Math.pow(dI(dr), 2) * varR() + 2 * dI(
