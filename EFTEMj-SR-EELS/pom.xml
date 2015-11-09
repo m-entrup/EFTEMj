@@ -1,31 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-  <artifactId>EFTEMj-SR-EELS</artifactId>
-  <version>0.4.0-SNAPSHOT</version>
+	<artifactId>EFTEMj-SR-EELS</artifactId>
+	<version>0.3.0</version>
 
-  <name>EFTEMj-SR-EELS</name>
+	<name>EFTEMj-SR-EELS</name>
+	<description>This plugin is used for processing spatial resolved EELS data sets.</description>
+	<url>https://github.com/m-entrup/EFTEMj</url>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 
-  <parent>
-  	<groupId>de.m-entrup</groupId>
-  	<artifactId>pom-EFTEMj</artifactId>
-  	<version>1.0.0</version>
-  	<relativePath>..</relativePath>
-  </parent>
-  <dependencies>
-  	<dependency>
-  		<groupId>de.m-entrup</groupId>
-  		<artifactId>EFTEMj-lib</artifactId>
-  		<version>0.2.0-SNAPSHOT</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>sc.fiji</groupId>
-  		<artifactId>IO_</artifactId>
-  	</dependency>
-  </dependencies>
+	<parent>
+		<groupId>de.m-entrup</groupId>
+		<artifactId>pom-EFTEMj</artifactId>
+		<version>0.1.0</version>
+		<relativePath>..</relativePath>
+	</parent>
+
+	<dependencies>
+		<dependency>
+			<groupId>de.m-entrup</groupId>
+			<artifactId>EFTEMj-lib</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>sc.fiji</groupId>
+			<artifactId>IO_</artifactId>
+		</dependency>
+	</dependencies>
+
+	<scm>
+		<connection>scm:git:git://github.com/m-entrup/EFTEMj</connection>
+		<developerConnection>scm:git:git@github.com:m-entrup/EFTEMj</developerConnection>
+		<tag>HEAD</tag>
+		<url>https://github.com/m-entrup/EFTEMj</url>
+	</scm>
+
+	<issueManagement>
+		<url>https://github.com/EFTEMj/m-entrup/issues</url>
+		<system>GitHub Issues</system>
+	</issueManagement>
 </project>

@@ -30,7 +30,7 @@ package de.m_entrup.EFTEMj_SR_EELS;
 /**
  * This class contains constants and utility methods for the sr_eels package.
  *
- * @author Michael Entrup b. Epping <michael.entrup@wwu.de>
+ * @author Michael Entrup b. Epping
  */
 public class SR_EELS {
 

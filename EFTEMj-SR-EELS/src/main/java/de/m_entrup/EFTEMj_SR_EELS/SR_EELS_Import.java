@@ -53,7 +53,7 @@ import ij.plugin.PlugIn;
  * loss on the x-axis and lateral information on the y-axis.
  * </p>
  *
- * @author Michael Entrup b. Epping <mail@m-entrup.de>
+ * @author Michael Entrup b. Epping
  */
 public class SR_EELS_Import implements PlugIn {
 
