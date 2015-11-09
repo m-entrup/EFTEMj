@@ -7,6 +7,8 @@
 	<version>0.1.0</version>
 
 	<name>EFTEMj-lib</name>
+	<description>This package provides some tools for other plugins of EFTEMj.</description>
+	<url>https://github.com/m-entrup/EFTEMj</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -18,4 +20,16 @@
 		<version>0.1.0</version>
 		<relativePath>..</relativePath>
 	</parent>
+
+	<scm>
+		<connection>scm:git:git://github.com/m-entrup/EFTEMj</connection>
+		<developerConnection>scm:git:git@github.com:m-entrup/EFTEMj</developerConnection>
+		<tag>HEAD</tag>
+		<url>https://github.com/m-entrup/EFTEMj</url>
+	</scm>
+
+	<issueManagement>
+		<url>https://github.com/EFTEMj/m-entrup/issues</url>
+		<system>GitHub Issues</system>
+	</issueManagement>
 </project>

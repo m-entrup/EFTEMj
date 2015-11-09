@@ -3,11 +3,11 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>EFTEMj-SR-EELS</artifactId>
-	<version>0.3.0</version>
+	<artifactId>EFTEMj-ESI</artifactId>
+	<version>1.0.0</version>
 
-	<name>EFTEMj-SR-EELS</name>
-	<description>This plugin is used for processing spatial resolved EELS data sets.</description>
+	<name>EFTEMj-ESI</name>
+	<description>This plugin will calculate elemental maps from a series of Energy Filtering TransmissionElectronMicroscope (EFTEM) images. It is not limited to the 3-window-method. Its full power can only be unleashed by using a minimum of 4 images.</description>
 	<url>https://github.com/m-entrup/EFTEMj</url>
 
 	<properties>
@@ -26,10 +26,6 @@
 			<groupId>de.m-entrup</groupId>
 			<artifactId>EFTEMj-lib</artifactId>
 			<version>0.1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>sc.fiji</groupId>
-			<artifactId>IO_</artifactId>
 		</dependency>
 	</dependencies>
 

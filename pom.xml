@@ -16,7 +16,7 @@
 	<packaging>pom</packaging>
 
 	<name>EFTEMj</name>
-	<description>A collection of plugins used for analyse data from Energy Filtering TransmissionElectronMicroscopy (EFTEM).</description>
+	<description>A collection of plugins used to analyse data from Energy Filtering TransmissionElectronMicroscopy (EFTEM).</description>
 	<url>https://github.com/m-entrup/EFTEMj</url>
 	<inceptionYear>2015</inceptionYear>
 	<organization />

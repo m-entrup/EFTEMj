@@ -36,7 +36,7 @@ import ij.plugin.PlugIn;
  * This class is used for debugging. The main method runs ImageJ and sets the
  * plugin directory. There are additional methods for logging.
  *
- * @author Michael Entrup b. Epping <mail@m-entrup.de>
+ * @author Michael Entrup b. Epping
  */
 public class EFTEMj_Debug {
 
@@ -111,7 +111,9 @@ public class EFTEMj_Debug {
 	 * @param caller is a class that contains a run method.
 	 * @param debugLevel defines the used level of debugging.
 	 */
-	public static void debug(final Class<?> caller, final int debugLevel) {
+	public static void debug(final Class<?> caller,
+		@SuppressWarnings("hiding") final int debugLevel)
+	{
 		EFTEMj_Debug.debugLevel = debugLevel;
 		// start ImageJ
 		final ImageJ ij = new ImageJ();

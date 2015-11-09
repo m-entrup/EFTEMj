@@ -33,11 +33,11 @@ import ij.Prefs;
 
 /**
  * This enum generates all {@link Prefs} keys that are used by
- * <code>SR_EELS_</code> classes.<br />
+ * <code>SR_EELS_</code> classes.<br>
  * If you select an item of this enum, use <code>getValue()</code> to get the
  * corresponding {@link Prefs} key as a {@link String}.
  *
- * @author Michael Entrup b. Epping <mail@m-entrup.de>
+ * @author Michael Entrup b. Epping
  */
 public enum SR_EELS_PrefsKeys {
 		specMagValues("specMagValues"), specMagIndex("specMagIndex"), binningIndex(
@@ -49,7 +49,7 @@ public enum SR_EELS_PrefsKeys {
 						"fileTypesToImport");
 
 	/**
-	 * <code>EFTEMj.PREFS_PREFIX + "SR-EELS.".<code>
+	 * <code>EFTEMj.PREFS_PREFIX + "SR-EELS.".</code>
 	 */
 	protected static final String PREFS_PREFIX = EFTEMj_Prefs.PREFS_PREFIX +
 		"SR-EELS.";
