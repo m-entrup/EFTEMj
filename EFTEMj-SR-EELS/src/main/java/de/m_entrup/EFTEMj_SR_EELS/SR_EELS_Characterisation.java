@@ -319,8 +319,8 @@ public class SR_EELS_Characterisation implements PlugIn {
 				fp.setf(8, j, (float) result.get(j).width);
 				fp.setf(9, j, (float) result.get(j).widthError);
 				fp.setf(10, j, (float) result.get(j).limit);
-				fp.setf(11, j, (float) result.leftFit.f(y));
-				fp.setf(12, j, (float) result.centreFit.f(y));
+				fp.setf(11, j, (float) result.centreFit.f(y));
+				fp.setf(12, j, (float) result.leftFit.f(y));
 				fp.setf(13, j, (float) result.rightFit.f(y));
 			}
 			fps.add(fp);

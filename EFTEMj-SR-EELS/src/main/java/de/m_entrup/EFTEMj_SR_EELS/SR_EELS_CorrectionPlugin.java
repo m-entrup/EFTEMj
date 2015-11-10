@@ -29,12 +29,9 @@
 package de.m_entrup.EFTEMj_SR_EELS;
 
 import java.awt.Desktop;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Vector;
@@ -50,6 +47,7 @@ import fiji.util.gui.GenericDialogPlus;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
+import ij.ImageStack;
 import ij.gui.GenericDialog;
 import ij.plugin.filter.ExtendedPlugInFilter;
 import ij.plugin.filter.PlugInFilterRunner;
@@ -126,6 +124,8 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 	 */
 	private static int progressSteps;
 
+	private DataImporter importer;
+
 	/*
 	 * (non-Javadoc)
 	 *
@@ -160,6 +160,7 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 		 * algorithm (LMA) is used to fit functions to the discrete values.
 		 */
 		IJ.showStatus("Preparing correction...");
+		importer = new DataImporter(pathResults, false);
 		final SR_EELS_Polynomial_2D widthFunction = getFunctionWidth();
 		inputProcessor.setWidthFunction(widthFunction);
 		final SR_EELS_Polynomial_2D borderFunction = getFunctionBorders();
@@ -257,16 +258,22 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 	 * @return a polynomial that fits the given data points
 	 */
 	private SR_EELS_Polynomial_2D getFunctionBorders() {
-		final DataImporter importer = new DataImporter(pathResults, true);
-		final double[][] vals =
-			new double[importer.vals.length][importer.vals[0].length];
-		for (int i = 0; i < vals.length; i++) {
-			// y value (this is a position on the x2 axis)
-			vals[i][0] = importer.vals[i][0] - CameraSetup.getFullHeight() / 2;
-			// x1 value
-			vals[i][1] = importer.vals[i][1] - CameraSetup.getFullWidth() / 2;
-			// x2 value
-			vals[i][2] = importer.vals[i][2] - CameraSetup.getFullHeight() / 2;
+		final double[][] vals = new double[3 * importer.size()][3];
+		int i = 0;
+		for (float[] point : importer) {
+			for (int j = 0; j < 3; j++) {
+				// y coordinate of the fit function at the centre of the image/camera ->
+				// z value
+				vals[i + j][0] = importer.getYInterceptPoint(i / 3)[11 + j] -
+					CameraSetup.getFullHeight() / 2;
+				// Coordinate on the energy dispersive axis -> x value
+				// The same value for top, centre and bottom.
+				vals[i + j][1] = point[0] - CameraSetup.getFullHeight() / 2;
+				// coordinate on the lateral axis -> y value
+				// The indices for centre, top and bottom are 2, 4 and 6.
+				vals[i + j][2] = point[2 + 2 * j] - CameraSetup.getFullWidth() / 2;
+			}
+			i += 3;
 		}
 		/*
 		 * Define the orders of the 2D polynomial.
@@ -297,16 +304,18 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 	 * @return a polynomial that fits the given data points
 	 */
 	private SR_EELS_Polynomial_2D getFunctionWidth() {
-		final DataImporter importer = new DataImporter(pathResults, false);
-		final double[][] vals =
-			new double[importer.vals.length][importer.vals[0].length];
-		for (int i = 0; i < vals.length; i++) {
-			// y value (the width is a difference of two x2 values)
-			vals[i][0] = importer.vals[i][0];
-			// x1 value
-			vals[i][1] = importer.vals[i][1] - CameraSetup.getFullWidth() / 2;
-			// x2 value
-			vals[i][2] = importer.vals[i][2] - CameraSetup.getFullHeight() / 2;
+		final double[][] vals = new double[importer.size()][3];
+		int i = 0;
+		for (float[] point : importer) {
+			// The width of the spectrum -> z value
+			vals[i][0] = point[8];
+			// Coordinate on the energy dispersive axis -> x value
+			// The same value for top, centre and bottom.
+			vals[i][1] = point[0] - CameraSetup.getFullWidth() / 2;
+			// coordinate on the lateral axis -> y value
+			// The indices for centre, top and bottom are 2, 4 and 6.
+			vals[i][2] = point[2] - CameraSetup.getFullHeight() / 2;
+			i++;
 		}
 		/*
 		 * Define the orders of the 2D polynomial.
@@ -361,18 +370,29 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 				pathResults = gd.getNextRadioButton();
 			}
 		}
-		/*
-		 * If only no file has been found, the parameters dialog is shown.
-		 */
-		if (foundCharacterisationResults.size() == 0) {
+		else {
+			/*
+			 * If only no file has been found, the parameters dialog is shown.
+			 */
+			if (foundCharacterisationResults.size() == 0) {
 
-			do {
-				if (showParameterDialog(command) == CANCEL) {
+				do {
+					if (showParameterDialog(command) == CANCEL) {
+						canceled();
+						return NO_CHANGES | DONE;
+					}
+				}
+				while (!pathResults.contains(SR_EELS.FILENAME_RESULTS.split(".")[1]));
+			}
+			else {
+				if (foundCharacterisationResults.size() == 1) {
+					pathResults = foundCharacterisationResults.getFirst();
+				}
+				else {
 					canceled();
 					return NO_CHANGES | DONE;
 				}
 			}
-			while (!pathResults.contains(SR_EELS.FILENAME_RESULTS.split(".")[1]));
 		}
 		inputProcessor = new SR_EELS_FloatProcessor((FloatProcessor) imp
 			.getProcessor(), CameraSetup.getFullWidth() / imp.getWidth(), CameraSetup
@@ -554,114 +574,35 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 	 * processed by this class.
 	 * </p>
 	 *
-	 * @author Michael Entrup b. Epping <michael.entrup@wwu.de>
+	 * @author Michael Entrup b. Epping
 	 */
-	private static class DataImporter {
+	@SuppressWarnings("serial")
+	private static class DataImporter extends ArrayList<float[]> {
 
-		/**
-		 * <p>
-		 * The first index will iterate through all the data points.
-		 * </p>
-		 * <p>
-		 * The second index defines y-value (index 0), the x1-value (index 1) and
-		 * the x2-value (index 2).
-		 * </p>
-		 */
-		protected double[][] vals;
-		/**
-		 * When loading the file <code>Borders.txt</code> there is a fourth column,
-		 * that contains the weight. This value is stored in a separate array-
-		 */
-		protected double[] weights;
+		private int slices;
 
-		/**
-		 * <p>
-		 * Create a new data set by loading it from a file.
-		 * </p>
-		 * <p>
-		 * This method supports the files <code>Borders.txt</code> and
-		 * <code>width.txt</code> that are created by
-		 * {@link SR_EELS_CharacterisationPlugin}.
-		 * </p>
-		 *
-		 * @param dataFilePath is the path to the file that contains the data set.
-		 * @param readWeights is used to disable the readout of the fourth column
-		 *          that contains weights.
-		 */
-		public DataImporter(final String dataFilePath, final boolean readWeights) {
-			/*
-			 * 'Borders.txt' contains a fourth column and has to be handled different
-			 * than 'Width.txt'.
-			 */
-			boolean isBordersTxt = false;
-			/*
-			 * First we read the file and store the values a a vector.
-			 */
-			final File file = new File(dataFilePath);
-			final Vector<Double[]> values = new Vector<Double[]>();
-			try {
-				final BufferedReader reader = new BufferedReader(new FileReader(file));
-				boolean containsData = true;
-				do {
-					final String line = reader.readLine();
-					if (line == null) {
-						containsData = false;
+		public DataImporter(final String resultsFilePath,
+			final boolean readWeights)
+		{
+			super();
+			final ImageStack file = IJ.openImage(resultsFilePath).getImageStack();
+			slices = file.getSize();
+			for (int i = 1; i <= file.getSize(); i++) {
+				for (int y = 0; y < file.getHeight(); y++) {
+					final float[] point = new float[14];
+					for (int x = 0; x < file.getWidth(); x++) {
+						point[x] = file.getProcessor(i).getf(x, y);
 					}
-					else {
-						/*
-						 * Only read the line if if does not contain any comment.
-						 */
-						if (line.indexOf('#') == -1) {
-							/*
-							 * This RegExpr splits the line at whitespace characters.
-							 */
-							final String[] splitLine = line.split("\\s+");
-							if (readWeights == true) {
-								if (splitLine.length >= 4) {
-									isBordersTxt = true;
-									final Double[] point = { Double.valueOf(splitLine[0]), Double
-										.valueOf(splitLine[1]), Double.valueOf(splitLine[2]), Double
-											.valueOf(splitLine[3]) };
-									values.add(point);
-								}
-							}
-							else {
-								if (splitLine.length >= 3) {
-									final Double[] point = { Double.valueOf(splitLine[0]), Double
-										.valueOf(splitLine[1]), Double.valueOf(splitLine[2]) };
-									values.add(point);
-								}
-							}
-						}
-					}
-				}
-				while (containsData);
-				reader.close();
-			}
-			catch (final FileNotFoundException exc) {
-				exc.printStackTrace();
-			}
-			catch (final IOException exc) {
-				exc.printStackTrace();
-			}
-			/*
-			 * Reading the file is done now.
-			 */
-			vals = new double[values.size()][3];
-			weights = new double[values.size()];
-			for (int i = 0; i < values.size(); i++) {
-				if (isBordersTxt) {
-					vals[i][0] = values.get(i)[2];
-				}
-				else {
-					vals[i][0] = values.get(i)[2];
-				}
-				vals[i][1] = values.get(i)[0];
-				vals[i][2] = values.get(i)[1];
-				if (readWeights == true) {
-					weights[i] = values.get(i)[3];
+					this.add(point);
 				}
 			}
+		}
+
+		public float[] getYInterceptPoint(int index) {
+			int height = size() / slices;
+			int currentSlice = (int) Math.floor(index / height);
+			int interceptINdex = currentSlice * height + height / 2;
+			return get(interceptINdex);
 		}
 	}
 
