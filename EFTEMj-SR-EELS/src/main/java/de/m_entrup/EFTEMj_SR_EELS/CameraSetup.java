@@ -28,6 +28,7 @@
 
 package de.m_entrup.EFTEMj_SR_EELS;
 
+import ij.IJ;
 import ij.Prefs;
 
 /**
@@ -39,13 +40,29 @@ public class CameraSetup {
 	 * @return the height of the camera stored at the ImageJ preferences.
 	 */
 	public static int getFullHeight() {
-		return (int) Prefs.get(SR_EELS_PrefsKeys.cameraHeight.getValue(), 4096);
+		int height = (int) Prefs.get(SR_EELS_PrefsKeys.cameraHeight.getValue(), -1);
+		if (height == -1) {
+			height = (int) IJ.getNumber(
+				"The height of the used camera is not saved. Please enter the height in Pixel:",
+				4096);
+			Prefs.set(SR_EELS_PrefsKeys.cameraHeight.getValue(), height);
+			Prefs.savePreferences();
+		}
+		return height;
 	}
 
 	/**
 	 * @return the width of the camera stored at the ImageJ preferences.
 	 */
 	public static int getFullWidth() {
-		return (int) Prefs.get(SR_EELS_PrefsKeys.cameraWidth.getValue(), 4096);
+		int width = (int) Prefs.get(SR_EELS_PrefsKeys.cameraWidth.getValue(), -1);
+		if (width == -1) {
+			width = (int) IJ.getNumber(
+				"The width of the used camera is not saved. Please enter the width in Pixel:",
+				4096);
+			Prefs.set(SR_EELS_PrefsKeys.cameraWidth.getValue(), width);
+			Prefs.savePreferences();
+		}
+		return width;
 	}
 }
