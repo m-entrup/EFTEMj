@@ -125,6 +125,12 @@ public class SR_EELS_Characterisation implements PlugIn {
 			result.imp.put(imageName, imp);
 			result.width = imp.getWidth();
 			result.height = imp.getHeight();
+			/*
+			 * During import the images had been rotated.
+			 * Therefore the width of the image has to refer to the height of the camera and vice versa.
+			 */
+			result.binX = CameraSetup.getFullHeight() / result.width;
+			result.binY = CameraSetup.getFullWidth() / result.height;
 			int yPos = settings.energyBorderLow;
 			int xOffset = 0;
 			int roiWidth = image.width;
@@ -299,44 +305,44 @@ public class SR_EELS_Characterisation implements PlugIn {
 			IJ.run(jpegImp, "Rotate 90 Degrees Left", "");
 			final ImagePlus jpeg = jpegImp.flatten();
 			IJ.run(jpeg, "Divide...", "value=1.3");
-			int bin = 1;
+			int binJPEG = 1;
 			while (Math.max(jpeg.getWidth(), jpeg.getHeight()) > 1024) {
 				IJ.run(jpeg, "Bin...", "x=2 y=2 bin=Average");
-				bin *= 2;
+				binJPEG *= 2;
 			}
 			if (height == 0) height = result.size();
 			final FloatProcessor fp = new FloatProcessor(width, height);
 			for (int j = 0; j < result.size(); j++) {
 				final float y = (float) result.get(j).y;
-				fp.setf(0, j, y);
-				fp.setf(1, j, (float) result.get(j).yError);
-				fp.setf(2, j, (float) result.get(j).x);
-				fp.setf(3, j, (float) result.get(j).xError);
-				fp.setf(4, j, (float) result.get(j).left);
-				fp.setf(5, j, (float) result.get(j).leftError);
-				fp.setf(6, j, (float) result.get(j).right);
-				fp.setf(7, j, (float) result.get(j).rightError);
-				fp.setf(8, j, (float) result.get(j).width);
-				fp.setf(9, j, (float) result.get(j).widthError);
-				fp.setf(10, j, (float) result.get(j).limit);
-				fp.setf(11, j, (float) result.centreFit.f(y));
-				fp.setf(12, j, (float) result.leftFit.f(y));
-				fp.setf(13, j, (float) result.rightFit.f(y));
+				fp.setf(0, j, result.binY * y);
+				fp.setf(1, j, (float) (result.binY * result.get(j).yError));
+				fp.setf(2, j, (float) (result.binX * result.get(j).x));
+				fp.setf(3, j, (float) (result.binX * result.get(j).xError));
+				fp.setf(4, j, (float) (result.binX * result.get(j).left));
+				fp.setf(5, j, (float) (result.binX * result.get(j).leftError));
+				fp.setf(6, j, (float) (result.binX * result.get(j).right));
+				fp.setf(7, j, (float) (result.binX * result.get(j).rightError));
+				fp.setf(8, j, (float) (result.binX * result.get(j).width));
+				fp.setf(9, j, (float) (result.binX * result.get(j).widthError));
+				fp.setf(10, j, (float) (result.get(j).limit));
+				fp.setf(11, j, (float) (result.binX * result.centreFit.f(y)));
+				fp.setf(12, j, (float) (result.binX * result.leftFit.f(y)));
+				fp.setf(13, j, (float) (result.binX * result.rightFit.f(y)));
 			}
 			fps.add(fp);
 			final ColorProcessor jP = (ColorProcessor) jpeg.getProcessor();
 			final int[] value = new int[3];
 			int y;
 			for (int x = 0; x < jpeg.getWidth(); x++) {
-				y = (int) Math.round(result.leftFit.f(x * bin) / bin);
+				y = (int) Math.round(result.leftFit.f(x * binJPEG) / binJPEG);
 				jP.getPixel(x, y, value);
 				value[0] = 255;
 				jP.putPixel(x, y, value);
-				y = (int) Math.round(result.rightFit.f(x * bin) / bin);
+				y = (int) Math.round(result.rightFit.f(x * binJPEG) / binJPEG);
 				jP.getPixel(x, y, value);
 				value[0] = 255;
 				jP.putPixel(x, y, value);
-				y = (int) Math.round(result.centreFit.f(x * bin) / bin);
+				y = (int) Math.round(result.centreFit.f(x * binJPEG) / binJPEG);
 				jP.getPixel(x, y, value);
 				value[0] = 255;
 				jP.putPixel(x, y, value);
@@ -421,6 +427,8 @@ public class SR_EELS_Characterisation implements PlugIn {
 		public CurveFitter rightFit;
 		public int width;
 		public int height;
+		public float binY;
+		public float binX;
 
 		public SR_EELS_CharacterisationResult() {
 			super();
