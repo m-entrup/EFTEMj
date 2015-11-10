@@ -46,7 +46,7 @@ public enum SR_EELS_PrefsKeys {
 			"cameraWidth"), cameraHeight("cameraHeight"), dispersionEloss(
 				"dispersionEloss."), dispersionSettings("dispersionSettings."), none(
 					""), databasePath("databasePath"), fileTypesToImport(
-						"fileTypesToImport");
+						"fileTypesToImport"), plotsAsTif("plotsAsTif");
 
 	/**
 	 * <code>EFTEMj.PREFS_PREFIX + "SR-EELS.".</code>
@@ -66,22 +66,29 @@ public enum SR_EELS_PrefsKeys {
 	 */
 	public String getValue() {
 		switch (this) {
+			/*
+			 * Begin section - dispersionSettings
+			 * All parameters get an additional prefix.
+			 */
 			case specMagIndex:
 			case binningIndex:
 			case binningUser:
 			case offsetIndex:
 			case offsetLoss:
 			case offsetAbsolute:
-				return dispersionSettings.getValue() + value;
-			case dispersionSettings:
-			case dispersionEloss:
-			case cameraHeight:
-			case cameraWidth:
-			case databasePath:
-			case fileTypesToImport:
-			case none:
+				return PREFS_PREFIX + dispersionSettings.getValue() + value;
+			/* 
+			 * End section - dispersionSettings
+			 */
+			/*
+			 * Begin section - default
+			 * All parameters that are not listed get the default EFTEMj-SR-EELS prefix.
+			 */
 			default:
 				return PREFS_PREFIX + value;
+			/*
+			 * End section - default
+			 */
 		}
 	}
 }

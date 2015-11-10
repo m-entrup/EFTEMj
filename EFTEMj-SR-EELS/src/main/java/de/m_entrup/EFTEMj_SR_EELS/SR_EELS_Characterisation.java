@@ -350,7 +350,9 @@ public class SR_EELS_Characterisation implements PlugIn {
 		final ImagePlus imp = new ImagePlus("Characterisation results", stack);
 		IJ.save(imp, path + "results.tif");
 		IJ.run(results.plots, "8-bit Color", "number=16");
-		// IJ.save(results.plots, path + "plots.tif");
+		if (Prefs.get(SR_EELS_PrefsKeys.plotsAsTif.getValue(), false)) {
+			IJ.save(results.plots, path + "plots.tif");
+		}
 		IJ.saveAs(results.plots, "Gif", path + "plots.gif");
 	}
 
