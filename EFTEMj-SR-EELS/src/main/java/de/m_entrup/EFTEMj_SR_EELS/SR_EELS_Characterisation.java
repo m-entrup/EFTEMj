@@ -285,7 +285,7 @@ public class SR_EELS_Characterisation implements PlugIn {
 		final ArrayList<String> images = results.settings.images;
 		final String path = results.settings.path + results.settings.toString();
 		new File(path).mkdirs();
-		final int width = 13;
+		final int width = 14;
 		int height = 0;
 		final ArrayList<FloatProcessor> fps = new ArrayList<FloatProcessor>();
 		for (int i = 0; i < images.size(); i++) {
@@ -307,7 +307,8 @@ public class SR_EELS_Characterisation implements PlugIn {
 			if (height == 0) height = result.size();
 			final FloatProcessor fp = new FloatProcessor(width, height);
 			for (int j = 0; j < result.size(); j++) {
-				fp.setf(0, j, (float) result.get(j).y);
+				final float y = (float) result.get(j).y;
+				fp.setf(0, j, y);
 				fp.setf(1, j, (float) result.get(j).yError);
 				fp.setf(2, j, (float) result.get(j).x);
 				fp.setf(3, j, (float) result.get(j).xError);
@@ -318,6 +319,9 @@ public class SR_EELS_Characterisation implements PlugIn {
 				fp.setf(8, j, (float) result.get(j).width);
 				fp.setf(9, j, (float) result.get(j).widthError);
 				fp.setf(10, j, (float) result.get(j).limit);
+				fp.setf(11, j, (float) result.leftFit.f(y));
+				fp.setf(12, j, (float) result.centreFit.f(y));
+				fp.setf(13, j, (float) result.rightFit.f(y));
 			}
 			fps.add(fp);
 			final ColorProcessor jP = (ColorProcessor) jpeg.getProcessor();
@@ -425,16 +429,44 @@ public class SR_EELS_Characterisation implements PlugIn {
 
 	private class SR_EELS_CharacterisationSubResults {
 
+		/**
+		 * This is the coordinate along the lateral axis.
+		 */
 		double x;
+		/**
+		 * This is the error of the coordinate along the lateral axis.
+		 */
 		double xError;
+		/**
+		 * This is the coordinate along the energy dispersive axis.
+		 */
 		double y;
+		/**
+		 * This is the error of the coordinate along the energy dispersive axis.
+		 */
 		double yError;
+		/**
+		 * This is the the left one of the detected borders (The top one of the
+		 * saved data sets).
+		 */
 		double left;
 		double leftError;
+		/**
+		 * This is the the right one of the detected borders (The lower one of the
+		 * saved data sets).
+		 */
 		double right;
 		double rightError;
+		/**
+		 * this is the width of the spectrum at the given energy loss (x
+		 * coordinate).
+		 */
 		double width;
 		double widthError;
+		/**
+		 * Only when not performing thresholding this value is used. The value of a
+		 * pixel is considered as signal and not noise, when the limit to exceeded.
+		 */
 		double limit;
 	}
 
