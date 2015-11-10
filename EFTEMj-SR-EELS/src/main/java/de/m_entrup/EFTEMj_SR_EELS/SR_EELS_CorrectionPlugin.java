@@ -342,17 +342,15 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 			/*
 			 * A dialog is presented to select one of the found files.
 			 */
-			final GenericDialog gd = new GenericDialog(command + " - Select data set",
-				IJ.getInstance());
-			if (foundCharacterisationResults.size() > 1) {
-				String[] arrayOfFoundResults = new String[foundCharacterisationResults
-					.size()];
-				arrayOfFoundResults = foundCharacterisationResults.toArray(
-					arrayOfFoundResults);
-				gd.addRadioButtonGroup(SR_EELS.FILENAME_RESULTS, arrayOfFoundResults,
-					foundCharacterisationResults.size(), 1, foundCharacterisationResults
-						.get(0));
-			}
+			final GenericDialog gd = new GenericDialog((command != "") ? command
+				: "Debugging" + " - Select data set", IJ.getInstance());
+			String[] arrayOfFoundResults = new String[foundCharacterisationResults
+				.size()];
+			arrayOfFoundResults = foundCharacterisationResults.toArray(
+				arrayOfFoundResults);
+			gd.addRadioButtonGroup(SR_EELS.FILENAME_RESULTS, arrayOfFoundResults,
+				foundCharacterisationResults.size(), 1, foundCharacterisationResults
+					.get(0));
 			gd.setResizable(false);
 			gd.showDialog();
 			if (gd.wasCanceled()) {
@@ -364,19 +362,18 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 			}
 		}
 		/*
-		 * If only one file has been found, this one automatically is passed to the
-		 * parameters dialog.
+		 * If only no file has been found, the parameters dialog is shown.
 		 */
-		if (foundCharacterisationResults.size() == 1) {
-			pathResults = foundCharacterisationResults.getFirst();
-		}
-		do {
-			if (showParameterDialog(command) == CANCEL) {
-				canceled();
-				return NO_CHANGES | DONE;
+		if (foundCharacterisationResults.size() == 0) {
+
+			do {
+				if (showParameterDialog(command) == CANCEL) {
+					canceled();
+					return NO_CHANGES | DONE;
+				}
 			}
+			while (!pathResults.contains(SR_EELS.FILENAME_RESULTS.split(".")[1]));
 		}
-		while (!pathResults.contains(SR_EELS.FILENAME_RESULTS.split(".")[1]));
 		inputProcessor = new SR_EELS_FloatProcessor((FloatProcessor) imp
 			.getProcessor(), CameraSetup.getFullWidth() / imp.getWidth(), CameraSetup
 				.getFullHeight() / imp.getHeight(), imp.getWidth() / 2, imp
@@ -421,8 +418,8 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 	 * @return The constant <code>OK</code> or <code>CANCEL</code>.
 	 */
 	private int showParameterDialog(final String dialogTitle) {
-		final GenericDialogPlus gd = new GenericDialogPlus(dialogTitle +
-			" - set parameters", IJ.getInstance());
+		final GenericDialogPlus gd = new GenericDialogPlus((dialogTitle != "")
+			? dialogTitle : "Debugging" + " - set parameters", IJ.getInstance());
 		gd.addFileField(SR_EELS.FILENAME_RESULTS, pathResults);
 		// TODO Add drop down menu for correction method.
 		gd.setResizable(false);

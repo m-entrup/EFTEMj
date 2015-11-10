@@ -77,7 +77,7 @@ public enum SR_EELS_PrefsKeys {
 			case offsetLoss:
 			case offsetAbsolute:
 				return PREFS_PREFIX + dispersionSettings.getValue() + value;
-			/* 
+			/*
 			 * End section - dispersionSettings
 			 */
 			/*
