@@ -36,13 +36,7 @@ public class SR_EELS {
 
 	/**
 	 * This is the name of the file that stores the data points used to describe
-	 * the change of the spectrum width.
+	 * the distortion of the spectrum.
 	 */
-	protected static final String FILENAME_WIDTH = "Width.txt";
-
-	/**
-	 * This is the name of the file that stores the data points used to describe
-	 * the spectrum borders.
-	 */
-	public static final String FILENAME_BORDERS = "Borders.txt";
+	public static final String FILENAME_RESULTS = "results.tif";
 }
