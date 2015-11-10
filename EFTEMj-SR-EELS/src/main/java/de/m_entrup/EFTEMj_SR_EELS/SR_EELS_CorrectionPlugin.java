@@ -264,14 +264,14 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 			for (int j = 0; j < 3; j++) {
 				// y coordinate of the fit function at the centre of the image/camera ->
 				// z value
-				vals[i + j][0] = importer.getYInterceptPoint(i / 3)[11 + j] -
-					CameraSetup.getFullHeight() / 2;
+				vals[i + j][0] = point[2 + 2 * j] - CameraSetup.getFullWidth() / 2;
 				// Coordinate on the energy dispersive axis -> x value
 				// The same value for top, centre and bottom.
 				vals[i + j][1] = point[0] - CameraSetup.getFullHeight() / 2;
 				// coordinate on the lateral axis -> y value
 				// The indices for centre, top and bottom are 2, 4 and 6.
-				vals[i + j][2] = point[2 + 2 * j] - CameraSetup.getFullWidth() / 2;
+				vals[i + j][2] = importer.getYInterceptPoint(i / 3)[11 + j] -
+					CameraSetup.getFullHeight() / 2;
 			}
 			i += 3;
 		}
