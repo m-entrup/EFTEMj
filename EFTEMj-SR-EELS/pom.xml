@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>EFTEMj-SR-EELS</artifactId>
-	<version>0.3.0</version>
+	<version>0.4.0-SNAPSHOT</version>
 
 	<name>EFTEMj-SR-EELS</name>
 	<description>This plugin is used for processing spatial resolved EELS data sets.</description>
@@ -25,11 +25,15 @@
 		<dependency>
 			<groupId>de.m-entrup</groupId>
 			<artifactId>EFTEMj-lib</artifactId>
-			<version>0.1.0</version>
+			<version>0.2.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>IO_</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>sc.fiji</groupId>
+			<artifactId>fiji-lib</artifactId>
 		</dependency>
 	</dependencies>
 
