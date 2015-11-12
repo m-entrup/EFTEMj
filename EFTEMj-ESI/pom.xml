@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>EFTEMj-ESI</artifactId>
-	<version>1.0.0</version>
+	<!-- <version>1.0.0</version> equal to parent version  -->
 
 	<name>EFTEMj-ESI</name>
 	<description>This plugin will calculate elemental maps from a series of Energy Filtering TransmissionElectronMicroscope (EFTEM) images. It is not limited to the 3-window-method. Its full power can only be unleashed by using a minimum of 4 images.</description>
@@ -17,7 +17,7 @@
 	<parent>
 		<groupId>de.m-entrup</groupId>
 		<artifactId>pom-EFTEMj</artifactId>
-		<version>0.1.0</version>
+		<version>1.0.0</version>
 		<relativePath>..</relativePath>
 	</parent>
 
