@@ -75,6 +75,26 @@
 		</dependency>
 	</dependencies>
 
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>de.m-entrup</groupId>
+				<artifactId>EFTEMj-lib</artifactId>
+				<version>0.2.0</version>
+			</dependency>
+			<dependency>
+				<groupId>de.m-entrup</groupId>
+				<artifactId>EFTEMj-ESI</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+			<dependency>
+				<groupId>de.m-entrup</groupId>
+				<artifactId>EFTEMj-SR-EELS</artifactId>
+				<version>0.4.0</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<build>
 		<pluginManagement>
 			<plugins>
