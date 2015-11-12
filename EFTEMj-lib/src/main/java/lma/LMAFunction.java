@@ -1,7 +1,7 @@
 /**
  * Downloaded from:
  * http://imagejdocu.tudor.lu/doku.php?id=plugin:filter:mri_processor:start&s[]=lma
- * 
+ *
  * All changes (except using "Clean Up..." in eclipse) are marked by comments.
  */
 
@@ -29,7 +29,7 @@ public abstract class LMAFunction {
 	 * can't calculate the derivate, use a small <code>a</code>-step (e.g.,
 	 * <i>da</i> = 1e-20) and return <i>dy/da</i> at the given <i>x</i> for each
 	 * fit parameter.
-	 * 
+	 *
 	 * @return The partial derivate of the function with respect to parameter
 	 *         <code>parameterIndex</code> at <i>x</i>.
 	 * @param x The <i>x</i>-value for which the partial derivate is calculated.

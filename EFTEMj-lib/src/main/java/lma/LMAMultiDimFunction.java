@@ -1,7 +1,7 @@
 /**
  * Downloaded from:
  * http://imagejdocu.tudor.lu/doku.php?id=plugin:filter:mri_processor:start&s[]=lma
- * 
+ *
  * All changes (except using "Clean Up..." in eclipse) are marked by comments.
  */
 
@@ -35,7 +35,7 @@ public abstract class LMAMultiDimFunction {
 	 * can't calculate the derivate, use a small <code>a</code>-step (e.g.,
 	 * <i>da</i> = 1e-20) and return <i>dy/da</i> at the given <i>x</i> for each
 	 * fit parameter.
-	 * 
+	 *
 	 * @return The partial derivate of the function with respect to parameter
 	 *         <code>parameterIndex</code> at <i>x</i>.
 	 * @param x The <i>x</i>-value for which the partial derivate is calculated.
@@ -49,7 +49,7 @@ public abstract class LMAMultiDimFunction {
 	/**
 	 * A convenience method for the one dimensional case. Not used by the fit
 	 * algorithm.
-	 * 
+	 *
 	 * @return The <i>y</i>-value of the function.
 	 * @param x The <i>x</i> value for which the <i>y</i>-value is calculated.
 	 * @param a The fitting parameters.
@@ -87,7 +87,7 @@ public abstract class LMAMultiDimFunction {
 
 	/**
 	 * The one dimesional convenience method.
-	 * 
+	 *
 	 * @param x The x-values for which the y-values are calculated,
 	 *          double[function value index]
 	 * @param a The fit parameters, double[fit parameter index]
@@ -117,7 +117,7 @@ public abstract class LMAMultiDimFunction {
 
 	/**
 	 * The one dimesional convenience method.
-	 * 
+	 *
 	 * @param x The x-values for which the y-values are calculated, float[function
 	 *          value index]
 	 * @param a The fit parameters, double[fit parameter index]

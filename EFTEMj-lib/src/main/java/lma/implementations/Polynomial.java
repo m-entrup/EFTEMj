@@ -1,7 +1,7 @@
 /**
  * Downloaded from:
  * http://imagejdocu.tudor.lu/doku.php?id=plugin:filter:mri_processor:start&s[]=lma
- * 
+ *
  * All changes (except using "Clean Up..." in eclipse) are marked by comments.
  */
 
@@ -27,7 +27,7 @@ public class Polynomial extends LMAFunction {
 
 	/**
 	 * Polynomial y = a_n * x^n + ... + a_2 * x^2 + a_1 * x + a_0
-	 * 
+	 *
 	 * @param a 0: a_0, 1: a_1, 2: a_2, ..., a_n
 	 */
 	@Override

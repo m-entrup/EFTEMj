@@ -1,7 +1,7 @@
 /**
  * Downloaded from:
  * http://imagejdocu.tudor.lu/doku.php?id=plugin:filter:mri_processor:start&s[]=lma
- * 
+ *
  * All changes (except using "Clean Up..." in eclipse) are marked by comments.
  */
 
@@ -38,7 +38,7 @@ public interface LMAMatrix {
 	/**
 	 * Multiplies this matrix with an array (result = this * vector). The lengths
 	 * of the arrays must be equal to the number of rows in the matrix.
-	 * 
+	 *
 	 * @param vector The array to be multiplied with the matrix.
 	 * @param result The result of the multiplication will be put here.
 	 */

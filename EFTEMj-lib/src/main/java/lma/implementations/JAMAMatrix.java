@@ -1,7 +1,7 @@
 /**
  * Downloaded from:
  * http://imagejdocu.tudor.lu/doku.php?id=plugin:filter:mri_processor:start&s[]=lma
- * 
+ *
  * All changes (except using "Clean Up..." in eclipse) are marked by comments.
  */
 
