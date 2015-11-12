@@ -225,8 +225,6 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 	 * have to be passed as parameters.
 	 *
 	 * @param input_image is the image to correct.
-	 * @param path_borders is the text file that contains the characterisation
-	 *          results for the borders.
 	 * @param path2REsults is the text file that contains the characterisation
 	 *          results for the width.
 	 * @return the corrected image.
@@ -260,7 +258,7 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 	private SR_EELS_Polynomial_2D getFunctionBorders() {
 		final double[][] vals = new double[3 * importer.size()][3];
 		int i = 0;
-		for (float[] point : importer) {
+		for (final float[] point : importer) {
 			for (int j = 0; j < 3; j++) {
 				// y coordinate of the fit function at the centre of the image/camera ->
 				// z value
@@ -306,7 +304,7 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 	private SR_EELS_Polynomial_2D getFunctionWidth() {
 		final double[][] vals = new double[importer.size()][3];
 		int i = 0;
-		for (float[] point : importer) {
+		for (final float[] point : importer) {
 			// The width of the spectrum -> z value
 			vals[i][0] = point[8];
 			// Coordinate on the energy dispersive axis -> x value
@@ -579,7 +577,7 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 	@SuppressWarnings("serial")
 	private static class DataImporter extends ArrayList<float[]> {
 
-		private int slices;
+		private final int slices;
 
 		public DataImporter(final String resultsFilePath,
 			final boolean readWeights)
@@ -598,10 +596,10 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 			}
 		}
 
-		public float[] getYInterceptPoint(int index) {
-			int height = size() / slices;
-			int currentSlice = (int) Math.floor(index / height);
-			int interceptINdex = currentSlice * height + height / 2;
+		public float[] getYInterceptPoint(final int index) {
+			final int height = size() / slices;
+			final int currentSlice = (int) Math.floor(index / height);
+			final int interceptINdex = currentSlice * height + height / 2;
 			return get(interceptINdex);
 		}
 	}
