@@ -288,7 +288,10 @@ public class MeasureCompositeImage implements PlugInFilter {
 			}
 			final FileDialog fDialog = new FileDialog(gd, PluginMessages.getString(
 				"Titel.SaveMeasurement"), FileDialog.SAVE);
-			fDialog.setMultipleMode(false);
+			/*
+			 * MultiMode is not available in Java 6
+			 * fDialog.setMultipleMode(false);
+			 */
 			fDialog.setDirectory(IJ.getDirectory("image"));
 			fDialog.setFile("Measurement_" + imp.getTitle() + ".txt");
 			fDialog.setVisible(true);

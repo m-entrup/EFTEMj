@@ -124,7 +124,10 @@ public class DQE_ByBinning {
 	public void saveResultAndShowPlot() {
 		final FileDialog fDialog = new FileDialog(WindowManager.getFrontWindow(),
 			"Save DQE results...", FileDialog.SAVE);
-		fDialog.setMultipleMode(false);
+		/*
+		 * MultiMode is not available in Java 6
+		 * fDialog.setMultipleMode(false);
+		 */
 		fDialog.setDirectory(IJ.getDirectory("image"));
 		final String fileName = "DQE_" + imageTitle;
 		fDialog.setFile(fileName + ".txt");

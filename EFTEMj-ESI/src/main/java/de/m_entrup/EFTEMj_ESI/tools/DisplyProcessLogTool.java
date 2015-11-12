@@ -43,7 +43,10 @@ public class DisplyProcessLogTool {
 		}
 		final FileDialog fDialog = new FileDialog(gd, PluginMessages.getString(
 			"Titel.SaveProcessLog"), FileDialog.SAVE);
-		fDialog.setMultipleMode(false);
+		/*
+		 * MultiMode is not available in Java 6
+		 * fDialog.setMultipleMode(false);
+		 */
 		fDialog.setDirectory(IJ.getDirectory("image"));
 		// adds date and time to the file name
 		final Calendar cal = Calendar.getInstance();
