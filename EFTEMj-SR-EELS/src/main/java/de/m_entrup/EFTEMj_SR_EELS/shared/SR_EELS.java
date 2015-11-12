@@ -25,7 +25,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package de.m_entrup.EFTEMj_SR_EELS;
+package de.m_entrup.EFTEMj_SR_EELS.shared;
 
 /**
  * This class contains constants and utility methods for the sr_eels package.

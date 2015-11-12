@@ -1,5 +1,5 @@
 
-package de.m_entrup.EFTEMj_SR_EELS;
+package de.m_entrup.EFTEMj_SR_EELS.characterisation;
 
 import java.awt.Rectangle;
 import java.io.File;
@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 
+import de.m_entrup.EFTEMj_SR_EELS.shared.SR_EELS_PrefsKeys;
+import de.m_entrup.EFTEMj_lib.CameraSetup;
 import de.m_entrup.EFTEMj_lib.EFTEMj_Debug;
 import ij.IJ;
 import ij.ImagePlus;
@@ -25,7 +27,7 @@ import ij.process.ColorProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageStatistics;
 
-public class SR_EELS_Characterisation implements PlugIn {
+public class SR_EELS_CharacterisationPlugin implements PlugIn {
 
 	@Override
 	public void run(final String arg) {
@@ -363,7 +365,7 @@ public class SR_EELS_Characterisation implements PlugIn {
 	}
 
 	public static void main(final String[] args) {
-		EFTEMj_Debug.debug(SR_EELS_Characterisation.class);
+		EFTEMj_Debug.debug(SR_EELS_CharacterisationPlugin.class);
 	}
 
 	protected class SR_EELS_CharacterisationSettings {

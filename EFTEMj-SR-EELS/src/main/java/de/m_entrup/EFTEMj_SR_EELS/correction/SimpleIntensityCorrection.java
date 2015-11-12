@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package de.m_entrup.EFTEMj_SR_EELS;
+package de.m_entrup.EFTEMj_SR_EELS.correction;
 
 import ij.process.FloatProcessor;
 

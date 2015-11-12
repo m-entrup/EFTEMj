@@ -26,13 +26,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package de.m_entrup.EFTEMj_SR_EELS;
+package de.m_entrup.EFTEMj_SR_EELS.correction;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 
+import de.m_entrup.EFTEMj_lib.CameraSetup;
 import de.m_entrup.EFTEMj_lib.EFTEMj_Debug;
 import de.m_entrup.EFTEMj_lib.lma.Polynomial_2D;
 import ij.IJ;

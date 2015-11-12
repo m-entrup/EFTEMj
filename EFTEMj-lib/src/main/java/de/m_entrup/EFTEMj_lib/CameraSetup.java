@@ -26,25 +26,43 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package de.m_entrup.EFTEMj_SR_EELS;
+package de.m_entrup.EFTEMj_lib;
 
-import ij.process.FloatProcessor;
+import ij.IJ;
+import ij.Prefs;
 
 /**
  * @author Michael Entrup b. Epping
  */
-public abstract class IntensityCorrector {
+public class CameraSetup {
 
-	FloatProcessor input;
-	CoordinateCorrector coordinateCorrector;
-
-	public IntensityCorrector(final FloatProcessor inputImage,
-		final CoordinateCorrector coordinateCorrector)
-	{
-		this.input = inputImage;
-		this.coordinateCorrector = coordinateCorrector;
+	/**
+	 * @return the height of the camera stored at the ImageJ preferences.
+	 */
+	public static int getFullHeight() {
+		int height = (int) Prefs.get(PrefsKeys.cameraHeight.getValue(), -1);
+		if (height == -1) {
+			height = (int) IJ.getNumber(
+				"The height of the used camera is not saved. Please enter the height in Pixel:",
+				4096);
+			Prefs.set(PrefsKeys.cameraHeight.getValue(), height);
+			Prefs.savePreferences();
+		}
+		return height;
 	}
 
-	public abstract float getIntensity(int x1, int x2);
-
+	/**
+	 * @return the width of the camera stored at the ImageJ preferences.
+	 */
+	public static int getFullWidth() {
+		int width = (int) Prefs.get(PrefsKeys.cameraWidth.getValue(), -1);
+		if (width == -1) {
+			width = (int) IJ.getNumber(
+				"The width of the used camera is not saved. Please enter the width in Pixel:",
+				4096);
+			Prefs.set(PrefsKeys.cameraWidth.getValue(), width);
+			Prefs.savePreferences();
+		}
+		return width;
+	}
 }

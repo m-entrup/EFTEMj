@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package de.m_entrup.EFTEMj_SR_EELS;
+package de.m_entrup.EFTEMj_SR_EELS.importer;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -34,6 +34,7 @@ import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.m_entrup.EFTEMj_SR_EELS.shared.SR_EELS_PrefsKeys;
 import de.m_entrup.EFTEMj_lib.EFTEMj_Debug;
 import ij.IJ;
 import ij.ImagePlus;
@@ -55,7 +56,7 @@ import ij.plugin.PlugIn;
  *
  * @author Michael Entrup b. Epping
  */
-public class SR_EELS_Import implements PlugIn {
+public class SR_EELS_ImportPlugin implements PlugIn {
 
 	/**
 	 * Path that contains the folder based database.
@@ -85,6 +86,8 @@ public class SR_EELS_Import implements PlugIn {
 		IJ.showStatus("Loading path of database from IJ_Prefs.txt.");
 		databasePath = Prefs.get(SR_EELS_PrefsKeys.databasePath.getValue(), null);
 		if (databasePath == null) {
+			IJ.showMessage("Setup database...",
+				"A database path is not jet defiend.\nA directory chooser will show up to select a path.");
 			databasePath = IJ.getDirectory("Set the path to the database...");
 			if (databasePath == null) {
 				IJ.showStatus("Path to database not set.");
@@ -92,6 +95,12 @@ public class SR_EELS_Import implements PlugIn {
 			}
 			Prefs.set(SR_EELS_PrefsKeys.databasePath.getValue(), databasePath);
 			Prefs.savePreferences();
+			IJ.showMessage("Your first import...",
+				"Select a folder that contains the files you want to import" +
+					"\nBy default only dm3 files are considerd." +
+					"\nTo add support for more file formats you have to add the following line to \"IJ_Prefs.txt\":" +
+					"\n.EFTEMj.SR-EELS.fileTypesToImport=.dm3;.tif;.tiff" +
+					"\nReplace \".tif\" and \".tiff\" by the file formats you want to import.");
 		}
 		/*
 		 * Read files to be imported from IJ_Prefs.txt.
@@ -349,7 +358,7 @@ public class SR_EELS_Import implements PlugIn {
 	}
 
 	public static void main(final String[] args) {
-		EFTEMj_Debug.debug(SR_EELS_Import.class);
+		EFTEMj_Debug.debug(SR_EELS_ImportPlugin.class);
 	}
 
 	private class ParameterSet {

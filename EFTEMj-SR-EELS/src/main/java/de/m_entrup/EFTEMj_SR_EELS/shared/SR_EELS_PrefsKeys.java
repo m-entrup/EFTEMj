@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package de.m_entrup.EFTEMj_SR_EELS;
+package de.m_entrup.EFTEMj_SR_EELS.shared;
 
 import de.m_entrup.EFTEMj_lib.EFTEMj_Prefs;
 import ij.Prefs;
@@ -42,11 +42,10 @@ import ij.Prefs;
 public enum SR_EELS_PrefsKeys {
 		specMagValues("specMagValues"), specMagIndex("specMagIndex"), binningIndex(
 			"binningIndex"), binningUser("binningUser"), offsetIndex("offsetIndex"),
-		offsetLoss("offsetLoss"), offsetAbsolute("offsetAbsolute"), cameraWidth(
-			"cameraWidth"), cameraHeight("cameraHeight"), dispersionEloss(
-				"dispersionEloss."), dispersionSettings("dispersionSettings."), none(
-					""), databasePath("databasePath"), fileTypesToImport(
-						"fileTypesToImport"), plotsAsTif("plotsAsTif");
+		offsetLoss("offsetLoss"), offsetAbsolute("offsetAbsolute"), dispersionEloss(
+			"dispersionEloss."), dispersionSettings("dispersionSettings."), none(""),
+		databasePath("databasePath"), fileTypesToImport("fileTypesToImport"),
+		plotsAsTif("plotsAsTif");
 
 	/**
 	 * <code>EFTEMj.PREFS_PREFIX + "SR-EELS.".</code>

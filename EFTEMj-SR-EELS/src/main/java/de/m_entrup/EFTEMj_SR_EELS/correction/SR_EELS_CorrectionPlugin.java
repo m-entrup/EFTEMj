@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package de.m_entrup.EFTEMj_SR_EELS;
+package de.m_entrup.EFTEMj_SR_EELS.correction;
 
 import java.awt.Desktop;
 import java.io.File;
@@ -41,6 +41,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.m_entrup.EFTEMj_SR_EELS.characterisation.SR_EELS_CharacterisationPlugin;
+import de.m_entrup.EFTEMj_SR_EELS.shared.SR_EELS;
+import de.m_entrup.EFTEMj_lib.CameraSetup;
 import de.m_entrup.EFTEMj_lib.EFTEMj_Debug;
 import de.m_entrup.EFTEMj_lib.tools.StringManipulator;
 import fiji.util.gui.GenericDialogPlus;

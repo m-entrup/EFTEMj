@@ -26,44 +26,47 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package de.m_entrup.EFTEMj_SR_EELS;
+package de.m_entrup.EFTEMj_lib;
+
+import ij.Prefs;
 
 /**
+ * This enum generates all {@link Prefs} keys that are used by classes of
+ * EFTEMj.<br>
+ * If you select an item of this enum, use <code>getValue()</code> to get the
+ * corresponding {@link Prefs} key as a {@link String}.
+ *
  * @author Michael Entrup b. Epping
  */
-@SuppressWarnings("serial")
-public class SR_EELS_Exception extends Exception {
+public enum PrefsKeys {
+		cameraWidth("cameraWidth"), cameraHeight("cameraHeight");
 
 	/**
-	 *
+	 * <code>EFTEMj.PREFS_PREFIX</code>
 	 */
-	public SR_EELS_Exception() {
-		// TODO Auto-generated constructor stub
+	protected static final String PREFS_PREFIX = EFTEMj_Prefs.PREFS_PREFIX;
+
+	private String value;
+
+	PrefsKeys(final String value) {
+		this.value = value;
 	}
 
 	/**
-	 * @param message
+	 * @return the full key that is used to access the property with {@link Prefs}
+	 *         .
 	 */
-	public SR_EELS_Exception(final String message) {
-		super(message);
-		// TODO Auto-generated constructor stub
+	public String getValue() {
+		switch (this) {
+			/*
+			 * Begin section - default
+			 * All parameters that are not listed get the default EFTEMj prefix.
+			 */
+			default:
+				return PREFS_PREFIX + value;
+			/*
+			 * End section - default
+			 */
+		}
 	}
-
-	/**
-	 * @param cause
-	 */
-	public SR_EELS_Exception(final Throwable cause) {
-		super(cause);
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @param message
-	 * @param cause
-	 */
-	public SR_EELS_Exception(final String message, final Throwable cause) {
-		super(message, cause);
-		// TODO Auto-generated constructor stub
-	}
-
 }
