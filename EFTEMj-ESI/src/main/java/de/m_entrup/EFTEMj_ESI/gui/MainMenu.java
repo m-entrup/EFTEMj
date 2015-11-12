@@ -410,8 +410,8 @@ public class MainMenu extends Frame {
 	 */
 	private final Panel centerPanel;
 	/**
-	 * The CENTER of contentPanel contains this {@link GridBagPanel}, it extends
-	 * from {@link Panel}.
+	 * The CENTER of contentPanel contains this component, it extends from
+	 * {@link Panel}.
 	 */
 	private GridBagPanel gridBagPane;
 	/**
@@ -419,16 +419,14 @@ public class MainMenu extends Frame {
 	 */
 	private final MainMenuListener mainMenuListener;
 	/**
-	 * This {@link DescriptionPanel} shows information about the elements of the
-	 * {@link MapResultPanel}. It is displayed togester with the
-	 * {@link MapResultPanel} and will be removed at the same time. This panel
-	 * replaces the {@link StackSelectionPanel}.
+	 * This component shows information about the elements of the
+	 * {@link MapResultPanel}. It is displayed together with the
+	 * {@link MapResultPanel} and will be removed at the same time.
 	 */
 	private DescriptionPanel mapResultDescription;
 	/**
-	 * The {@link MapResultPanel} will replace the {@link GridBagPanel} at the
-	 * CENTER of the contentPanel to access the results of the elemental-map
-	 * calculation.
+	 * The component will be placed at the CENTER of the {@link MainMenu} to
+	 * access the results of the elemental mapping.
 	 */
 	private MapResultPanel mapResultPanel;
 	/**
@@ -444,8 +442,8 @@ public class MainMenu extends Frame {
 	 */
 	private final Panel southPanel;
 	/**
-	 * The NORTH of the contentPanel contains this {@link StackSelectionPanel}, it
-	 * extends from {@link Label}.
+	 * The NORTH of the contentPanel contains this component, it extends from
+	 * {@link Label}.
 	 */
 	private StackSelectionPanel stackSelectionPanel;
 
@@ -500,11 +498,9 @@ public class MainMenu extends Frame {
 	}
 
 	/**
-	 * Replaces the instances of the {@link DescriptionPanel} and
-	 * {@link MapResultPanel} by the old instances of the
-	 * {@link StackSelectionPanel} and the {@link GridBagPanel}. The instances of
-	 * {@link DescriptionPanel} and {@link MapResultPanel} are deleted by
-	 * assigning <code>null</code> to it.
+	 * Parts of the {@link MainMenu} are replaced by the default components. By
+	 * setting fields to <code>null</code> the elemental mapping result is no
+	 * longer accessible after calling this method.
 	 */
 	public void closeMapResultPanel() {
 		if (mapResultPanel != null) {
@@ -589,9 +585,8 @@ public class MainMenu extends Frame {
 	}
 
 	/**
-	 * Replaces the instance of the {@link GridBagPanel} by a new instance of the
-	 * {@link MapResultPanel} and replaces the instance of
-	 * {@link StackSelectionPanel} by a new instance of {@link DescriptionPanel} .
+	 * Parts of the {@link MainMenu} are replaced by new components to access the
+	 * results of elemental mapping.
 	 */
 	public void showMapResultPanel() {
 		this.setTitle(PluginMessages.getString("Titel.MapResultDialog"));
@@ -611,8 +606,7 @@ public class MainMenu extends Frame {
 	}
 
 	/**
-	 * Updates the components of the {@link MainMenu}:<br>
-	 * 1. Update of the {@link StackSelectionPanel}
+	 * Updating components of the {@link MainMenu}.
 	 */
 	public void updateMainMenu() {
 		stackSelectionPanel.updateStackSelection();

@@ -380,43 +380,18 @@ public class ThreadInterface {
 	private static final ThreadInterface INSTANCE = new ThreadInterface();
 	/**
 	 * A shortcut to access the instance of {@link MainMenu}. Some finisher
-	 * threads are manipulationg the main menu.
+	 * threads are manipulating the main menu.
 	 */
 	private final MainMenu mainMenu = PluginAPI.getInstance().getMainMenu();
-	// This constants are used to determinate the finisher thread that has to be
-	// used when a calculation ends.
-	/**
-	 * {@link MLEFinisher}, used by {@link PowerLawFitCalculation}.
+	/*
+	 * These constants are used to determinate the finisher thread that has to be used when a calculation ends.
 	 */
 	public static final int MLE = 1;
-	/**
-	 * {@link BGFinisher}, uses by {@link BGCalculation}.
-	 */
 	public static final int BG = 2;
-
-	/**
-	 * {@link MapFinisher}, used by {@link MapCalculation}.
-	 */
 	public static final int MAP = 3;
-
-	/**
-	 * {@link SNRFinisher}, used by {@link SNRCalculation}.
-	 */
 	public static final int SNR = 4;
-
-	/**
-	 * {@link CODFinisher}, used by {@link CoeffOfDetCalculation}.
-	 */
 	public static final int COD = 5;
-
-	/**
-	 * {@link CROSSFinisher}, used by {@link CrossCorrelation}.
-	 */
 	public static final int CROSS = 6;
-
-	/**
-	 * {@link Chi2Finisher}, used by {@link Chi2Calculation}.
-	 */
 	public static final int CHI2 = 7;
 
 	/**

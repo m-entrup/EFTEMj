@@ -60,8 +60,7 @@ public class ChangeStackDialog extends EFTEMFrame {
 	} // END ChangeStackListener
 
 	/**
-	 * This field will gain {@link ChangeStackListener} access to the stackChooser
-	 * {@link Choice}.
+	 * This field is used to gain access to the {@link Choice} component.
 	 */
 	private final Choice stackChooser;
 
