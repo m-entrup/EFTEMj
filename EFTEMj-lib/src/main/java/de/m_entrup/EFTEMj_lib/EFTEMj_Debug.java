@@ -111,9 +111,7 @@ public class EFTEMj_Debug {
 	 * @param caller is a class that contains a run method.
 	 * @param debugLevel defines the used level of debugging.
 	 */
-	public static void debug(final Class<?> caller,
-		@SuppressWarnings("hiding") final int debugLevel)
-	{
+	public static void debug(final Class<?> caller, final int debugLevel) {
 		EFTEMj_Debug.debugLevel = debugLevel;
 		// start ImageJ
 		final ImageJ ij = new ImageJ();

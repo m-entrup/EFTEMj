@@ -13,6 +13,7 @@ package lma;
  */
 public interface LMAMatrix {
 
+	@SuppressWarnings("serial")
 	public static class InvertException extends RuntimeException {
 
 		public InvertException(final String message) {
