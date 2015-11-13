@@ -286,9 +286,9 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 		Arrays.fill(a_fit, 1.);
 		final LMA lma = new LMA(func, a_fit, vals);
 		lma.fit();
-		if (true) {
-			IJ.log(func.compareWithGnuplot(SR_EELS_Polynomial_2D.BORDERS));
-		}
+		/*
+		 * TODO: Output information about the fit using IJ.log
+		 */
 		return new SR_EELS_Polynomial_2D(m, n, a_fit);
 	}
 
@@ -328,9 +328,9 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 		Arrays.fill(b_fit, 1.);
 		final LMA lma = new LMA(func, b_fit, vals);
 		lma.fit();
-		if (true) {
-			IJ.log(func.compareWithGnuplot(SR_EELS_Polynomial_2D.WIDTH_VS_POS));
-		}
+		/*
+		 * TODO: Output information about the fit using IJ.log
+		 */
 		return new SR_EELS_Polynomial_2D(m, n, b_fit);
 	}
 
@@ -383,7 +383,7 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 						return NO_CHANGES | DONE;
 					}
 				}
-				while (!pathResults.contains(SR_EELS.FILENAME_RESULTS.split(".")[1]));
+				while (!pathResults.contains(SR_EELS.FILENAME_RESULTS));
 			}
 			else {
 				if (foundCharacterisationResults.size() == 1) {

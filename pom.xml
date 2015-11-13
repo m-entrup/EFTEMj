@@ -12,7 +12,7 @@
 
 	<groupId>de.m-entrup</groupId>
 	<artifactId>pom-EFTEMj</artifactId>
-	<version>1.1.0</version>
+	<version>1.1.1</version>
 	<packaging>pom</packaging>
 
 	<name>EFTEMj</name>
@@ -90,7 +90,7 @@
 			<dependency>
 				<groupId>de.m-entrup</groupId>
 				<artifactId>EFTEMj-SR-EELS</artifactId>
-				<version>0.5.0</version>
+				<version>0.5.1</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

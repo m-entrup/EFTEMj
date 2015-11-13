@@ -31,12 +31,10 @@ package de.m_entrup.EFTEMj_SR_EELS.correction;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.Locale;
 
 import de.m_entrup.EFTEMj_lib.CameraSetup;
 import de.m_entrup.EFTEMj_lib.EFTEMj_Debug;
 import de.m_entrup.EFTEMj_lib.lma.Polynomial_2D;
-import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.measure.CurveFitter;
@@ -91,7 +89,6 @@ public class SR_EELS_Polynomial_2D extends Polynomial_2D {
 			-CameraSetup.getFullHeight() / 2;
 		if (Double.isNaN(rootH) || rootH > CameraSetup.getFullHeight() / 2 - 1)
 			rootH = CameraSetup.getFullHeight() / 2 - 1;
-		IJ.log(rootL + ", " + maxPos + ", " + rootH);
 		/*
 		 * The second step is to map uncorrected and corrected coordinates. For each uncorrected coordinate the
 		 * corrected coordinate is calculated. The inverse function is hard to determine Instead we switch the axes and
@@ -164,75 +161,75 @@ public class SR_EELS_Polynomial_2D extends Polynomial_2D {
 		}
 	}
 
-	public String compareWithGnuplot(final int functionType) {
-		String filename = "";
-		String using = "";
-		final String offsetX1 = "offsetX1 = " + CameraSetup.getFullWidth() / 2;
-		final String offsetX2 = "offsetX2 = " + CameraSetup.getFullHeight() / 2;
-		switch (functionType) {
-			case BORDERS:
-				filename = "Borders.txt";
-				using = "using ($1-offsetX1):($2-offsetX2):($3-offsetX2):4";
-				break;
-			case WIDTH_VS_POS:
-				filename = "Width.txt";
-				using = "using ($1-offsetX1):($2-offsetX2):3:(1)";
-				break;
-			default:
-				break;
-		}
-		String functionGnu = "f(x,y) = ";
-		String fit = "fit f(x,y) '" + filename + "' " + using + " zerror via ";
-		for (int i = 0; i <= m; i++) {
-			for (int j = 0; j <= n; j++) {
-				functionGnu += String.format(Locale.UK, "a%d%d*x**%d*y**%d", i, j, i,
-					j);
-				fit += String.format(Locale.UK, "a%d%d", i, j);
-				if (i != m | j != n) {
-					functionGnu += " + ";
-					fit += ",";
+	/*	public String compareWithGnuplot(final int functionType) {
+			String filename = "";
+			String using = "";
+			final String offsetX1 = "offsetX1 = " + CameraSetup.getFullWidth() / 2;
+			final String offsetX2 = "offsetX2 = " + CameraSetup.getFullHeight() / 2;
+			switch (functionType) {
+				case BORDERS:
+					filename = "Borders.txt";
+					using = "using ($1-offsetX1):($2-offsetX2):($3-offsetX2):4";
+					break;
+				case WIDTH_VS_POS:
+					filename = "Width.txt";
+					using = "using ($1-offsetX1):($2-offsetX2):3:(1)";
+					break;
+				default:
+					break;
+			}
+			String functionGnu = "f(x,y) = ";
+			String fit = "fit f(x,y) '" + filename + "' " + using + " zerror via ";
+			for (int i = 0; i <= m; i++) {
+				for (int j = 0; j <= n; j++) {
+					functionGnu += String.format(Locale.UK, "a%d%d*x**%d*y**%d", i, j, i,
+						j);
+					fit += String.format(Locale.UK, "a%d%d", i, j);
+					if (i != m | j != n) {
+						functionGnu += " + ";
+						fit += ",";
+					}
 				}
 			}
-		}
-		final String title = String.format(Locale.UK,
-			"%n#####%n# Fit of '%s':%n#####%n", filename);
-		fit = title + "\n" + offsetX1 + "\n" + offsetX2 + "\n" + functionGnu +
-			"\n" + fit;
-		String residuals = "";
-		switch (functionType) {
-			case BORDERS:
-				filename = "Borders.txt";
-				using = "using ($1-offsetX1):($2-offsetX2):($3-offsetX2)";
-				residuals =
-					"using ($1-offsetX1):($2-offsetX2):(abs( $3 - offsetX2 - fJ($1-offsetX1,$2-offsetX2))**2)";
-				break;
-			case WIDTH_VS_POS:
-				filename = "Width.txt";
-				using = "using ($1-offsetX1):($2-offsetX2):3";
-				residuals =
-					"using ($1-offsetX1):($2-offsetX2):(abs( $3 - fJ($1-offsetX1,$2-offsetX2))**2)";
-				break;
-			default:
-				break;
-		}
-		final String splot = String.format(
-			"splot '%s' %s notitle,\\%nf(x,y) title 'Gnuplot', fJ(x,y) title 'Java LMA',\\%n'%1$s' %s title 'residuals'",
-			filename, using, residuals);
-		String functionJava = "fJ(x,y) = ";
-		String compare = "#Java LMA";
-		for (int i = 0; i <= m; i++) {
-			for (int j = 0; j <= n; j++) {
-				compare += String.format(Locale.UK, "\naJ%d%d = %+6e", i, j, params[(n +
-					1) * i + j]);
-				functionJava += String.format(Locale.UK, "aJ%d%d*x**%d*y**%d", i, j, i,
-					j);
-				if (i != m | j != n) {
-					functionJava += " + ";
+			final String title = String.format(Locale.UK,
+				"%n#####%n# Fit of '%s':%n#####%n", filename);
+			fit = title + "\n" + offsetX1 + "\n" + offsetX2 + "\n" + functionGnu +
+				"\n" + fit;
+			String residuals = "";
+			switch (functionType) {
+				case BORDERS:
+					filename = "Borders.txt";
+					using = "using ($1-offsetX1):($2-offsetX2):($3-offsetX2)";
+					residuals =
+						"using ($1-offsetX1):($2-offsetX2):(abs( $3 - offsetX2 - fJ($1-offsetX1,$2-offsetX2))**2)";
+					break;
+				case WIDTH_VS_POS:
+					filename = "Width.txt";
+					using = "using ($1-offsetX1):($2-offsetX2):3";
+					residuals =
+						"using ($1-offsetX1):($2-offsetX2):(abs( $3 - fJ($1-offsetX1,$2-offsetX2))**2)";
+					break;
+				default:
+					break;
+			}
+			final String splot = String.format(
+				"splot '%s' %s notitle,\\%nf(x,y) title 'Gnuplot', fJ(x,y) title 'Java LMA',\\%n'%1$s' %s title 'residuals'",
+				filename, using, residuals);
+			String functionJava = "fJ(x,y) = ";
+			String compare = "#Java LMA";
+			for (int i = 0; i <= m; i++) {
+				for (int j = 0; j <= n; j++) {
+					compare += String.format(Locale.UK, "\naJ%d%d = %+6e", i, j, params[(n +
+						1) * i + j]);
+					functionJava += String.format(Locale.UK, "aJ%d%d*x**%d*y**%d", i, j, i,
+						j);
+					if (i != m | j != n) {
+						functionJava += " + ";
+					}
 				}
 			}
-		}
-		return fit + "\n\n" + functionJava + "\n\n" + compare + "\n\n" + splot;
-	}
+			return fit + "\n\n" + functionJava + "\n\n" + compare + "\n\n" + splot;
+		}*/
 
 	public float getY1(final float[] x2) {
 		final float[] x2_img = transformY1.convertToImageCoordinates(x2);
