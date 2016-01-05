@@ -33,6 +33,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
@@ -81,8 +83,28 @@ public class LoadMsa {
 				eels.add(new EnergyLossPoint(Double.parseDouble(items[0]), Double
 					.parseDouble(items[1])));
 			}
+			else {
+				String extract = extractMatch("#XUNITS\\s*:\\s*(\\S+)", s);
+				if (extract != null) {
+					eels.setXUnit(extract);
+					continue;
+				}
+				extract = extractMatch("#YUNITS\\s*:\\s*(\\S+)", s);
+				if (extract != null) {
+					eels.setYUnit(extract);
+					continue;
+				}
+			}
 		}
 		br.close();
+	}
+
+	private String extractMatch(final String pattern, final String input) {
+		final Pattern pat = Pattern.compile(pattern);
+		final Matcher match = pat.matcher(input);
+		if (!match.find()) return null;
+		final String s = match.group(1);
+		return s;
 	}
 
 	/**
@@ -157,4 +179,17 @@ public class LoadMsa {
 		}
 	}
 
+	/**
+	 * @return the x-unit specified in the meta data of the selected file.
+	 */
+	public String getXUnit() {
+		return eels.getXUnit();
+	}
+
+	/**
+	 * @return the y-unit specified in the meta data of the selected file.
+	 */
+	public String getYUnit() {
+		return eels.getYUnit();
+	}
 }

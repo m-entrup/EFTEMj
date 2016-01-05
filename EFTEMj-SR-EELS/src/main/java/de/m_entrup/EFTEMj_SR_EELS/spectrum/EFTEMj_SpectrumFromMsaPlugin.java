@@ -73,8 +73,12 @@ public class EFTEMj_SpectrumFromMsaPlugin extends Profiler implements PlugIn,
 		}
 		final float[] xValues = loader.getEnergyArray();
 		final float[] yValues = loader.getCountArray();
-		final String xLabel = "Energy loss (eV)";
-		final String yLabel = "Counts";
+		String s = loader.getXUnit();
+		if (s == null) s = "eV";
+		final String xLabel = "Energy loss (" + s + ")";
+		s = loader.getYUnit();
+		if (s == null) s = "a.u.";
+		final String yLabel = "Intensity (" + s + ")";
 		final Plot plot = new Plot("Plot of " + loader.getFileName(), xLabel,
 			yLabel, xValues, yValues);
 		return plot;

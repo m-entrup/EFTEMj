@@ -48,6 +48,9 @@ import ij.gui.Plot;
 @SuppressWarnings("serial")
 public class EnergyLossData extends ArrayList<Point2D> {
 
+	private String xUnit = null;
+	private String yUnit = null;
+
 	/**
 	 * A method to convert all x- or y-values of the point-list to an array.
 	 *
@@ -128,5 +131,37 @@ public class EnergyLossData extends ArrayList<Point2D> {
 			s += String.format("%1g\t%2g\n", point.getX(), point.getY());
 		}
 		return s;
+	}
+
+	/**
+	 * @param value is the {@link String} that represents the unit of the
+	 *          x-values.
+	 */
+	public void setXUnit(final String value) {
+		xUnit = value;
+	}
+
+	/**
+	 * @return the x-unit of the data set. <code>null</code> if it was not set
+	 *         before.
+	 */
+	public String getXUnit() {
+		return xUnit;
+	}
+
+	/**
+	 * @param value value is the {@link String} that represents the unit of the
+	 *          y-values.
+	 */
+	public void setYUnit(final String value) {
+		yUnit = value;
+	}
+
+	/**
+	 * @return the y-unit of the data set. <code>null</code> if it was not set
+	 *         before.
+	 */
+	public String getYUnit() {
+		return yUnit;
 	}
 }
