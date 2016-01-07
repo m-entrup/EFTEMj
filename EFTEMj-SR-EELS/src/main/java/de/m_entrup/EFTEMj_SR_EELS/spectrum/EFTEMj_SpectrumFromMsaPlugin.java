@@ -28,14 +28,17 @@
 
 package de.m_entrup.EFTEMj_SR_EELS.spectrum;
 
+import java.io.File;
 import java.io.IOException;
 
 import de.m_entrup.EFTEMj_lib.importer.LoadMsa;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
+import ij.gui.GenericDialog;
 import ij.gui.Plot;
 import ij.gui.PlotMaker;
+import ij.io.OpenDialog;
 import ij.plugin.PlugIn;
 import ij.plugin.Profiler;
 
@@ -62,13 +65,15 @@ public class EFTEMj_SpectrumFromMsaPlugin extends Profiler implements PlugIn,
 	 */
 	@Override
 	public Plot getPlot() {
+		final File file = getFile();
+		if (file == null) return null;
 		LoadMsa loader = null;
 		try {
-			loader = new LoadMsa();
+			loader = new LoadMsa(file.getAbsolutePath());
 		}
 		catch (final IOException e) {
 			IJ.error(String.format("Error while loading %1s:\n%2s", (loader != null)
-				? loader.getFileName() : "no file", e.toString()));
+				? file.getName() : "no file", e.toString()));
 			return null;
 		}
 		final float[] xValues = loader.getEnergyArray();
@@ -79,9 +84,32 @@ public class EFTEMj_SpectrumFromMsaPlugin extends Profiler implements PlugIn,
 		s = loader.getYUnit();
 		if (s == null) s = "a.u.";
 		final String yLabel = "Intensity (" + s + ")";
-		final Plot plot = new Plot("Plot of " + loader.getFileName(), xLabel,
-			yLabel, xValues, yValues);
+		final Plot plot = new Plot("Plot of " + file.getName(), xLabel, yLabel,
+			xValues, yValues);
 		return plot;
+	}
+
+	private File getFile() {
+		final OpenDialog od = new OpenDialog("Select a msa file...");
+		if (od.getFileName()== null) return null;
+		final File file = new File(od.getPath());
+		if (file.getName().toLowerCase().endsWith(".msa")) {
+                        return file;
+                }
+                else {
+			final GenericDialog gd = new GenericDialog("Confirm loading...", IJ
+				.getInstance());
+			gd.addMessage("You have not selected a msa file.\n" +
+				"Confirm to continue.");
+			gd.addCheckbox("Load_non_msa file.", false);
+			gd.showDialog();
+			if (gd.wasOKed()) {
+				if (gd.getNextBoolean()) {
+					return file;
+				}
+			}
+		}
+		return null;
 	}
 
 	/* (non-Javadoc)

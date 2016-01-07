@@ -30,14 +30,10 @@ package de.m_entrup.EFTEMj_lib.importer;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
 
 import de.m_entrup.EFTEMj_lib.data.EnergyLossData;
 import de.m_entrup.EFTEMj_lib.data.EnergyLossPoint;
@@ -60,21 +56,17 @@ public class LoadMsa {
 	 * Object to store the imported data.
 	 */
 	private final EnergyLossData eels;
-	/**
-	 * Name of the file data is imported from.
-	 */
-	private String fileName;
 
 	/**
 	 * Get a {@link BufferedReader} and load the energy loss data line by line.
 	 * The data is stored in an {@link EnergyLossData} object.
 	 *
 	 * @throws IOException
+	 * @param path is the full path to the msa file to load.
 	 */
-	public LoadMsa() throws IOException {
-		final BufferedReader br = getReader();
-		if (br == null) throw new IOException(
-			"The user has canceld the file selection.");
+	public LoadMsa(final String path) throws IOException {
+		final BufferedReader br = new BufferedReader(new FileReader(new File(
+			path)));
 		String s = null;
 		eels = new EnergyLossData();
 		while ((s = br.readLine()) != null) {
@@ -108,30 +100,6 @@ public class LoadMsa {
 	}
 
 	/**
-	 * @return the name of the file data is imported from.
-	 */
-	public String getFileName() {
-		return fileName;
-	}
-
-	/**
-	 * @return a {@link BufferedReader} that is created on a user selected file.
-	 * @throws FileNotFoundException
-	 */
-	private BufferedReader getReader() throws FileNotFoundException {
-		final JFileChooser fc = new JFileChooser();
-		fc.setFileFilter(new MsaFilter());
-		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-			fileName = fc.getSelectedFile().getName();
-			return new BufferedReader(new FileReader(fc.getSelectedFile()));
-		}
-		else {
-			fileName = "no file";
-			return null;
-		}
-	}
-
-	/**
 	 * @return an array with energy loss values imported from the selected file.
 	 */
 	public float[] getEnergyArray() {
@@ -150,33 +118,6 @@ public class LoadMsa {
 	 */
 	public EnergyLossData getEnergyLossData() {
 		return eels;
-	}
-
-	/**
-	 * A {@link FileFilter} used by a {@link JFileChooser} to show only
-	 * directories and msa files.
-	 *
-	 * @author Michael Entrup b. Epping
-	 */
-	private class MsaFilter extends FileFilter {
-
-		/* (non-Javadoc)
-		 * @see javax.swing.filechooser.FileFilter#getDescription()
-		 */
-		@Override
-		public String getDescription() {
-			return "File format for electron energy loss spectra.";
-		}
-
-		/* (non-Javadoc)
-		 * @see javax.swing.filechooser.FileFilter#accept(java.io.File)
-		 */
-		@Override
-		public boolean accept(final File f) {
-			if (f.isDirectory()) return true;
-			if (f.getName().toLowerCase().endsWith(".msa")) return true;
-			return false;
-		}
 	}
 
 	/**
