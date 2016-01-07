@@ -3,21 +3,17 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>EFTEMj-lib</artifactId>
+	<artifactId>EFTEMj-lib_</artifactId>
 	<version>0.3.0-SNAPSHOT</version>
 
 	<name>EFTEMj-lib</name>
 	<description>This package provides some tools for other plugins of EFTEMj.</description>
 	<url>https://github.com/m-entrup/EFTEMj</url>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
-
 	<parent>
 		<groupId>de.m-entrup</groupId>
 		<artifactId>pom-EFTEMj</artifactId>
-		<version>1.1.0</version>
+		<version>1.1.1-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 
@@ -27,16 +23,4 @@
 			<artifactId>jama</artifactId>
 		</dependency>
 	</dependencies>
-
-	<scm>
-		<connection>scm:git:git://github.com/m-entrup/EFTEMj</connection>
-		<developerConnection>scm:git:git@github.com:m-entrup/EFTEMj</developerConnection>
-		<tag>HEAD</tag>
-		<url>https://github.com/m-entrup/EFTEMj</url>
-	</scm>
-
-	<issueManagement>
-		<url>https://github.com/EFTEMj/m-entrup/issues</url>
-		<system>GitHub Issues</system>
-	</issueManagement>
 </project>

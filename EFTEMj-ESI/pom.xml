@@ -3,16 +3,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>EFTEMj-ESI</artifactId>
+	<artifactId>EFTEMj-ESI_</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 
 	<name>EFTEMj-ESI</name>
 	<description>This plugin will calculate elemental maps from a series of Energy Filtering TransmissionElectronMicroscope (EFTEM) images. It is not limited to the 3-window-method. Its full power can only be unleashed by using a minimum of 4 images.</description>
 	<url>https://github.com/m-entrup/EFTEMj</url>
-
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
 
 	<parent>
 		<groupId>de.m-entrup</groupId>
@@ -27,16 +23,4 @@
 			<artifactId>EFTEMj-lib</artifactId>
 		</dependency>
 	</dependencies>
-
-	<scm>
-		<connection>scm:git:git://github.com/m-entrup/EFTEMj</connection>
-		<developerConnection>scm:git:git@github.com:m-entrup/EFTEMj</developerConnection>
-		<tag>HEAD</tag>
-		<url>https://github.com/m-entrup/EFTEMj</url>
-	</scm>
-
-	<issueManagement>
-		<url>https://github.com/EFTEMj/m-entrup/issues</url>
-		<system>GitHub Issues</system>
-	</issueManagement>
 </project>

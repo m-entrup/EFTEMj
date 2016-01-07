@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>sc.fiji</groupId>
 		<artifactId>pom-fiji</artifactId>
-		<version>16.0.0</version>
+		<version>20.0.0</version>
 	</parent>
 
 	<groupId>de.m-entrup</groupId>
@@ -44,7 +44,6 @@
 	</developers>
 
 	<repositories>
-		<!-- NB: for project parent -->
 		<repository>
 			<id>imagej.public</id>
 			<url>http://maven.imagej.net/content/groups/public</url>
@@ -62,12 +61,7 @@
 		<url>https://github.com/EFTEMj/m-entrup/issues</url>
 		<system>GitHub Issues</system>
 	</issueManagement>
-
-	<ciManagement />
-
-	<properties>
-		<jar.finalName>${project.artifactId}_-${project.version}</jar.finalName>
-	</properties>
+	
 	<dependencies>
 		<dependency>
 			<groupId>net.imagej</groupId>
@@ -94,36 +88,4 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-
-	<build>
-		<pluginManagement>
-			<plugins>
-				<!-- http://stackoverflow.com/questions/13040788/how-to-elimate-the-maven-enforcer-plugin-goal-enforce-is-ignored-by-m2e-wa -->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.apache.maven.plugins</groupId>
-										<artifactId>maven-enforcer-plugin</artifactId>
-										<versionRange>[1.0.0,)</versionRange>
-										<goals>
-											<goal>enforce</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore />
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
 </project>
