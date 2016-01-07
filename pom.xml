@@ -73,7 +73,7 @@
 		<dependencies>
 			<dependency>
 				<groupId>de.m-entrup</groupId>
-				<artifactId>EFTEMj-lib</artifactId>
+				<artifactId>EFTEMj-lib_</artifactId>
 				<version>0.3.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>

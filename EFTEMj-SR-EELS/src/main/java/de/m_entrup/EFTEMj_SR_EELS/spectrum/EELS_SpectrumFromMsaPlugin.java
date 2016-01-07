@@ -56,7 +56,7 @@ import ij.plugin.Profiler;
  *
  * @author Michael Entrup b. Epping
  */
-public class EFTEMj_SpectrumFromMsaPlugin extends Profiler implements PlugIn,
+public class EELS_SpectrumFromMsaPlugin extends Profiler implements PlugIn,
 	PlotMaker
 {
 
@@ -143,7 +143,7 @@ public class EFTEMj_SpectrumFromMsaPlugin extends Profiler implements PlugIn,
 		new ImageJ();
 
 		// run the plugin
-		final Class<?> clazz = EFTEMj_SpectrumFromMsaPlugin.class;
+		final Class<?> clazz = EELS_SpectrumFromMsaPlugin.class;
 		IJ.runPlugIn(clazz.getName(), "");
 	}
 

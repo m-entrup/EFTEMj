@@ -20,7 +20,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>de.m-entrup</groupId>
-			<artifactId>EFTEMj-lib</artifactId>
+			<artifactId>EFTEMj-lib_</artifactId>
 		</dependency>
 	</dependencies>
 </project>
