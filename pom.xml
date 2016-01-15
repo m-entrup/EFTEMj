@@ -7,13 +7,19 @@
 	<parent>
 		<groupId>sc.fiji</groupId>
 		<artifactId>pom-fiji</artifactId>
-		<version>20.0.0</version>
+		<version>21.0.0</version>
 	</parent>
 
 	<groupId>de.m-entrup</groupId>
 	<artifactId>pom-EFTEMj</artifactId>
-	<version>1.1.1-SNAPSHOT</version>
+	<version>1.2.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
+
+	<modules>
+		<module>EFTEMj-lib</module>
+		<module>EFTEMj-ESI</module>
+		<module>EFTEMj-SR-EELS</module>
+	</modules>
 
 	<name>EFTEMj</name>
 	<description>A collection of plugins used to analyse data from Energy Filtering TransmissionElectronMicroscopy (EFTEM).</description>
@@ -32,7 +38,7 @@
 			<id>m-entrup</id>
 			<name>Michael Entrup</name>
 			<email>mail@m-entrup.de</email>
-			<url>http://www.m-entrup</url>
+			<url>http://www.m-entrup.de</url>
 			<organization>WWU Münster</organization>
 			<organizationUrl>http://www.uni-muenster.de/</organizationUrl>
 			<roles>
@@ -61,7 +67,7 @@
 		<url>https://github.com/EFTEMj/m-entrup/issues</url>
 		<system>GitHub Issues</system>
 	</issueManagement>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>net.imagej</groupId>
@@ -74,17 +80,17 @@
 			<dependency>
 				<groupId>de.m-entrup</groupId>
 				<artifactId>EFTEMj-lib_</artifactId>
-				<version>0.3.0-SNAPSHOT</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>de.m-entrup</groupId>
 				<artifactId>EFTEMj-ESI</artifactId>
-				<version>1.0.0-SNAPSHOT</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>de.m-entrup</groupId>
 				<artifactId>EFTEMj-SR-EELS</artifactId>
-				<version>0.5.1-SNAPSHOT</version>
+				<version>${project.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
