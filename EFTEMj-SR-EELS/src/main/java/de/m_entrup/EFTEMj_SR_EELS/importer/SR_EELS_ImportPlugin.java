@@ -34,11 +34,13 @@ import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.m_entrup.EFTEMj_SR_EELS.shared.SR_EELS_PrefsKeys;
+import org.apache.commons.configuration.ConfigurationException;
+
+import de.m_entrup.EFTEMj_lib.EFTEMj_Configuration;
+import de.m_entrup.EFTEMj_lib.EFTEMj_ConfigurationManager;
 import de.m_entrup.EFTEMj_lib.EFTEMj_Debug;
 import ij.IJ;
 import ij.ImagePlus;
-import ij.Prefs;
 import ij.gui.GenericDialog;
 import ij.plugin.PlugIn;
 
@@ -64,27 +66,31 @@ public class SR_EELS_ImportPlugin implements PlugIn {
 	private String databasePath;
 	/**
 	 * File types that can be imported. ".dm3" is the default value. It can be
-	 * overwritten by an entry in IJ_Prefs.txt.
-	 * <p>
-	 * Append the following line to IJ_Prefs.txt. to add support for ".tif" and
-	 * ".tiff":
-	 *
-	 * <pre>
-	 * .EFTEMj.SR-EELS.fileTypesToImport=.dm3;.tif;.tiff
-	 * </pre>
-	 * </p>
+	 * overwritten by an entry in EFTEMj_config.xml.
 	 */
 	private String[] fileTypeToImport = { ".dm3" };
 	private boolean importAsCalibration = false;
 	private boolean automaticImport = false;
+	private EFTEMj_Configuration config;
+	private final String configKeyPrefix = "SR-EELS." + this.getClass()
+		.getSimpleName() + ".";
+	private final String databasePathKey = configKeyPrefix + "databasePath";
+	private final String fileTypesKey = configKeyPrefix + "fileTypeToImport";
 
 	@Override
 	public void run(final String arg) {
+		try {
+			config = EFTEMj_ConfigurationManager.getConfiguration();
+		}
+		catch (final ConfigurationException e) {
+			IJ.error("Failed to load config.", e.toString());
+			return;
+		}
 		/*
 		 * Read path to database from IJ_Prefs.txt or ask the user to set the path.
 		 */
 		IJ.showStatus("Loading path of database from IJ_Prefs.txt.");
-		databasePath = Prefs.get(SR_EELS_PrefsKeys.databasePath.getValue(), null);
+		databasePath = config.getString(databasePathKey);
 		if (databasePath == null) {
 			IJ.showMessage("Setup database...",
 				"A database path is not jet defiend.\nA directory chooser will show up to select a path.");
@@ -93,23 +99,20 @@ public class SR_EELS_ImportPlugin implements PlugIn {
 				IJ.showStatus("Path to database not set.");
 				return;
 			}
-			Prefs.set(SR_EELS_PrefsKeys.databasePath.getValue(), databasePath);
-			Prefs.savePreferences();
+			config.setProperty(databasePathKey, databasePath);
+			config.save();
 			IJ.showMessage("Your first import...",
 				"Select a folder that contains the files you want to import" +
 					"\nBy default only dm3 files are considerd." +
-					"\nTo add support for more file formats you have to add the following line to \"IJ_Prefs.txt\":" +
-					"\n.EFTEMj.SR-EELS.fileTypesToImport=.dm3;.tif;.tiff" +
-					"\nReplace \".tif\" and \".tiff\" by the file formats you want to import.");
+					"\nTo add support for more file formats visit:" + "\n .");
 		}
 		/*
 		 * Read files to be imported from IJ_Prefs.txt.
 		 */
 		IJ.showStatus("Loading supported file types from IJ_Prefs.txt.");
-		final String fileTypes = Prefs.get(SR_EELS_PrefsKeys.fileTypesToImport
-			.getValue(), null);
-		if (fileTypes != null) {
-			fileTypeToImport = fileTypes.split(";");
+
+		if (config.getStringArray(fileTypesKey).length > 0) {
+			fileTypeToImport = config.getStringArray(fileTypesKey);
 		}
 		/*
 		 *  Step 1
