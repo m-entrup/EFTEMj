@@ -1,7 +1,7 @@
 /**
  * EFTEMj - Processing of Energy Filtering TEM images with ImageJ
  *
- * Copyright (c) 2015, Michael Entrup b. Epping <mail@m-entrup.de>
+ * Copyright (c) 2015, Michael Entrup b. Epping
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,8 +36,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.configuration.ConfigurationException;
 
+import de.m_entrup.EFTEMj_SR_EELS.shared.SR_EELS_ConfigurationManager;
 import de.m_entrup.EFTEMj_lib.EFTEMj_Configuration;
-import de.m_entrup.EFTEMj_lib.EFTEMj_ConfigurationManager;
 import de.m_entrup.EFTEMj_lib.EFTEMj_Debug;
 import ij.IJ;
 import ij.ImagePlus;
@@ -72,39 +72,35 @@ public class SR_EELS_ImportPlugin implements PlugIn {
 	private boolean importAsCalibration = false;
 	private boolean automaticImport = false;
 	private EFTEMj_Configuration config;
-	private final String configKeyPrefix = "SR-EELS." + this.getClass()
-		.getSimpleName() + ".";
-	private final String databasePathKey = configKeyPrefix + "databasePath";
-	private final String fileTypesKey = configKeyPrefix + "fileTypeToImport";
+	private static String configKeyPrefix = "SR-EELS." + SR_EELS_ImportPlugin.class.getSimpleName() + ".";
+	public static String databasePathKey = configKeyPrefix + "databasePath";
+	public static String fileTypesKey = configKeyPrefix + "fileTypeToImport";
+	private static String usedBefore = configKeyPrefix + "usedBefore";
+	public static String rotateOnImport = configKeyPrefix + "rotateOnImport";
 
 	@Override
 	public void run(final String arg) {
 		try {
-			config = EFTEMj_ConfigurationManager.getConfiguration();
-		}
-		catch (final ConfigurationException e) {
+			config = SR_EELS_ConfigurationManager.getConfiguration();
+		} catch (final ConfigurationException e) {
 			IJ.error("Failed to load config.", e.toString());
 			return;
 		}
-		/*
-		 * Read path to database from IJ_Prefs.txt or ask the user to set the path.
-		 */
-		IJ.showStatus("Loading path of database from IJ_Prefs.txt.");
 		databasePath = config.getString(databasePathKey);
-		if (databasePath == null) {
-			IJ.showMessage("Setup database...",
-				"A database path is not jet defiend.\nA directory chooser will show up to select a path.");
-			databasePath = IJ.getDirectory("Set the path to the database...");
-			if (databasePath == null) {
-				IJ.showStatus("Path to database not set.");
-				return;
-			}
-			config.setProperty(databasePathKey, databasePath);
+		if (databasePath == null | databasePath.equals("")) {
+			IJ.showMessage("No database found...",
+					"A database path is not jet defiend.\nRun the \"Setup EFTEMj SR-EELS\" first.");
+			return;
+		}
+		if (!databasePath.endsWith("/") & !databasePath.endsWith("\\")) {
+			databasePath += File.separator;
+		}
+		boolean firstUse = !config.getBoolean(usedBefore);
+		if (firstUse) {
+			IJ.showMessage("Your first import...", "Select a folder that contains the files you want to import.");
+			// ToDo Add a better documentation.
+			config.setProperty(usedBefore, true);
 			config.save();
-			IJ.showMessage("Your first import...",
-				"Select a folder that contains the files you want to import" +
-					"\nBy default only dm3 files are considerd." +
-					"\nTo add support for more file formats visit:" + "\n .");
 		}
 		/*
 		 * Read files to be imported from IJ_Prefs.txt.
@@ -115,58 +111,49 @@ public class SR_EELS_ImportPlugin implements PlugIn {
 			fileTypeToImport = config.getStringArray(fileTypesKey);
 		}
 		/*
-		 *  Step 1
-		 *  Select the folder to import from.
+		 * Step 1 Select the folder to import from.
 		 */
 		String inputPath;
 		IJ.showStatus("Loading files for import.");
 		if ((inputPath = IJ.getDirectory("Characterisation files...")) == null)
 			return;
 		/*
-		 *  Step 2
-		 *  Show list of files to select from.
+		 * Step 2 Show list of files to select from.
 		 */
 		ArrayList<String> files;
-		if ((files = selectFiles(inputPath)) == null) return;
+		if ((files = selectFiles(inputPath)) == null)
+			return;
 		/*
-		 *  Step 3
-		 *  Import calibration or import individual SR-EELS measurements
-		 *  Show a dialog to amend the parameters
+		 * Step 3 Import calibration or import individual SR-EELS measurements
+		 * Show a dialog to amend the parameters
 		 */
 		if (importAsCalibration) {
 			/*
-			 * Step 3.1
-			 * Show a dialog to amend the parameters
+			 * Step 3.1 Show a dialog to amend the parameters
 			 */
 			ParameterSet parameters;
-			if ((parameters = getParameters(inputPath, true)) == null) return;
+			if ((parameters = getParameters(inputPath, true)) == null)
+				return;
 			/*
-			 *  Step 3.2
-			 *  Import files to the database.
+			 * Step 3.2 Import files to the database.
 			 */
-			if (parameters.date != null & parameters.SpecMag != null &
-				parameters.QSinK7 != null)
-			{
+			if (parameters.date != null & parameters.SpecMag != null & parameters.QSinK7 != null) {
 				saveFiles(inputPath, files, parameters);
 			}
-		}
-		else {
+		} else {
 
 			for (final String file : files) {
 				/*
-				 * Step 3.1
-				 * Show a dialog to amend the parameters
+				 * Step 3.1 Show a dialog to amend the parameters
 				 */
 				ParameterSet parameters;
 				if ((parameters = getParameters(inputPath + file, false)) == null)
 					return;
 				/*
-				 *  Step 3.2
-				 *  Import files to the database.
+				 * Step 3.2 Import files to the database.
 				 */
-				if (parameters.date != null & parameters.SpecMag != null &
-					parameters.QSinK7 != null & parameters.fileName != null)
-				{
+				if (parameters.date != null & parameters.SpecMag != null & parameters.QSinK7 != null
+						& parameters.fileName != null) {
 					saveFile(inputPath, file, parameters);
 				}
 			}
@@ -188,8 +175,7 @@ public class SR_EELS_ImportPlugin implements PlugIn {
 				shown[i] = true;
 				if (!list[i].contains("-exclude")) {
 					gd.addCheckbox(list[i], true);
-				}
-				else {
+				} else {
 					gd.addCheckbox(list[i], false);
 				}
 			}
@@ -200,8 +186,8 @@ public class SR_EELS_ImportPlugin implements PlugIn {
 			for (int i = 1; i < fileTypeToImport.length; i++) {
 				strBuilder.append(";" + fileTypeToImport[i]);
 			}
-			IJ.showMessage("Script aborted", "There are no files to import in\n" +
-				path + "\nSupported file types:\n" + strBuilder.toString());
+			IJ.showMessage("Script aborted",
+					"There are no files to import in\n" + path + "\nSupported file types:\n" + strBuilder.toString());
 			return null;
 		}
 		gd.addMessage("Options:");
@@ -225,26 +211,24 @@ public class SR_EELS_ImportPlugin implements PlugIn {
 	private boolean checkFileType(final String string) {
 		boolean isType = false;
 		for (final String type : fileTypeToImport) {
-			if (string.endsWith(type)) isType = true;
+			if (string.endsWith(type))
+				isType = true;
 		}
 		return isType;
 	}
 
-	private ParameterSet getParameters(final String path,
-		final boolean importCalibration)
-	{
+	private ParameterSet getParameters(final String path, final boolean importCalibration) {
 		final Pattern patternDate = Pattern.compile("(\\d{8})");
 		final Pattern patternSM = Pattern.compile("(?:SM|SpecMag)(\\d{2,3})");
-		final Pattern patternQSinK7 = Pattern.compile(
-			"QSinK7\\s?[\\s|=]\\s?(-?\\+?\\d{1,3})%?");
-		final Pattern patternQSinK7Alternative = Pattern.compile(
-			"(-?\\+?\\d{1,3})%?");
+		final Pattern patternQSinK7 = Pattern.compile("QSinK7\\s?[\\s|=]\\s?(-?\\+?\\d{1,3})%?");
+		final Pattern patternQSinK7Alternative = Pattern.compile("(-?\\+?\\d{1,3})%?");
 		final Pattern patternFileName = Pattern.compile("/([^/]+)\\..+$");
 		final ParameterSet parameters = new ParameterSet();
 		Matcher matcher = patternDate.matcher(path);
 		/*
 		 * The while loop is used to find the last match of the given RegExp.
-		 * Index 0 of the array is the complete match. All following indices reference the groups.
+		 * Index 0 of the array is the complete match. All following indices
+		 * reference the groups.
 		 */
 		while (matcher.find()) {
 			parameters.date = matcher.group();
@@ -276,8 +260,7 @@ public class SR_EELS_ImportPlugin implements PlugIn {
 		gd.addStringField("QSinK7:", parameters.QSinK7);
 		if (importCalibration) {
 			gd.addStringField("comment:", parameters.comment);
-		}
-		else {
+		} else {
 			gd.addStringField("file name:", parameters.fileName);
 			gd.addCheckbox("automatic import", automaticImport);
 		}
@@ -291,49 +274,52 @@ public class SR_EELS_ImportPlugin implements PlugIn {
 			parameters.QSinK7 = gd.getNextString();
 			if (importCalibration) {
 				parameters.comment = gd.getNextString();
-			}
-			else {
+			} else {
 				parameters.fileName = gd.getNextString();
 				automaticImport = gd.getNextBoolean();
 			}
 			/*
-			 * We replace space by underscore to easily recognize the complete comment.
-			 * This is useful when further processing is done.
+			 * We replace space by underscore to easily recognize the complete
+			 * comment. This is useful when further processing is done.
 			 */
 			parameters.comment = parameters.comment.replace(" ", "_");
 		}
 		return parameters;
 	}
 
-	private void saveFiles(final String inputPath, final ArrayList<String> files,
-		final ParameterSet parameters)
-	{
-		String output = databasePath + "SM" + parameters.SpecMag + "/" +
-			parameters.QSinK7 + "/" + parameters.date;
+	private void saveFiles(final String inputPath, final ArrayList<String> files, final ParameterSet parameters) {
+		String output = databasePath + "SM" + parameters.SpecMag + "/" + parameters.QSinK7 + "/" + parameters.date;
 		if (parameters.comment.length() > 0) {
 			output += " " + parameters.comment;
 		}
 		output += "/";
 		final File folder = new File(output);
 		if (folder.exists()) {
-			IJ.showMessage("Script aborted", "This data set already exists\n" + folder
-				.toString().replace(databasePath, ""));
+			IJ.showMessage("Script aborted",
+					"This data set already exists\n" + folder.toString().replace(databasePath, ""));
 			return;
 		}
 		folder.mkdirs();
 		for (int index = 0; index < files.size();) {
 			final ImagePlus imp = IJ.openImage(inputPath + files.get(index));
-			IJ.run(imp, "Rotate 90 Degrees Left", "");
+			String rotation = config.getString(rotateOnImport).toLowerCase();
+			if (rotation.equals("left")) {
+				rotation = "Left";
+			} else if (rotation.equals("right")) {
+				rotation = "Right";
+				IJ.run(imp, "Rotate 90 Degrees ", "");
+			} else if (!rotation.equals("") & !rotation.contains("no") & !rotation.equals("0")) {
+				String[] splitKey = rotateOnImport.split(".");
+				IJ.log(config.getString(rotateOnImport) + " is no valid value for " + splitKey[splitKey.length - 1]
+						+ ".");
+			}
 			IJ.save(imp, output + "Cal_" + pad(++index, 2) + ".tif");
 			imp.close();
 		}
 	}
 
-	private void saveFile(final String inputPath, final String file,
-		final ParameterSet parameters)
-	{
-		final String output = databasePath + "SM" + parameters.SpecMag + "/" +
-			parameters.QSinK7 + "/";
+	private void saveFile(final String inputPath, final String file, final ParameterSet parameters) {
+		final String output = databasePath + "SM" + parameters.SpecMag + "/" + parameters.QSinK7 + "/";
 		final File folder = new File(output);
 		folder.mkdirs();
 		if (new File(output + parameters.fileName + ".tif").exists()) {
@@ -349,8 +335,10 @@ public class SR_EELS_ImportPlugin implements PlugIn {
 	/**
 	 * Adding zeroes in front of the {@link Integer} to match the given length.
 	 *
-	 * @param number to convert.
-	 * @param length of the created {@link String}.
+	 * @param number
+	 *            to convert.
+	 * @param length
+	 *            of the created {@link String}.
 	 * @return a {@link String} that matches the given length.
 	 */
 	private String pad(final int number, final int length) {
@@ -361,6 +349,12 @@ public class SR_EELS_ImportPlugin implements PlugIn {
 	}
 
 	public static void main(final String[] args) {
+		System.out.println("Printing all used configuration keys:");
+		System.out.println(SR_EELS_ImportPlugin.databasePathKey);
+		System.out.println(SR_EELS_ImportPlugin.fileTypesKey);
+		System.out.println(SR_EELS_ImportPlugin.usedBefore);
+		System.out.println(SR_EELS_ImportPlugin.rotateOnImport);
+		System.out.println("");
 		EFTEMj_Debug.debug(SR_EELS_ImportPlugin.class);
 	}
 
