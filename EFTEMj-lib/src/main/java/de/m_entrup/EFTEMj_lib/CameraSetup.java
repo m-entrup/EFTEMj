@@ -28,41 +28,71 @@
 
 package de.m_entrup.EFTEMj_lib;
 
+import org.apache.commons.configuration.ConfigurationException;
+
 import ij.IJ;
-import ij.Prefs;
 
 /**
  * @author Michael Entrup b. Epping
  */
 public class CameraSetup {
 
+	// TODO Change implementation
+
+	private static String configKeyPrefix = "lib." + CameraSetup.class.getSimpleName() + ".";
+	public static String heightKey = configKeyPrefix + "height";
+	public static String widthKey = configKeyPrefix + "width";
+
 	/**
 	 * @return the height of the camera stored at the ImageJ preferences.
+	 * @throws ConfigurationException
 	 */
 	public static int getFullHeight() {
-		int height = (int) Prefs.get(PrefsKeys.cameraHeight.getValue(), -1);
-		if (height == -1) {
-			height = (int) IJ.getNumber(
-				"The height of the used camera is not saved. Please enter the height in Pixel:",
-				4096);
-			Prefs.set(PrefsKeys.cameraHeight.getValue(), height);
-			Prefs.savePreferences();
+		EFTEMj_Configuration config;
+		try {
+			config = EFTEMj_ConfigurationManager.getConfiguration();
+
+			int height = config.getInt(heightKey);
+			if (height <= 0) {
+				height = (int) IJ.getNumber(
+						"The height of the used camera is not saved. Please enter the height in Pixel:", 4096);
+				config.setProperty(heightKey, height);
+				config.save();
+			}
+			return height;
+		} catch (ConfigurationException e) {
+			e.printStackTrace();
 		}
-		return height;
+		return 1;
 	}
 
 	/**
 	 * @return the width of the camera stored at the ImageJ preferences.
+	 * @throws ConfigurationException
 	 */
 	public static int getFullWidth() {
-		int width = (int) Prefs.get(PrefsKeys.cameraWidth.getValue(), -1);
-		if (width == -1) {
-			width = (int) IJ.getNumber(
-				"The width of the used camera is not saved. Please enter the width in Pixel:",
-				4096);
-			Prefs.set(PrefsKeys.cameraWidth.getValue(), width);
-			Prefs.savePreferences();
+		EFTEMj_Configuration config;
+		try {
+			config = EFTEMj_ConfigurationManager.getConfiguration();
+			int width = config.getInt(widthKey);
+			if (width <= 0) {
+				width = (int) IJ
+						.getNumber("The width of the used camera is not saved. Please enter the width in Pixel:", 4096);
+				config.setProperty(widthKey, width);
+				config.save();
+			}
+			return width;
+		} catch (ConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		return width;
+		return 1;
+	}
+
+	public static void main(final String[] args) {
+		System.out.println("Printing all used configuration keys:");
+		System.out.println(CameraSetup.heightKey);
+		System.out.println(CameraSetup.widthKey);
+
 	}
 }

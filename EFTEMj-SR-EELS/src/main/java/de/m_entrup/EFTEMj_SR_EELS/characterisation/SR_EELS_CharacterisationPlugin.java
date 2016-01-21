@@ -8,13 +8,16 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 
-import de.m_entrup.EFTEMj_SR_EELS.shared.SR_EELS_PrefsKeys;
+import org.apache.commons.configuration.ConfigurationException;
+
+import de.m_entrup.EFTEMj_SR_EELS.importer.SR_EELS_ImportPlugin;
+import de.m_entrup.EFTEMj_SR_EELS.shared.SR_EELS_ConfigurationManager;
 import de.m_entrup.EFTEMj_lib.CameraSetup;
+import de.m_entrup.EFTEMj_lib.EFTEMj_Configuration;
 import de.m_entrup.EFTEMj_lib.EFTEMj_Debug;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
-import ij.Prefs;
 import ij.gui.GenericDialog;
 import ij.gui.Plot;
 import ij.gui.ProfilePlot;
@@ -29,47 +32,51 @@ import ij.process.ImageStatistics;
 
 public class SR_EELS_CharacterisationPlugin implements PlugIn {
 
+	private static String configKeyPrefix = "SR-EELS." + SR_EELS_ImportPlugin.class.getSimpleName() + ".";
+	public static String plotsAsStackKey = configKeyPrefix + "plotsAsStack";
+	private EFTEMj_Configuration config;
+
 	@Override
 	public void run(final String arg) {
 		try {
-			final SR_EELS_CharacterisationSettings settings =
-				new SR_EELS_CharacterisationSettings();
+			config = SR_EELS_ConfigurationManager.getConfiguration();
+		} catch (ConfigurationException e) {
+			IJ.error("Failed to load config.", e.toString());
+			return;
+		}
+		try {
+			final SR_EELS_CharacterisationSettings settings = new SR_EELS_CharacterisationSettings();
 
 			/*
-			 * Use the same folder as SR-EELS_ImportCharacterisation.js.
-			 * The user has to select a data set (sub-folder), but it is still possible to select any other folder.
+			 * Use the same folder as SR-EELS_ImportCharacterisation.js. The
+			 * user has to select a data set (sub-folder), but it is still
+			 * possible to select any other folder.
 			 */
-			settings.path = Prefs.get(SR_EELS_PrefsKeys.databasePath.getValue(),
-				null);
+			settings.path = config.getString(SR_EELS_ImportPlugin.databasePathKey);
 			if (settings.path == null) {
 				IJ.showMessage("Can't find database", "EFTMj can't find a database.");
 				return;
 			}
 			DirectoryChooser.setDefaultDirectory(settings.path);
-			final DirectoryChooser dc = new DirectoryChooser(
-				"Select folder for characterisation...");
+			final DirectoryChooser dc = new DirectoryChooser("Select folder for characterisation...");
 			settings.path = dc.getDirectory();
-			if (settings.path == null) return;
+			if (settings.path == null)
+				return;
 			settings.images = getImages(settings);
-			final SR_EELS_CharacterisationResults results =
-				new SR_EELS_CharacterisationResults();
+			final SR_EELS_CharacterisationResults results = new SR_EELS_CharacterisationResults();
 			results.settings = settings;
 			results.timeStart = new Date().getTime();
 			runCharacterisation(results);
 			plotResults(results);
 			saveResults(results);
 			results.timeStop = new Date().getTime();
-			IJ.showStatus("Finished in " + Math.round((results.timeStop -
-				results.timeStart) / 1000) + " seconds!");
-		}
-		catch (final InternalError e) {
+			IJ.showStatus("Finished in " + Math.round((results.timeStop - results.timeStart) / 1000) + " seconds!");
+		} catch (final InternalError e) {
 			IJ.showMessage("Script aborted", e.getMessage());
 		}
 	}
 
-	private ArrayList<String> getImages(
-		final SR_EELS_CharacterisationSettings settings)
-	{
+	private ArrayList<String> getImages(final SR_EELS_CharacterisationSettings settings) {
 		ArrayList<String> images = new ArrayList<String>();
 		final File folder = new File(settings.path);
 		final String[] fileList = folder.list();
@@ -77,9 +84,8 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 		return images;
 	}
 
-	private ArrayList<String> getFilteredImages(
-		final SR_EELS_CharacterisationSettings settings, final String[] fileList)
-	{
+	private ArrayList<String> getFilteredImages(final SR_EELS_CharacterisationSettings settings,
+			final String[] fileList) {
 		final ArrayList<String> filteredList = new ArrayList<String>();
 		Arrays.sort(fileList);
 		final GenericDialog gd = new GenericDialog("Select files");
@@ -89,15 +95,13 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 				counter++;
 				if (fileList[i].endsWith(".tif") & !fileList[i].contains("-exclude")) {
 					gd.addCheckbox(fileList[i], true);
-				}
-				else {
+				} else {
 					gd.addCheckbox(fileList[i], false);
 				}
 			}
 		}
 		if (counter < 1) {
-			throw new InternalError("There are no files to load in\n" +
-				settings.path);
+			throw new InternalError("There are no files to load in\n" + settings.path);
 		}
 		gd.showDialog();
 		if (gd.wasCanceled()) {
@@ -111,36 +115,27 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 		return filteredList;
 	}
 
-	private void runCharacterisation(
-		final SR_EELS_CharacterisationResults results)
-	{
+	private void runCharacterisation(final SR_EELS_CharacterisationResults results) {
 		final SR_EELS_CharacterisationSettings settings = results.settings;
 		final ArrayList<String> images = settings.images;
 		for (int i = 0; i < images.size(); i++) {
 			final String imageName = settings.images.get(i);
 			results.subResults.put(imageName, new SR_EELS_CharacterisationResult());
-			final SR_EELS_CharacterisationResult result = results.subResults.get(
-				imageName);
-			final SR_EELS_ImageObject image = new SR_EELS_ImageObject(imageName,
-				settings);
+			final SR_EELS_CharacterisationResult result = results.subResults.get(imageName);
+			final SR_EELS_ImageObject image = new SR_EELS_ImageObject(imageName, settings);
 			final ImagePlus imp = image.imp;
 			result.imp.put(imageName, imp);
 			result.width = imp.getWidth();
 			result.height = imp.getHeight();
-			/*
-			 * During import the images had been rotated.
-			 * Therefore the width of the image has to refer to the height of the camera and vice versa.
-			 */
 			result.binX = CameraSetup.getFullHeight() / result.width;
 			result.binY = CameraSetup.getFullWidth() / result.height;
 			int yPos = settings.energyBorderLow;
 			int xOffset = 0;
 			int roiWidth = image.width;
-//			mean = new Array();
+			// mean = new Array();
 			while (yPos < image.height - settings.energyBorderHigh) {
 				imp.setRoi(new Rectangle(xOffset, yPos, roiWidth, settings.stepSize));
-				SR_EELS_SubImageObject subImage = new SR_EELS_SubImageObject(
-					new Duplicator().run(imp));
+				SR_EELS_SubImageObject subImage = new SR_EELS_SubImageObject(new Duplicator().run(imp));
 				final ProfilePlot profile = new ProfilePlot(subImage.imp);
 				final double[] xValues = new double[profile.getProfile().length];
 				for (int p = 0; p < profile.getProfile().length; p++) {
@@ -150,10 +145,8 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 				fit.doFit(CurveFitter.GAUSSIAN);
 				final double gaussCentre = fit.getParams()[2];
 				final double gaussSigma = fit.getParams()[3];
-				final double gaussSigmaWeighted = settings.sigmaWeight * gaussSigma /
-					Math.pow(fit.getRSquared(), 2);
-				xOffset = (int) Math.max(xOffset + Math.round(gaussCentre -
-					gaussSigmaWeighted), 0);
+				final double gaussSigmaWeighted = settings.sigmaWeight * gaussSigma / Math.pow(fit.getRSquared(), 2);
+				xOffset = (int) Math.max(xOffset + Math.round(gaussCentre - gaussSigmaWeighted), 0);
 				roiWidth = (int) Math.round(2 * gaussSigmaWeighted);
 				imp.setRoi(new Rectangle(xOffset, yPos, roiWidth, settings.stepSize));
 				subImage = new SR_EELS_SubImageObject(new Duplicator().run(imp));
@@ -166,32 +159,28 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 		}
 	}
 
-	private SR_EELS_CharacterisationSubResults runCharacterisationSub(
-		final SR_EELS_SubImageObject subImage, final boolean useThresholding)
-	{
+	private SR_EELS_CharacterisationSubResults runCharacterisationSub(final SR_EELS_SubImageObject subImage,
+			final boolean useThresholding) {
 		final ImagePlus subImp = subImage.imp;
-		final SR_EELS_CharacterisationSubResults subResult =
-			new SR_EELS_CharacterisationSubResults();
+		final SR_EELS_CharacterisationSubResults subResult = new SR_EELS_CharacterisationSubResults();
 		if (useThresholding == true) {
 			IJ.setAutoThreshold(subImp, subImage.threshold + " dark");
 			IJ.run(subImp, "NaN Background", "");
-			final int measurements = Measurements.MEAN +
-				Measurements.INTEGRATED_DENSITY + Measurements.CENTER_OF_MASS;
-			final ImageStatistics statistic = ImageStatistics.getStatistics(subImp
-				.getProcessor(), measurements, null);
-//			double mean = statistic.mean;
+			final int measurements = Measurements.MEAN + Measurements.INTEGRATED_DENSITY + Measurements.CENTER_OF_MASS;
+			final ImageStatistics statistic = ImageStatistics.getStatistics(subImp.getProcessor(), measurements, null);
+			// double mean = statistic.mean;
 			final double specWidth = statistic.area / subImp.getHeight();
 			final double xm = statistic.xCenterOfMass;
 			final double ym = statistic.yCenterOfMass;
 			IJ.run(subImp, "Macro...", "code=[if(isNaN(v)) v=-10000;]");
 			IJ.run(subImp, "Find Edges", "");
-			subImp.setRoi(new Rectangle((int) Math.max(xm - specWidth, 0), 0,
-				(int) (xm - Math.max(xm - specWidth, 0)), subImp.getHeight()));
+			subImp.setRoi(new Rectangle((int) Math.max(xm - specWidth, 0), 0, (int) (xm - Math.max(xm - specWidth, 0)),
+					subImp.getHeight()));
 			IJ.run(subImp, "Find Maxima...", "output=[Point Selection] exclude");
 			Rectangle roi = subImp.getRoi().getBounds();
 			final int xLeft = roi.x;
-			subImp.setRoi(new Rectangle((int) xm, 0, subImp.getWidth() - (int) Math
-				.max(xm - specWidth, 0), subImp.getHeight()));
+			subImp.setRoi(new Rectangle((int) xm, 0, subImp.getWidth() - (int) Math.max(xm - specWidth, 0),
+					subImp.getHeight()));
 			IJ.run(subImp, "Find Maxima...", "output=[Point Selection] exclude");
 			roi = subImp.getRoi().getBounds();
 			final int xRight = roi.x + roi.width;
@@ -205,12 +194,11 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 			subResult.rightError = 0;
 			subResult.width = xRight - xLeft;
 			subResult.widthError = 0;
-		}
-		else {
+		} else {
 			final int stepSize = subImp.getHeight();
 			IJ.run(subImp, "Bin...", "x=1 y=" + subImp.getHeight() + " bin=Average");
-			final ImageStatistics statistic = ImageStatistics.getStatistics(subImp
-				.getProcessor(), Measurements.MEAN + Measurements.STD_DEV, null);
+			final ImageStatistics statistic = ImageStatistics.getStatistics(subImp.getProcessor(),
+					Measurements.MEAN + Measurements.STD_DEV, null);
 			final double limit = statistic.mean; // statistic.stdDev
 			int left = 0;
 			int right = subImp.getWidth();
@@ -221,8 +209,7 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 						left = i;
 						searchLeft = false;
 					}
-				}
-				else {
+				} else {
 					if (subImp.getProcessor().getf(i, 0) < limit) {
 						right = i;
 						break;
@@ -248,8 +235,7 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 		final ArrayList<String> images = results.settings.images;
 		ImageStack stack = null;
 		for (int i = 0; i < images.size(); i++) {
-			final SR_EELS_CharacterisationResult result = results.subResults.get(
-				images.get(i));
+			final SR_EELS_CharacterisationResult result = results.subResults.get(images.get(i));
 			final double[] xValues = new double[result.size()];
 			final double[] yValues = new double[result.size()];
 			final double[] leftValues = new double[result.size()];
@@ -264,18 +250,17 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 				widthValues[j] = result.get(j).width;
 				limit[j] = result.get(j).limit;
 			}
-			final Plot plot = new Plot("Spec of " + images.get(i) + " (" +
-				results.settings.useThresholding + ")", "position x", "position y",
-				xValues, yValues);
+			final Plot plot = new Plot("Spec of " + images.get(i) + " (" + results.settings.useThresholding + ")",
+					"position x", "position y", xValues, yValues);
 			plot.add("", xValues, leftValues);
 			plot.add("", xValues, rightValues);
-			if (!results.settings.useThresholding) plot.add("CROSS", xValues, limit);
+			if (!results.settings.useThresholding)
+				plot.add("CROSS", xValues, limit);
 			plot.setColor(java.awt.Color.RED);
 			plot.add("", xValues, widthValues);
 			plot.setLimits(0, result.height - 1, 0, result.width - 1);
 			if (stack == null) {
-				stack = new ImageStack(plot.getProcessor().getWidth(), plot
-					.getProcessor().getHeight());
+				stack = new ImageStack(plot.getProcessor().getWidth(), plot.getProcessor().getHeight());
 			}
 			stack.addSlice(results.settings.images.get(i), plot.getProcessor(), i);
 			result.leftFit = new CurveFitter(xValues, leftValues);
@@ -297,8 +282,7 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 		int height = 0;
 		final ArrayList<FloatProcessor> fps = new ArrayList<FloatProcessor>();
 		for (int i = 0; i < images.size(); i++) {
-			final SR_EELS_CharacterisationResult result = results.subResults.get(
-				images.get(i));
+			final SR_EELS_CharacterisationResult result = results.subResults.get(images.get(i));
 			final ImagePlus jpegImp = result.imp.get(images.get(i));
 			IJ.run(jpegImp, "Select None", "");
 			IJ.run(jpegImp, "Log", "");
@@ -312,7 +296,8 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 				IJ.run(jpeg, "Bin...", "x=2 y=2 bin=Average");
 				binJPEG *= 2;
 			}
-			if (height == 0) height = result.size();
+			if (height == 0)
+				height = result.size();
 			final FloatProcessor fp = new FloatProcessor(width, height);
 			for (int j = 0; j < result.size(); j++) {
 				final float y = (float) result.get(j).y;
@@ -358,13 +343,14 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 		final ImagePlus imp = new ImagePlus("Characterisation results", stack);
 		IJ.save(imp, path + "results.tif");
 		IJ.run(results.plots, "8-bit Color", "number=16");
-		if (Prefs.get(SR_EELS_PrefsKeys.plotsAsTif.getValue(), false)) {
+		if (config.getBoolean(plotsAsStackKey)) {
 			IJ.save(results.plots, path + "plots.tif");
 		}
 		IJ.saveAs(results.plots, "Gif", path + "plots.gif");
 	}
 
 	public static void main(final String[] args) {
+		System.out.println(SR_EELS_CharacterisationPlugin.plotsAsStackKey);
 		EFTEMj_Debug.debug(SR_EELS_CharacterisationPlugin.class);
 	}
 
@@ -387,8 +373,7 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 			final StringBuffer str = new StringBuffer();
 			if (useThresholding) {
 				str.append(threshold);
-			}
-			else {
+			} else {
 				str.append("Limit");
 			}
 			str.append(",");
@@ -419,9 +404,7 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 	}
 
 	@SuppressWarnings("serial")
-	private class SR_EELS_CharacterisationResult extends
-		ArrayList<SR_EELS_CharacterisationSubResults>
-	{
+	private class SR_EELS_CharacterisationResult extends ArrayList<SR_EELS_CharacterisationSubResults> {
 
 		public HashMap<String, ImagePlus> imp;
 		public CurveFitter leftFit;
@@ -464,8 +447,8 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 		double left;
 		double leftError;
 		/**
-		 * This is the the right one of the detected borders (The lower one of the
-		 * saved data sets).
+		 * This is the the right one of the detected borders (The lower one of
+		 * the saved data sets).
 		 */
 		double right;
 		double rightError;
@@ -476,8 +459,9 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 		double width;
 		double widthError;
 		/**
-		 * Only when not performing thresholding this value is used. The value of a
-		 * pixel is considered as signal and not noise, when the limit to exceeded.
+		 * Only when not performing thresholding this value is used. The value
+		 * of a pixel is considered as signal and not noise, when the limit to
+		 * exceeded.
 		 */
 		double limit;
 	}
@@ -497,9 +481,7 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 		int width;
 		int height;
 
-		public SR_EELS_ImageObject(final String imageName,
-			final SR_EELS_CharacterisationSettings settings)
-		{
+		public SR_EELS_ImageObject(final String imageName, final SR_EELS_CharacterisationSettings settings) {
 			final double filterRadius = settings.filterRadius;
 			this.path = settings.path + imageName;
 			this.imp = IJ.openImage(this.path);
@@ -508,10 +490,10 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 			this.width = this.imp.getWidth();
 			this.height = this.imp.getHeight();
 			final double threshold = 2 * this.imp.getStatistics().stdDev;
-			IJ.run(this.imp, "Remove Outliers...", "radius=" + filterRadius +
-				" threshold=" + threshold + " which=Bright");
-			IJ.run(this.imp, "Remove Outliers...", "radius=" + filterRadius +
-				" threshold=" + threshold + " which=Dark");
+			IJ.run(this.imp, "Remove Outliers...",
+					"radius=" + filterRadius + " threshold=" + threshold + " which=Bright");
+			IJ.run(this.imp, "Remove Outliers...",
+					"radius=" + filterRadius + " threshold=" + threshold + " which=Dark");
 			IJ.run(this.imp, "Median...", "radius=" + filterRadius);
 		}
 	}
@@ -525,8 +507,7 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 
 		public SR_EELS_SubImageObject(final ImagePlus imp) {
 			this.imp = imp;
-			this.imp.setRoi(new Rectangle(0, 0, this.imp.getWidth(), this.imp
-				.getHeight()));
+			this.imp.setRoi(new Rectangle(0, 0, this.imp.getWidth(), this.imp.getHeight()));
 		}
 	}
 }

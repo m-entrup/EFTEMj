@@ -75,8 +75,8 @@ public class SR_EELS_ImportPlugin implements PlugIn {
 	private static String configKeyPrefix = "SR-EELS." + SR_EELS_ImportPlugin.class.getSimpleName() + ".";
 	public static String databasePathKey = configKeyPrefix + "databasePath";
 	public static String fileTypesKey = configKeyPrefix + "fileTypeToImport";
-	private static String usedBefore = configKeyPrefix + "usedBefore";
-	public static String rotateOnImport = configKeyPrefix + "rotateOnImport";
+	private static String usedBeforeKey = configKeyPrefix + "usedBefore";
+	public static String rotateOnImportKey = configKeyPrefix + "rotateOnImport";
 
 	@Override
 	public void run(final String arg) {
@@ -95,11 +95,11 @@ public class SR_EELS_ImportPlugin implements PlugIn {
 		if (!databasePath.endsWith("/") & !databasePath.endsWith("\\")) {
 			databasePath += File.separator;
 		}
-		boolean firstUse = !config.getBoolean(usedBefore);
+		boolean firstUse = !config.getBoolean(usedBeforeKey);
 		if (firstUse) {
 			IJ.showMessage("Your first import...", "Select a folder that contains the files you want to import.");
 			// ToDo Add a better documentation.
-			config.setProperty(usedBefore, true);
+			config.setProperty(usedBeforeKey, true);
 			config.save();
 		}
 		/*
@@ -222,7 +222,6 @@ public class SR_EELS_ImportPlugin implements PlugIn {
 		final Pattern patternSM = Pattern.compile("(?:SM|SpecMag)(\\d{2,3})");
 		final Pattern patternQSinK7 = Pattern.compile("QSinK7\\s?[\\s|=]\\s?(-?\\+?\\d{1,3})%?");
 		final Pattern patternQSinK7Alternative = Pattern.compile("(-?\\+?\\d{1,3})%?");
-		final Pattern patternFileName = Pattern.compile("/([^/]+)\\..+$");
 		final ParameterSet parameters = new ParameterSet();
 		Matcher matcher = patternDate.matcher(path);
 		/*
@@ -248,20 +247,16 @@ public class SR_EELS_ImportPlugin implements PlugIn {
 			}
 		}
 		if (importAsCalibration == false) {
-			matcher = patternFileName.matcher(path);
-			while (matcher.find()) {
-				parameters.fileName = matcher.group(1);
-			}
-			parameters.fileName = parameters.date + "_" + parameters.fileName;
+			parameters.fileName = parameters.date + "_" + new File(path).getName().replaceFirst("\\.\\w+$", "");
 		}
 		final GenericDialog gd = new GenericDialog("Set parameters");
-		gd.addStringField("date:", parameters.date);
-		gd.addStringField("SpecMag:", parameters.SpecMag);
-		gd.addStringField("QSinK7:", parameters.QSinK7);
+		gd.addStringField("date:", parameters.date, 8);
+		gd.addStringField("SpecMag:", parameters.SpecMag, 8);
+		gd.addStringField("QSinK7:", parameters.QSinK7, 8);
 		if (importCalibration) {
-			gd.addStringField("comment:", parameters.comment);
+			gd.addStringField("comment:", parameters.comment, 24);
 		} else {
-			gd.addStringField("file name:", parameters.fileName);
+			gd.addStringField("file name:", parameters.fileName, parameters.fileName.length() + 8);
 			gd.addCheckbox("automatic import", automaticImport);
 		}
 		if (automaticImport == false | importAsCalibration == true) {
@@ -302,16 +297,11 @@ public class SR_EELS_ImportPlugin implements PlugIn {
 		folder.mkdirs();
 		for (int index = 0; index < files.size();) {
 			final ImagePlus imp = IJ.openImage(inputPath + files.get(index));
-			String rotation = config.getString(rotateOnImport).toLowerCase();
+			String rotation = config.getString(rotateOnImportKey).toLowerCase();
 			if (rotation.equals("left")) {
-				rotation = "Left";
+				IJ.run(imp, "Rotate 90 Degrees Left", "");
 			} else if (rotation.equals("right")) {
-				rotation = "Right";
-				IJ.run(imp, "Rotate 90 Degrees ", "");
-			} else if (!rotation.equals("") & !rotation.contains("no") & !rotation.equals("0")) {
-				String[] splitKey = rotateOnImport.split(".");
-				IJ.log(config.getString(rotateOnImport) + " is no valid value for " + splitKey[splitKey.length - 1]
-						+ ".");
+				IJ.run(imp, "Rotate 90 Degrees Right", "");
 			}
 			IJ.save(imp, output + "Cal_" + pad(++index, 2) + ".tif");
 			imp.close();
@@ -352,8 +342,8 @@ public class SR_EELS_ImportPlugin implements PlugIn {
 		System.out.println("Printing all used configuration keys:");
 		System.out.println(SR_EELS_ImportPlugin.databasePathKey);
 		System.out.println(SR_EELS_ImportPlugin.fileTypesKey);
-		System.out.println(SR_EELS_ImportPlugin.usedBefore);
-		System.out.println(SR_EELS_ImportPlugin.rotateOnImport);
+		System.out.println(SR_EELS_ImportPlugin.usedBeforeKey);
+		System.out.println(SR_EELS_ImportPlugin.rotateOnImportKey);
 		System.out.println("");
 		EFTEMj_Debug.debug(SR_EELS_ImportPlugin.class);
 	}

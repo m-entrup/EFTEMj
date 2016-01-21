@@ -33,6 +33,7 @@ import java.util.Arrays;
 
 import org.apache.commons.configuration.ConfigurationException;
 
+import de.m_entrup.EFTEMj_SR_EELS.characterisation.SR_EELS_CharacterisationPlugin;
 import de.m_entrup.EFTEMj_SR_EELS.importer.SR_EELS_ImportPlugin;
 import de.m_entrup.EFTEMj_lib.EFTEMj_Configuration;
 import de.m_entrup.EFTEMj_lib.EFTEMj_Debug;
@@ -60,11 +61,13 @@ public class SR_EELS_SetupPlugin implements PlugIn {
 		defaultFontSize = gd.getFont().getSize();
 		largerFontSize = (int) Math.round(1.2 * defaultFontSize);
 		addImportSection(gd);
+		addCharacterisationSection(gd);
 
 		gd.showDialog();
 		if (gd.wasCanceled())
 			return;
 		saveImportSection(gd);
+		saveCharacterisationSection(gd);
 	}
 
 	private void addImportSection(GenericDialogPlus gd) {
@@ -81,7 +84,7 @@ public class SR_EELS_SetupPlugin implements PlugIn {
 		gd.addStringField("", fileTypesToImport, 25);
 		gd.addMessage("Rotate on import");
 		String[] rotationArray = { "no", "Left", "Right" };
-		gd.addChoice("", rotationArray, config.getString(SR_EELS_ImportPlugin.rotateOnImport));
+		gd.addChoice("", rotationArray, config.getString(SR_EELS_ImportPlugin.rotateOnImportKey));
 	}
 
 	private void saveImportSection(GenericDialogPlus gd) {
@@ -91,7 +94,20 @@ public class SR_EELS_SetupPlugin implements PlugIn {
 
 		config.setProperty(SR_EELS_ImportPlugin.databasePathKey, databasePath);
 		config.setProperty(SR_EELS_ImportPlugin.fileTypesKey, fileTypesToImport.split(";"));
-		config.setProperty(SR_EELS_ImportPlugin.rotateOnImport, rotateOnImport);
+		config.setProperty(SR_EELS_ImportPlugin.rotateOnImportKey, rotateOnImport);
+		config.save();
+	}
+
+	private void addCharacterisationSection(GenericDialogPlus gd) {
+		gd.addMessage("SR-EELS characterisation:", new Font(defaultFontName, Font.BOLD, largerFontSize));
+
+		gd.addCheckbox("Save plots as stack (.tif)", config.getBoolean(SR_EELS_CharacterisationPlugin.plotsAsStackKey));
+	}
+
+	private void saveCharacterisationSection(GenericDialogPlus gd) {
+		boolean plotsAsStack = gd.getNextBoolean();
+
+		config.setProperty(SR_EELS_CharacterisationPlugin.plotsAsStackKey, plotsAsStack);
 		config.save();
 	}
 
