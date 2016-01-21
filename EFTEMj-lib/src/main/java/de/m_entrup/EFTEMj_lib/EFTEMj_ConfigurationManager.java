@@ -28,6 +28,7 @@
 package de.m_entrup.EFTEMj_lib;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Iterator;
 
 import org.apache.commons.configuration.CompositeConfiguration;
@@ -46,7 +47,7 @@ public class EFTEMj_ConfigurationManager {
 
 	private static EFTEMj_Configuration config = null;
 	public static String userConfigPath = System.getProperty("user.home") + "/" + "EFTEMj_config.xml";
-	private static String defaultConfigName = "default.properties";
+	private static String defaultConfigName = "/EFTEMj-lib.properties";
 
 	public static void main(final String[] args) {
 		try {
@@ -68,7 +69,14 @@ public class EFTEMj_ConfigurationManager {
 			return config;
 		config = new EFTEMj_Configuration();
 		config.addConfiguration(getUserConfiguration());
-		config.addConfiguration(new PropertiesConfiguration(defaultConfigName));
+		PropertiesConfiguration defaultConfig = new PropertiesConfiguration();
+		InputStream is = config.getClass().getResourceAsStream(defaultConfigName);
+		defaultConfig.load(is);
+		/*
+		 * Iterator<String> iter = defaultConfig.getKeys(); while
+		 * (iter.hasNext()) { IJ.log(iter.next()); }
+		 */
+		config.addConfiguration(defaultConfig);
 		return config;
 	}
 

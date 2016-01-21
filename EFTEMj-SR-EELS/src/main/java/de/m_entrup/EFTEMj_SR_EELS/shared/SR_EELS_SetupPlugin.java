@@ -77,7 +77,7 @@ public class SR_EELS_SetupPlugin implements PlugIn {
 		fileTypesToImport = fileTypesToImport.replaceAll("\\[", "");
 		fileTypesToImport = fileTypesToImport.replaceAll("\\]", "");
 		fileTypesToImport = fileTypesToImport.replaceAll(",", ";");
-		gd.addMessage("File types to import (separate differnt file type by a ;)");
+		gd.addMessage("File types to import (separate different file types by a ;)");
 		gd.addStringField("", fileTypesToImport, 25);
 		gd.addMessage("Rotate on import");
 		String[] rotationArray = { "no", "Left", "Right" };

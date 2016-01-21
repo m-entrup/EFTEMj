@@ -28,6 +28,8 @@
 
 package de.m_entrup.EFTEMj_SR_EELS.shared;
 
+import java.io.InputStream;
+
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 
@@ -36,7 +38,7 @@ import de.m_entrup.EFTEMj_lib.EFTEMj_ConfigurationManager;
 
 public class SR_EELS_ConfigurationManager {
 
-	private static String defaultConfigName = "default.properties";
+	private static String defaultConfigName = "/EFTEMj-SR-EELS.properties";
 
 	private static EFTEMj_Configuration config;
 
@@ -44,7 +46,14 @@ public class SR_EELS_ConfigurationManager {
 		if (config != null)
 			return config;
 		config = EFTEMj_ConfigurationManager.getConfiguration();
-		config.addConfiguration(new PropertiesConfiguration(defaultConfigName));
+		PropertiesConfiguration defaultConfig = new PropertiesConfiguration();
+		InputStream is = config.getClass().getResourceAsStream(defaultConfigName);
+		defaultConfig.load(is);
+		/*
+		 * Iterator<String> iter = defaultConfig.getKeys(); while
+		 * (iter.hasNext()) { IJ.log(iter.next()); }
+		 */
+		config.addConfiguration(defaultConfig);
 		return config;
 	}
 
