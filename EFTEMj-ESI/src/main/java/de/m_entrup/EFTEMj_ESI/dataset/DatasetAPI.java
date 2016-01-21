@@ -1,3 +1,29 @@
+/**
+ * EFTEMj - Processing of Energy Filtering TEM images with ImageJ
+ *
+ * Copyright (c) 2015, Michael Entrup b. Epping
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
 package de.m_entrup.EFTEMj_ESI.dataset;
 
@@ -27,13 +53,14 @@ public class DatasetAPI {
 	 */
 	private DatasetDriftInput datasetDriftInput;
 	/**
-	 * The result of the crosscorrelation. Only this part of the drift correction
-	 * has parallel threads that save their results using the {@link DatasetAPI}.
+	 * The result of the crosscorrelation. Only this part of the drift
+	 * correction has parallel threads that save their results using the
+	 * {@link DatasetAPI}.
 	 */
 	private DatasetDriftResult datasetDriftResult;
 	/**
-	 * {@link DatasetMapInput} gives access to all data that you need to start the
-	 * elemental-map calculation.
+	 * {@link DatasetMapInput} gives access to all data that you need to start
+	 * the elemental-map calculation.
 	 */
 	private DatasetMapInput datasetMapInput;
 	/**
@@ -57,11 +84,13 @@ public class DatasetAPI {
 	private final ImagePlus imagePlus;
 
 	/**
-	 * Creates a new {@link DatasetAPI} object that will handle the access to all
-	 * data of the given {@link ImagePlus} object. Additionally it will be used to
-	 * store results of calculations and give access to the stored values.
+	 * Creates a new {@link DatasetAPI} object that will handle the access to
+	 * all data of the given {@link ImagePlus} object. Additionally it will be
+	 * used to store results of calculations and give access to the stored
+	 * values.
 	 *
-	 * @param imagePlus The {@link ImagePlus} that is used for calculations.
+	 * @param imagePlus
+	 *            The {@link ImagePlus} that is used for calculations.
 	 */
 	public DatasetAPI(final ImagePlus imagePlus) {
 		super();
@@ -76,15 +105,15 @@ public class DatasetAPI {
 	 * {@link DatasetDriftResult}. This is only done if the distance between the
 	 * ROI and the image bounds is larger than the parameter delta.
 	 *
-	 * @param delta The largest investigated drift.
-	 * @param referenceIndex The index (starting @ 1) of the image (slice) that is
-	 *          used as reference for the drift correction.
+	 * @param delta
+	 *            The largest investigated drift.
+	 * @param referenceIndex
+	 *            The index (starting @ 1) of the image (slice) that is used as
+	 *            reference for the drift correction.
 	 * @return <code>true</code> if delta is ok and the drift correction can be
 	 *         done, <code>false</code> if delta is to large.
 	 */
-	public boolean createDatasetDriftInput(final int delta,
-		final int referenceIndex)
-	{
+	public boolean createDatasetDriftInput(final int delta, final int referenceIndex) {
 		// The Rectangle is cloned to prevent changes by the user. It may be
 		// possible to change the ROI of the original image during the
 		// calculation.
@@ -92,17 +121,14 @@ public class DatasetAPI {
 		if (roi.getX() - delta < 0 | roi.getY() - delta < 0) {
 			return false;
 		}
-		if (roi.getX() + roi.getWidth() + delta > this.getWidth() | roi.getY() + roi
-			.getHeight() + delta > this.getHeight())
-		{
+		if (roi.getX() + roi.getWidth() + delta > this.getWidth()
+				| roi.getY() + roi.getHeight() + delta > this.getHeight()) {
 			return false;
 		}
-		final FloatProcessor[] array_croppedImages = new FloatProcessor[this
-			.getStackSize()];
+		final FloatProcessor[] array_croppedImages = new FloatProcessor[this.getStackSize()];
 		for (int i = 0; i < this.getStackSize(); i++) {
 			if (i != referenceIndex - 1) {
-				final FloatProcessor fp = (FloatProcessor) datasetStack.imageStack
-					.getProcessor(i + 1);
+				final FloatProcessor fp = (FloatProcessor) datasetStack.imageStack.getProcessor(i + 1);
 				fp.setRoi(roi);
 				array_croppedImages[i] = (FloatProcessor) fp.crop();
 			}
@@ -111,14 +137,11 @@ public class DatasetAPI {
 		// be corrected. The size of the new rectangle is increased by delta in
 		// all directions.
 		final Rectangle roiMod = (Rectangle) roi.clone();
-		roiMod.setBounds(roiMod.x - delta, roiMod.y - delta, roiMod.width + 2 *
-			delta, roiMod.height + 2 * delta);
-		final FloatProcessor fp = (FloatProcessor) datasetStack.imageStack
-			.getProcessor(referenceIndex);
+		roiMod.setBounds(roiMod.x - delta, roiMod.y - delta, roiMod.width + 2 * delta, roiMod.height + 2 * delta);
+		final FloatProcessor fp = (FloatProcessor) datasetStack.imageStack.getProcessor(referenceIndex);
 		fp.setRoi(roiMod);
 		array_croppedImages[referenceIndex - 1] = (FloatProcessor) fp.crop();
-		datasetDriftInput = new DatasetDriftInput(array_croppedImages, roi,
-			referenceIndex, delta);
+		datasetDriftInput = new DatasetDriftInput(array_croppedImages, roi, referenceIndex, delta);
 		datasetDriftResult = new DatasetDriftResult();
 		return true;
 	}
@@ -128,27 +151,26 @@ public class DatasetAPI {
 	 * array of {@link EFTEMImage}s. Additionally edgeELoss, epsilon and rLimit
 	 * are passed to {@link DatasetMapInput}.
 	 *
-	 * @param edgeEnergyLoss The energy loss where the element signal starts.
-	 * @param epsilon The exit condition for the MLE calculation.
-	 * @throws Exception when creating new instances of {@link DatasetMapInput}
-	 *           and {@link DatasetMapResult} fails.
+	 * @param edgeEnergyLoss
+	 *            The energy loss where the element signal starts.
+	 * @param epsilon
+	 *            The exit condition for the MLE calculation.
+	 * @throws Exception
+	 *             when creating new instances of {@link DatasetMapInput} and
+	 *             {@link DatasetMapResult} fails.
 	 */
-	public void createDatasetMapInput(final float edgeEnergyLoss,
-		final float epsilon) throws Exception
-	{
+	public void createDatasetMapInput(final float edgeEnergyLoss, final float epsilon) throws Exception {
 		final EFTEMImage[] array_EFTEMImages = new EFTEMImage[getStackSize()];
 		for (int i = 0; i < getStackSize(); i++) {
 			array_EFTEMImages[i] = new EFTEMImage(datasetStack.eLossArray[i],
-				datasetStack.imageStack.getShortSliceLabel(i + 1),
-				(float[]) datasetStack.imageStack.getPixels(i + 1), getWidth());
+					datasetStack.imageStack.getShortSliceLabel(i + 1),
+					(float[]) datasetStack.imageStack.getPixels(i + 1), getWidth());
 		}
 		Arrays.sort(array_EFTEMImages);
 		try {
-			datasetMapInput = new DatasetMapInput(array_EFTEMImages, edgeEnergyLoss,
-				epsilon);
+			datasetMapInput = new DatasetMapInput(array_EFTEMImages, edgeEnergyLoss, epsilon);
 			datasetMapResult = new DatasetMapResult();
-		}
-		catch (final Exception e) {
+		} catch (final Exception e) {
 			datasetMapInput = null;
 			datasetMapResult = null;
 			throw e;
@@ -176,13 +198,14 @@ public class DatasetAPI {
 	/**
 	 * Tries to find an edge in the given energy loss interval.
 	 *
-	 * @param eLossLow The lower limit of the interval.
-	 * @param eLossHigh The upper limit of the interval.
+	 * @param eLossLow
+	 *            The lower limit of the interval.
+	 * @param eLossHigh
+	 *            The upper limit of the interval.
 	 * @return <code>true</code> if an edge was found.
 	 */
 	private boolean findEdge(final float eLossLow, final float eLossHigh) {
-		final LinkedHashMap<Integer, String> edges = IonisationEdges.getInstance()
-			.getEdges();
+		final LinkedHashMap<Integer, String> edges = IonisationEdges.getInstance().getEdges();
 		final int[] possibleEdges = new int[edges.size()];
 		int edgeCount = 0;
 		for (int i = (int) Math.ceil(eLossLow); i < eLossHigh; i++) {
@@ -233,8 +256,9 @@ public class DatasetAPI {
 	/**
 	 * {@link DatasetMapInput}
 	 *
-	 * @param imageIndex The position of the image at the array of all background
-	 *          images (starting at 0).
+	 * @param imageIndex
+	 *            The position of the image at the array of all background
+	 *            images (starting at 0).
 	 * @return The pixel values of the selected image.
 	 */
 	public float[] getBackgroundPixels(final int imageIndex) {
@@ -281,9 +305,9 @@ public class DatasetAPI {
 	/**
 	 * {@link DatasetDriftResult}
 	 *
-	 * @return An array of {@link FloatProcessor}s, each of them containing a map
-	 *         of crosscorrelation coefficients. The {@link FloatProcessor} at the
-	 *         position of the template image is empty.
+	 * @return An array of {@link FloatProcessor}s, each of them containing a
+	 *         map of crosscorrelation coefficients. The {@link FloatProcessor}
+	 *         at the position of the template image is empty.
 	 */
 	public FloatProcessor[] getCorrelationCoefficientsAsFP() {
 		if (datasetDriftResult.array_correlationCoefficientsAsFP == null) {
@@ -295,11 +319,12 @@ public class DatasetAPI {
 	/**
 	 * {@link DatasetDriftInput}
 	 *
-	 * @param index The position of the {@link FloatProcessor} at the array
-	 *          (starting at 0).
-	 * @return A cropped image that correspondents to the ROI set at the GUI. The
-	 *         {@link FloatProcessor} at the position of the template index is
-	 *         larger than the others.
+	 * @param index
+	 *            The position of the {@link FloatProcessor} at the array
+	 *            (starting at 0).
+	 * @return A cropped image that correspondents to the ROI set at the GUI.
+	 *         The {@link FloatProcessor} at the position of the template index
+	 *         is larger than the others.
 	 */
 	public FloatProcessor getCroppedImage(final int index) {
 		return datasetDriftInput.array_CroppedImages[index];
@@ -338,8 +363,9 @@ public class DatasetAPI {
 	/**
 	 * {@link DatasetMapInput}
 	 *
-	 * @param imageIndex The position (starting at 0) of the {@link EFTEMImage} at
-	 *          the sorted array of {@link EFTEMImage}s.
+	 * @param imageIndex
+	 *            The position (starting at 0) of the {@link EFTEMImage} at the
+	 *            sorted array of {@link EFTEMImage}s.
 	 * @return The {@link EFTEMImage} at the selected array position.
 	 */
 	public EFTEMImage getEFTEMImage(final int imageIndex) {
@@ -359,19 +385,21 @@ public class DatasetAPI {
 	/**
 	 * {@link DatasetStack}
 	 *
-	 * @return An unsorted array containing the energy losses of all images at the
-	 *         {@link ImageStack}. It returns <code>null</code> if only a single
-	 *         image is selected.
+	 * @return An unsorted array containing the energy losses of all images at
+	 *         the {@link ImageStack}. It returns <code>null</code> if only a
+	 *         single image is selected.
 	 */
 	public float[] getELossArray() {
-		if (datasetStack == null) return null;
+		if (datasetStack == null)
+			return null;
 		return datasetStack.eLossArray;
 	}
 
 	/**
 	 * {@link DatasetStack}
 	 *
-	 * @param n Index of the eLossArray, starting at 0.
+	 * @param n
+	 *            Index of the eLossArray, starting at 0.
 	 * @return The energy loss as a String with 0, 1, or 2 decimal places using
 	 *         the US locale to format the String.
 	 */
@@ -383,11 +411,9 @@ public class DatasetAPI {
 		String valueFormat;
 		if (value % 1 == 0) {
 			valueFormat = "%.0f";
-		}
-		else if (10 * value % 1 == 0) {
+		} else if (10 * value % 1 == 0) {
 			valueFormat = "%.1f";
-		}
-		else {
+		} else {
 			valueFormat = "%.2f";
 		}
 		final String eLossStr = String.format(Locale.ENGLISH, valueFormat, value);
@@ -442,8 +468,9 @@ public class DatasetAPI {
 	/**
 	 * {@link DatasetMapResult}
 	 *
-	 * @param index The position of the {@link EFTEMImage} at the array of
-	 *          elemental-maps (starting at 0).
+	 * @param index
+	 *            The position of the {@link EFTEMImage} at the array of
+	 *            elemental-maps (starting at 0).
 	 * @return The elemental-map at the selected array position.
 	 */
 	public EFTEMImage getMap(final int index) {
@@ -453,8 +480,9 @@ public class DatasetAPI {
 	/**
 	 * {@link DatasetDriftInput}
 	 *
-	 * @param index The position of the value at the array of cropped images
-	 *          (starting at 0).
+	 * @param index
+	 *            The position of the value at the array of cropped images
+	 *            (starting at 0).
 	 * @return The mean value of the image at the selected position.
 	 */
 	public float getMean(final int index) {
@@ -482,14 +510,14 @@ public class DatasetAPI {
 	}
 
 	/**
-	 * @param edgeEnergyLoss The energy loss of the ionization edge.
-	 * @return If the given energy loss is listed at the database the element and
-	 *         the name of the edge are written to this string.
+	 * @param edgeEnergyLoss
+	 *            The energy loss of the ionization edge.
+	 * @return If the given energy loss is listed at the database the element
+	 *         and the name of the edge are written to this string.
 	 */
 	public String getPredictedEdgeLabel(final int edgeEnergyLoss) {
 		String label;
-		final LinkedHashMap<Integer, String> edges = IonisationEdges.getInstance()
-			.getEdges();
+		final LinkedHashMap<Integer, String> edges = IonisationEdges.getInstance().getEdges();
 		label = edges.get(edgeEnergyLoss);
 		if (label == null) {
 			label = PluginMessages.getString("Label.NoEdgeFound");
@@ -500,8 +528,8 @@ public class DatasetAPI {
 	/**
 	 * {@link DatasetMapResult}
 	 *
-	 * @return An array of {@link EFTEMImage}s which show the calculated relative
-	 *         background.
+	 * @return An array of {@link EFTEMImage}s which show the calculated
+	 *         relative background.
 	 */
 	public EFTEMImage[] getRelBackgroundImages() {
 		return datasetMapResult.array_RelativeBackgroundImage;
@@ -528,8 +556,9 @@ public class DatasetAPI {
 	/**
 	 * {@link DatasetStack}
 	 *
-	 * @param n The index of the image at the input stack (starting at 0, the
-	 *          stack is not sorted by the energy loss).
+	 * @param n
+	 *            The index of the image at the input stack (starting at 0, the
+	 *            stack is not sorted by the energy loss).
 	 * @return The short title of the selected slice/image.
 	 */
 	public String getShortSliceLabel(final int n) {
@@ -539,8 +568,9 @@ public class DatasetAPI {
 	/**
 	 * {@link DatasetMapInput}
 	 *
-	 * @param index The position of the value at the array of cropped images
-	 *          (starting at 0).
+	 * @param index
+	 *            The position of the value at the array of cropped images
+	 *            (starting at 0).
 	 * @return The variance of the selected image.
 	 */
 	public double getSigma(final int index) {
@@ -550,8 +580,8 @@ public class DatasetAPI {
 	/**
 	 * {@link DatasetMapResult}
 	 *
-	 * @return Sigma² is part of the SNR. It is calculated for each elemental-map
-	 *         and each pixel of it.
+	 * @return Sigma² is part of the SNR. It is calculated for each
+	 *         elemental-map and each pixel of it.
 	 */
 	public EFTEMImage[] getSigma2() {
 		return datasetMapResult.array_Sigma2;
@@ -560,8 +590,9 @@ public class DatasetAPI {
 	/**
 	 * {@link DatasetStack}
 	 *
-	 * @param n The index of the image at the input stack (starting at 0, the
-	 *          stack is not sorted by the energy loss).
+	 * @param n
+	 *            The index of the image at the input stack (starting at 0, the
+	 *            stack is not sorted by the energy loss).
 	 * @return The complete title of the selected slice/image.
 	 */
 	public String getSliceLabel(final int n) {
@@ -585,7 +616,8 @@ public class DatasetAPI {
 	 *         image is selected.
 	 */
 	public float[] getSortedELossArray() {
-		if (datasetStack == null) return null;
+		if (datasetStack == null)
+			return null;
 		final float[] sortedELossArray = datasetStack.eLossArray.clone();
 		Arrays.sort(sortedELossArray);
 		return sortedELossArray;
@@ -594,8 +626,8 @@ public class DatasetAPI {
 	/**
 	 * {@link DatasetAPI}
 	 *
-	 * @return The size of the {@link ImageStack}. Returns 1 if an single image is
-	 *         selected.
+	 * @return The size of the {@link ImageStack}. Returns 1 if an single image
+	 *         is selected.
 	 */
 	public int getStackSize() {
 		return imagePlus.getStackSize();
@@ -622,8 +654,10 @@ public class DatasetAPI {
 	/**
 	 * {@link DatasetMapResult}
 	 *
-	 * @param index <code>y * width + x</code>
-	 * @param array_A The parameters <code>a</code> of an image row.
+	 * @param index
+	 *            <code>y * width + x</code>
+	 * @param array_A
+	 *            The parameters <code>a</code> of an image row.
 	 */
 	public synchronized void saveA(final int index, final float[] array_A) {
 		for (int i = 0; i < array_A.length; i++) {
@@ -634,25 +668,26 @@ public class DatasetAPI {
 	/**
 	 * {@link DatasetMapResult}
 	 *
-	 * @param background All pixel values of a background image.
-	 * @param imageIndex The position of the image at the array of all background
-	 *          images (starting at 0).
+	 * @param background
+	 *            All pixel values of a background image.
+	 * @param imageIndex
+	 *            The position of the image at the array of all background
+	 *            images (starting at 0).
 	 */
-	public synchronized void saveBackground(final float[] background,
-		final int imageIndex)
-	{
+	public synchronized void saveBackground(final float[] background, final int imageIndex) {
 		final EFTEMImage eftemImage = datasetMapInput.array_InputImages[imageIndex];
-		final String label = PluginMessages.getString("Label.BgImage") + "[" +
-			eftemImage.getELoss() + "eV]";
-		datasetMapResult.array_BackgroundImage[imageIndex] = new EFTEMImage(
-			eftemImage.getELoss(), label, background, eftemImage.width);
+		final String label = PluginMessages.getString("Label.BgImage") + "[" + eftemImage.getELoss() + "eV]";
+		datasetMapResult.array_BackgroundImage[imageIndex] = new EFTEMImage(eftemImage.getELoss(), label, background,
+				eftemImage.width);
 	}
 
 	/**
 	 * {@link DatasetMapResult}
 	 *
-	 * @param index <code>y * width + x</code>
-	 * @param array_Chi2 The Chi²-values of an image row.
+	 * @param index
+	 *            <code>y * width + x</code>
+	 * @param array_Chi2
+	 *            The Chi²-values of an image row.
 	 */
 	public synchronized void saveChi2(final int index, final float[] array_Chi2) {
 		for (int i = 0; i < array_Chi2.length; i++) {
@@ -663,8 +698,10 @@ public class DatasetAPI {
 	/**
 	 * {@link DatasetMapResult}
 	 *
-	 * @param index <code>y * width + x</code>
-	 * @param array_COD The coefficients of determination of an image row.
+	 * @param index
+	 *            <code>y * width + x</code>
+	 * @param array_COD
+	 *            The coefficients of determination of an image row.
 	 */
 	public synchronized void saveCOD(final int index, final float[] array_COD) {
 		for (int i = 0; i < array_COD.length; i++) {
@@ -675,29 +712,29 @@ public class DatasetAPI {
 	/**
 	 * {@link DatasetDriftResult}
 	 *
-	 * @param values The crosscorrelation coefficients of an image row.
-	 * @param imageIndex The position of the image at the array of all coefficient
-	 *          images (starting at 0).
-	 * @param index <code>y * width + x</code>
+	 * @param values
+	 *            The crosscorrelation coefficients of an image row.
+	 * @param imageIndex
+	 *            The position of the image at the array of all coefficient
+	 *            images (starting at 0).
+	 * @param index
+	 *            <code>y * width + x</code>
 	 */
-	public synchronized void saveCross(final float[] values, final int imageIndex,
-		final int index)
-	{
+	public synchronized void saveCross(final float[] values, final int imageIndex, final int index) {
 		for (int i = 0; i < values.length; i++) {
-			datasetDriftResult.array_correlationCoefficients[imageIndex][index + i] =
-				values[i];
+			datasetDriftResult.array_correlationCoefficients[imageIndex][index + i] = values[i];
 		}
 	}
 
 	/**
 	 * {@link DatasetMapResult}
 	 *
-	 * @param index <code>y * width + x</code>
-	 * @param array_Error The error values of an image row.
+	 * @param index
+	 *            <code>y * width + x</code>
+	 * @param array_Error
+	 *            The error values of an image row.
 	 */
-	public synchronized void saveError(final int index,
-		final short[] array_Error)
-	{
+	public synchronized void saveError(final int index, final short[] array_Error) {
 		for (int i = 0; i < array_Error.length; i++) {
 			datasetMapResult.errorMap[index + i] = array_Error[i];
 		}
@@ -706,23 +743,26 @@ public class DatasetAPI {
 	/**
 	 * {@link DatasetMapResult}
 	 *
-	 * @param map All pixel values of a elemental-map.
-	 * @param imageIndex he position of the image at the array of all
-	 *          elemental-maps (starting at 0).
+	 * @param map
+	 *            All pixel values of a elemental-map.
+	 * @param imageIndex
+	 *            he position of the image at the array of all elemental-maps
+	 *            (starting at 0).
 	 */
 	public synchronized void saveMap(final float[] map, final int imageIndex) {
 		final EFTEMImage eftemImage = datasetMapInput.array_InputImages[imageIndex];
-		final String label = PluginMessages.getString("Label.MapImage") + "[" +
-			eftemImage.getELoss() + "eV]";
-		datasetMapResult.array_Map[imageIndex - datasetMapInput.edgeIndex] =
-			new EFTEMImage(eftemImage.getELoss(), label, map, eftemImage.width);
+		final String label = PluginMessages.getString("Label.MapImage") + "[" + eftemImage.getELoss() + "eV]";
+		datasetMapResult.array_Map[imageIndex - datasetMapInput.edgeIndex] = new EFTEMImage(eftemImage.getELoss(),
+				label, map, eftemImage.width);
 	}
 
 	/**
 	 * {@link DatasetMapResult}
 	 *
-	 * @param index <code>y * width + x</code>
-	 * @param array_R The parameters <code>r</code> of an image row.
+	 * @param index
+	 *            <code>y * width + x</code>
+	 * @param array_R
+	 *            The parameters <code>r</code> of an image row.
 	 */
 	public synchronized void saveR(final int index, final float[] array_R) {
 		for (int i = 0; i < array_R.length; i++) {
@@ -733,69 +773,60 @@ public class DatasetAPI {
 	/**
 	 * {@link DatasetMapResult}
 	 *
-	 * @param relBackground All pixel values of a relative background image.
-	 * @param imageIndex The position of the image at the array of all relative
-	 *          background images (starting at 0).
+	 * @param relBackground
+	 *            All pixel values of a relative background image.
+	 * @param imageIndex
+	 *            The position of the image at the array of all relative
+	 *            background images (starting at 0).
 	 */
-	public synchronized void saveRelBackground(final float[] relBackground,
-		final int imageIndex)
-	{
+	public synchronized void saveRelBackground(final float[] relBackground, final int imageIndex) {
 		final EFTEMImage eftemImage = datasetMapInput.array_InputImages[imageIndex];
-		final String label = PluginMessages.getString("Label.RelBgImage") + "[" +
-			eftemImage.getELoss() + "eV]";
-		datasetMapResult.array_RelativeBackgroundImage[imageIndex] = new EFTEMImage(
-			eftemImage.getELoss(), label, relBackground, eftemImage.width);
+		final String label = PluginMessages.getString("Label.RelBgImage") + "[" + eftemImage.getELoss() + "eV]";
+		datasetMapResult.array_RelativeBackgroundImage[imageIndex] = new EFTEMImage(eftemImage.getELoss(), label,
+				relBackground, eftemImage.width);
 	}
 
 	/**
 	 * {@link DatasetMapResult}
 	 *
-	 * @param imageIndex The position of the image at the array of all sigma²
-	 *          images (starting at 0).
-	 * @param index <code>y * width + x</code>
-	 * @param sigma2 The sigma² values of an image row.
+	 * @param imageIndex
+	 *            The position of the image at the array of all sigma² images
+	 *            (starting at 0).
+	 * @param index
+	 *            <code>y * width + x</code>
+	 * @param sigma2
+	 *            The sigma² values of an image row.
 	 */
-	public synchronized void saveSigma2(final int imageIndex, final int index,
-		final float[] sigma2)
-	{
+	public synchronized void saveSigma2(final int imageIndex, final int index, final float[] sigma2) {
 		final EFTEMImage eftemImage = datasetMapInput.array_InputImages[imageIndex];
-		final String label = PluginMessages.getString("Label.Sigma2Image") + "[" +
-			eftemImage.getELoss() + "eV]";
-		if (datasetMapResult.array_Sigma2[imageIndex -
-			datasetMapInput.edgeIndex] == null)
-		{
-			datasetMapResult.array_Sigma2[imageIndex - datasetMapInput.edgeIndex] =
-				new EFTEMImage(eftemImage.getELoss(), label, new float[getWidth() *
-					getHeight()], eftemImage.width);
+		final String label = PluginMessages.getString("Label.Sigma2Image") + "[" + eftemImage.getELoss() + "eV]";
+		if (datasetMapResult.array_Sigma2[imageIndex - datasetMapInput.edgeIndex] == null) {
+			datasetMapResult.array_Sigma2[imageIndex - datasetMapInput.edgeIndex] = new EFTEMImage(
+					eftemImage.getELoss(), label, new float[getWidth() * getHeight()], eftemImage.width);
 		}
-		final float[] pixels = datasetMapResult.array_Sigma2[imageIndex -
-			datasetMapInput.edgeIndex].getPixels();
+		final float[] pixels = datasetMapResult.array_Sigma2[imageIndex - datasetMapInput.edgeIndex].getPixels();
 		for (int i = 0; i < sigma2.length; i++) {
 			pixels[index + i] = sigma2[i];
 		}
 	}
 
 	/**
-	 * @param imageIndex The position of the image at the array of all SNR images
-	 *          (starting at 0).
-	 * @param index <code>y * width + x</code>
-	 * @param snr The SNR values of an image row.
+	 * @param imageIndex
+	 *            The position of the image at the array of all SNR images
+	 *            (starting at 0).
+	 * @param index
+	 *            <code>y * width + x</code>
+	 * @param snr
+	 *            The SNR values of an image row.
 	 */
-	public synchronized void saveSNR(final int imageIndex, final int index,
-		final float[] snr)
-	{
+	public synchronized void saveSNR(final int imageIndex, final int index, final float[] snr) {
 		final EFTEMImage eftemImage = datasetMapInput.array_InputImages[imageIndex];
-		final String label = PluginMessages.getString("Label.SnrImage") + "[" +
-			eftemImage.getELoss() + "eV]";
-		if (datasetMapResult.array_SNR[imageIndex -
-			datasetMapInput.edgeIndex] == null)
-		{
-			datasetMapResult.array_SNR[imageIndex - datasetMapInput.edgeIndex] =
-				new EFTEMImage(eftemImage.getELoss(), label, new float[getWidth() *
-					getHeight()], eftemImage.width);
+		final String label = PluginMessages.getString("Label.SnrImage") + "[" + eftemImage.getELoss() + "eV]";
+		if (datasetMapResult.array_SNR[imageIndex - datasetMapInput.edgeIndex] == null) {
+			datasetMapResult.array_SNR[imageIndex - datasetMapInput.edgeIndex] = new EFTEMImage(eftemImage.getELoss(),
+					label, new float[getWidth() * getHeight()], eftemImage.width);
 		}
-		final float[] pixels = datasetMapResult.array_SNR[imageIndex -
-			datasetMapInput.edgeIndex].getPixels();
+		final float[] pixels = datasetMapResult.array_SNR[imageIndex - datasetMapInput.edgeIndex].getPixels();
 		for (int i = 0; i < snr.length; i++) {
 			pixels[index + i] = snr[i];
 		}
@@ -804,9 +835,11 @@ public class DatasetAPI {
 	/**
 	 * {@link DatasetStack}
 	 *
-	 * @param imageIndex The index of the image at the input stack (starting at 0,
-	 *          the stack is not sorted by the energy loss).
-	 * @param eLoss The new energy loss of the image.
+	 * @param imageIndex
+	 *            The index of the image at the input stack (starting at 0, the
+	 *            stack is not sorted by the energy loss).
+	 * @param eLoss
+	 *            The new energy loss of the image.
 	 */
 	public void setELoss(final int imageIndex, final float eLoss) {
 		datasetStack.eLossArray[imageIndex] = eLoss;
@@ -817,8 +850,10 @@ public class DatasetAPI {
 	 * Set a new label for a specific slice. This is not a short label. It can
 	 * contain additional information about the image.
 	 *
-	 * @param n The index of the slice starting at 0.
-	 * @param newLabel The new Label.
+	 * @param n
+	 *            The index of the slice starting at 0.
+	 * @param newLabel
+	 *            The new Label.
 	 */
 	public void setSliceLabel(final int n, final String newLabel) {
 		datasetStack.imageStack.setSliceLabel(newLabel, n + 1);
