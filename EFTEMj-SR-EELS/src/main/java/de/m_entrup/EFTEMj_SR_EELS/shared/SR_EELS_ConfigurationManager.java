@@ -25,44 +25,27 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package de.m_entrup.EFTEMj_lib;
 
-import java.util.Collection;
+package de.m_entrup.EFTEMj_SR_EELS.shared;
 
-import org.apache.commons.configuration.CompositeConfiguration;
-import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
 
-import ij.IJ;
+import de.m_entrup.EFTEMj_lib.EFTEMj_Configuration;
+import de.m_entrup.EFTEMj_lib.EFTEMj_ConfigurationManager;
 
-public class EFTEMj_Configuration extends CompositeConfiguration {
+public class SR_EELS_ConfigurationManager {
 
-	public EFTEMj_Configuration() {
-		// TODO Auto-generated constructor stub
-	}
+	private static String defaultConfigName = "default.properties";
 
-	public EFTEMj_Configuration(final Configuration inMemoryConfiguration) {
-		super(inMemoryConfiguration);
-		// TODO Auto-generated constructor stub
-	}
+	private static EFTEMj_Configuration config;
 
-	public EFTEMj_Configuration(final Collection<? extends Configuration> configurations) {
-		super(configurations);
-		// TODO Auto-generated constructor stub
-	}
-
-	public EFTEMj_Configuration(final Configuration inMemoryConfiguration,
-			final Collection<? extends Configuration> configurations) {
-		super(inMemoryConfiguration, configurations);
-		// TODO Auto-generated constructor stub
-	}
-
-	public void save() {
-		try {
-			EFTEMj_ConfigurationManager.saveConfiguration();
-		} catch (final ConfigurationException e) {
-			IJ.error("Failed to save config.", e.toString());
-		}
+	public static EFTEMj_Configuration getConfiguration() throws ConfigurationException {
+		if (config != null)
+			return config;
+		config = EFTEMj_ConfigurationManager.getConfiguration();
+		config.addConfiguration(new PropertiesConfiguration(defaultConfigName));
+		return config;
 	}
 
 }
