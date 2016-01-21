@@ -12,7 +12,7 @@
 	<parent>
 		<groupId>de.m-entrup</groupId>
 		<artifactId>pom-EFTEMj</artifactId>
-		<version>1.2.0-SNAPSHOT</version>
+		<version>1.2.0</version>
 		<relativePath>..</relativePath>
 	</parent>
 
