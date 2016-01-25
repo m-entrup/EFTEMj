@@ -1,7 +1,7 @@
 /**
  * EFTEMj - Processing of Energy Filtering TEM images with ImageJ
  *
- * Copyright (c) 2015, Michael Entrup b. Epping <mail@m-entrup.de>
+ * Copyright (c) 2015, Michael Entrup b. Epping
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
