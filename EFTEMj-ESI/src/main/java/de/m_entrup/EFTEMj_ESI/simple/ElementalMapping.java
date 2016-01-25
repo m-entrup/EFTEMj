@@ -464,7 +464,7 @@ public class ElementalMapping {
 					fitMethod = new PowerLawFit_MLE(preEdgeEnergyLosses, counts, epsilon);
 					break;
 				case LMA:
-					fitMethod = new PowerLawFit_LMA(preEdgeEnergyLosses, counts, epsilon);
+					fitMethod = new PowerLawFit_linearLMA(preEdgeEnergyLosses, counts, epsilon);
 					break;
 				case LSE:
 					fitMethod = new PowerLawFit_LSE(preEdgeEnergyLosses, counts, epsilon);
