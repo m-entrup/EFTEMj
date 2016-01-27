@@ -16,10 +16,4 @@
 		<relativePath>..</relativePath>
 	</parent>
 
-	<dependencies>
-		<dependency>
-			<groupId>gov.nist.math</groupId>
-			<artifactId>jama</artifactId>
-		</dependency>
-	</dependencies>
 </project>
