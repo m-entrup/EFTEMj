@@ -97,5 +97,5 @@ public class PluginConstants {
 	 * This value is used to indicate that there was an error at the MLE
 	 * calculation. It is the smallest nonezero value multiplied with (-1).
 	 */
-	public static final float VALUE_CALCULATION_FAILED = -Float.MIN_VALUE;
+	public static final float VALUE_CALCULATION_FAILED = Float.NaN;
 }
