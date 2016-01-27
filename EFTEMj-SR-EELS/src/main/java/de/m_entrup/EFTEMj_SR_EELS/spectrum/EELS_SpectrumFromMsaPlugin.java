@@ -31,9 +31,9 @@ package de.m_entrup.EFTEMj_SR_EELS.spectrum;
 import java.io.File;
 import java.io.IOException;
 
+import de.m_entrup.EFTEMj_lib.EFTEMj_Debug;
 import de.m_entrup.EFTEMj_lib.importer.LoadMsa;
 import ij.IJ;
-import ij.ImageJ;
 import ij.ImagePlus;
 import ij.gui.GenericDialog;
 import ij.gui.Plot;
@@ -66,7 +66,20 @@ public class EELS_SpectrumFromMsaPlugin extends Profiler implements PlugIn,
 	@Override
 	public Plot getPlot() {
 		final File file = getFile();
-		if (file == null) return null;
+		return getPlot(file);
+	}
+
+	public Plot getPlot(String path) {
+		File file = new File(path);
+		if (!file.exists()) return null;
+		if (file.isDirectory()) return null;
+		return getPlot(file);
+	}
+
+	public Plot getPlot(File file) {
+		if (file == null) {
+			return null;
+		}
 		LoadMsa loader = null;
 		try {
 			loader = new LoadMsa(file.getAbsolutePath());
@@ -91,12 +104,12 @@ public class EELS_SpectrumFromMsaPlugin extends Profiler implements PlugIn,
 
 	private File getFile() {
 		final OpenDialog od = new OpenDialog("Select a msa file...");
-		if (od.getFileName()== null) return null;
+		if (od.getFileName() == null) return null;
 		final File file = new File(od.getPath());
 		if (file.getName().toLowerCase().endsWith(".msa")) {
-                        return file;
-                }
-                else {
+			return file;
+		}
+		else {
 			final GenericDialog gd = new GenericDialog("Confirm loading...", IJ
 				.getInstance());
 			gd.addMessage("You have not selected a msa file.\n" +
@@ -139,12 +152,7 @@ public class EELS_SpectrumFromMsaPlugin extends Profiler implements PlugIn,
 	 * @param args unused
 	 */
 	public static void main(final String[] args) {
-		// start ImageJ
-		new ImageJ();
-
-		// run the plugin
-		final Class<?> clazz = EELS_SpectrumFromMsaPlugin.class;
-		IJ.runPlugIn(clazz.getName(), "");
+		EFTEMj_Debug.debug(EELS_SpectrumFromMsaPlugin.class);
 	}
 
 }
