@@ -60,7 +60,8 @@ public class ElementalMapping {
 	 */
 	public static enum AVAILABLE_METHODS {
 		LSE("Least squares estimation"), MLE("Maximum-likelihood estimation"), WLSE(
-				"Weighted least squares estimation"), LMA("Levenberg-Marquardt algorithm");
+				"Weighted least squares estimation"), LMA("Levenberg-Marquardt algorithm"), LMA_L(
+						"Levenberg-Marquardt algorithm (linear)");
 
 		/**
 		 * Full name of the method. Display this {@link String} at the GUI.
@@ -464,6 +465,9 @@ public class ElementalMapping {
 					fitMethod = new PowerLawFit_MLE(preEdgeEnergyLosses, counts, epsilon);
 					break;
 				case LMA:
+					fitMethod = new PowerLawFit_LMA(preEdgeEnergyLosses, counts, epsilon);
+					break;
+				case LMA_L:
 					fitMethod = new PowerLawFit_linearLMA(preEdgeEnergyLosses, counts, epsilon);
 					break;
 				case LSE:

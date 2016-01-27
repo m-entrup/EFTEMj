@@ -127,6 +127,7 @@ public class ElementalMappingPlugin implements ExtendedPlugInFilter {
 	public void run(final ImageProcessor ip) {
 		switch (method) {
 		case LMA:
+		case LMA_L:
 		case MLE:
 		case LSE:
 		case WLSE:

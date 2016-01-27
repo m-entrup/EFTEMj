@@ -35,12 +35,13 @@ import org.apache.commons.math3.fitting.WeightedObservedPoint;
 /**
  * @author Michael Entrup b. Epping
  */
-public class PowerLawFit_linearLMA extends PowerLawFit {
+public class PowerLawFit_LMA extends PowerLawFit {
 
-	private static LMACurveFitter fitter = new LMACurveFitter(new LinearFunction());;
+	private static double[] initialGuess = { Math.exp(20), -2.0 };
+	private static LMACurveFitter fitter = new LMACurveFitter(new PowerLawFunction()).setInitialGuess(initialGuess);
 	private ArrayList<WeightedObservedPoint> points;
 
-	public PowerLawFit_linearLMA(final double[] xValues, final double[] yValues, final double epsilon) {
+	public PowerLawFit_LMA(final double[] xValues, final double[] yValues, final double epsilon) {
 		super(xValues, yValues, epsilon);
 		if (fitter.getLimit() != epsilon) {
 			fitter.setLimit(epsilon);
@@ -49,8 +50,8 @@ public class PowerLawFit_linearLMA extends PowerLawFit {
 		this.xValues = new double[xValues.length];
 		this.yValues = new double[yValues.length];
 		for (int i = 0; i < xValues.length; i++) {
-			this.xValues[i] = Math.log(xValues[i]);
-			this.yValues[i] = Math.log(yValues[i]);
+			this.xValues[i] = xValues[i];
+			this.yValues[i] = yValues[i];
 			points.add(new WeightedObservedPoint(Math.sqrt(yValues[i]), this.xValues[i], this.yValues[i]));
 		}
 	}
@@ -58,7 +59,14 @@ public class PowerLawFit_linearLMA extends PowerLawFit {
 	@Override
 	public void doFit() {
 		if (checkPoints(points)) {
-			final double[] coeffs = fitter.fit(points);
+			double[] coeffs;
+			try {
+				coeffs = fitter.fit(points);
+			} catch (Exception e) {
+				coeffs = new double[2];
+				coeffs[0] = Double.NaN;
+				coeffs[1] = Double.NaN;
+			}
 			errorCode = ERROR_NONE;
 			if (Double.isNaN(coeffs[0]))
 				errorCode = ERROR_A_NAN;
@@ -69,7 +77,7 @@ public class PowerLawFit_linearLMA extends PowerLawFit {
 			if (Double.isInfinite(coeffs[1]))
 				errorCode = ERROR_R_INFINITE;
 			if (errorCode == ERROR_NONE) {
-				a = Math.exp(coeffs[0]);
+				a = coeffs[0];
 				r = -coeffs[1];
 			} else {
 				a = Double.NaN;
@@ -91,16 +99,17 @@ public class PowerLawFit_linearLMA extends PowerLawFit {
 		return true;
 	}
 
-	private static class LinearFunction implements ParametricUnivariateFunction {
+	private static class PowerLawFunction implements ParametricUnivariateFunction {
 
 		@Override
 		public double value(double t, double... parameters) {
-			return parameters[0] + t * parameters[1];
+			return parameters[0] * Math.pow(t, parameters[1]);
 		}
 
 		@Override
 		public double[] gradient(double t, double... parameters) {
-			return new double[] { 1, t };
+			return new double[] { Math.pow(t, parameters[1]),
+					parameters[0] * Math.pow(t, parameters[1]) * Math.log(t) };
 		}
 	}
 
