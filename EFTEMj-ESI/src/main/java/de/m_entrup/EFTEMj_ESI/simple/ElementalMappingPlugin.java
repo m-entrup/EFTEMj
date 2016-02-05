@@ -28,14 +28,20 @@
 package de.m_entrup.EFTEMj_ESI.simple;
 
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.Label;
 import java.awt.Panel;
-import java.awt.Scrollbar;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.concurrent.CancellationException;
 
+import javax.swing.AbstractButton;
+import javax.swing.ButtonGroup;
 import javax.swing.JLabel;
+import javax.swing.JRadioButton;
 
 import de.m_entrup.EFTEMj_ESI.dataset.IonisationEdges;
 import de.m_entrup.EFTEMj_ESI.simple.ElementalMapping.AVAILABLE_METHODS;
@@ -228,7 +234,7 @@ public class ElementalMappingPlugin implements ExtendedPlugInFilter {
 		final GenericDialog gd = new GenericDialog(title + " - set parameters", IJ.getInstance());
 		// TODO Add a button to show a text window with all detected energy
 		// losses.
-		gd.addSlider("Edge energy loss:", getMinELoss(), getMaxELoss(), getPredictedEdgeELoss());
+		gd.addSlider("Edge_energy_loss:", getMinELoss(), getMaxELoss(), getPredictedEdgeELoss());
 		final Panel panel = new Panel(new FlowLayout());
 		panel.add(new Label("Predicted edge:"));
 		panel.add(new JLabel("<html>" + getPredictedEdgeLabel(Math.round(edgeEnergyLoss)) + "</html>"));
@@ -241,8 +247,7 @@ public class ElementalMappingPlugin implements ExtendedPlugInFilter {
 		if (gd.wasCanceled()) {
 			return CANCEL;
 		}
-		final Scrollbar scrollbar = (Scrollbar) gd.getSliders().get(0);
-		edgeEnergyLoss = scrollbar.getValue();
+		edgeEnergyLoss = (float) gd.getNextNumber();
 		epsilon = new Float(gd.getNextChoice());
 		method = AVAILABLE_METHODS.values()[gd.getNextChoiceIndex()];
 		return OK;
@@ -319,31 +324,41 @@ public class ElementalMappingPlugin implements ExtendedPlugInFilter {
 		} else if (edgeCount == 1) {
 			edgeEnergyLoss = possibleEdges[0];
 		} else {
-			int selected = 0;
 			final GenericDialog gd = new GenericDialog("Select an ionisation edge", IJ.getInstance());
 			gd.addMessage("More than one edge is qualified for the given energy losses.\nPlease select one.");
 			final String[] edgeLabels = new String[edgeCount];
 			for (int i = 0; i < edgeCount; i++) {
 				edgeLabels[i] = possibleEdges[i] + "eV - " + edges.get(possibleEdges[i]);
 			}
-			gd.addChoice("Edges:", edgeLabels, edgeLabels[selected]);
+			ButtonGroup bg = new ButtonGroup();
+			String[] htmlLabels = new String[edgeLabels.length];
+			Panel panel = new Panel(new GridLayout(htmlLabels.length, 1));
+			for (int i = 0; i < edgeLabels.length; i++) {
+				JRadioButton button = new JRadioButton("<HTML>" + edgeLabels[i] + "</HTML>");
+				if (i == 0) {
+					button.setSelected(true);
+				}
+				htmlLabels[i] = "<HTML>" + edgeLabels[i] + "</HTML>";
+				bg.add(button);
+				panel.add(button);
+			}
+			gd.addPanel(panel, GridBagConstraints.WEST, new Insets(5, 25, 0, 0));
 			gd.setResizable(false);
 			gd.showDialog();
-			if (gd.wasOKed()) {
-				selected = gd.getNextChoiceIndex();
-			} else {
-				final float mean = (eLossHigh + eLossLow) / 2;
-				float diff = Math.abs(mean - possibleEdges[0]);
-				for (int i = 1; i < edgeCount; i++) {
-					if (Math.abs(mean - possibleEdges[i]) < diff) {
-						diff = Math.abs(mean - possibleEdges[i]);
-						selected = i;
-					}
+			if (gd.wasCanceled()) {
+				return false;
+			}
+			Enumeration<AbstractButton> iter = bg.getElements();
+			while (iter.hasMoreElements()) {
+				JRadioButton button = (JRadioButton) iter.nextElement();
+				if (button.isSelected()) {
+					int index = Arrays.binarySearch(htmlLabels, button.getText());
+					edgeEnergyLoss = possibleEdges[index];
+					return true;
 				}
 			}
-			edgeEnergyLoss = possibleEdges[selected];
 		}
-		return true;
+		return false;
 	}
 
 	/**
