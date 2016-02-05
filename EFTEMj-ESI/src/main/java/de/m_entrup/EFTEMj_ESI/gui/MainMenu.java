@@ -70,15 +70,16 @@ import ij.plugin.ImagesToStack;
 public class MainMenu extends Frame {
 
 	/**
-	 * The {@link GridBagPanel} contains the the functions provided by the plugin.
-	 * For each function there is a {@link Button} to start it and a {@link Label}
-	 * for a short description. The class extends from {@link Label}.
+	 * The {@link GridBagPanel} contains the the functions provided by the
+	 * plugin. For each function there is a {@link Button} to start it and a
+	 * {@link Label} for a short description. The class extends from
+	 * {@link Label}.
 	 */
 	private class GridBagPanel extends Panel {
 
 		/**
-		 * The {@link Button}s at this {@link Vector} will be disabled if no image
-		 * is selected.
+		 * The {@link Button}s at this {@link Vector} will be disabled if no
+		 * image is selected.
 		 */
 		private final Vector<Button> disabledButtons;
 		/**
@@ -101,14 +102,15 @@ public class MainMenu extends Frame {
 		/**
 		 * Adds a {@link Button} to the GridBagPane. It's width is 1 columns.
 		 *
-		 * @param button Text of the {@link Button}
-		 * @param pos Position (row) at the GridBagPane. Counting starts at 0.
-		 * @param disabled This parameter determines if the {@link Button} is
-		 *          disabled when no image is selected.
+		 * @param button
+		 *            Text of the {@link Button}
+		 * @param pos
+		 *            Position (row) at the GridBagPane. Counting starts at 0.
+		 * @param disabled
+		 *            This parameter determines if the {@link Button} is
+		 *            disabled when no image is selected.
 		 */
-		private void addButton(final Button button, final int pos,
-			final boolean disabled)
-		{
+		private void addButton(final Button button, final int pos, final boolean disabled) {
 			if (disabled == true) {
 				disabledButtons.add(button);
 			}
@@ -120,9 +122,11 @@ public class MainMenu extends Frame {
 		 * Adds a {@link Label} to the {@link GridBagPanel}. It's width is 2
 		 * columns.
 		 *
-		 * @param label Text of the {@link Label}
-		 * @param pos Position (row) at the {@link GridBagPanel}. Counting starts at
-		 *          0.
+		 * @param label
+		 *            Text of the {@link Label}
+		 * @param pos
+		 *            Position (row) at the {@link GridBagPanel}. Counting
+		 *            starts at 0.
 		 */
 		private void addLabel(final String label, final int pos) {
 			final Label awtLabel = new Label(label);
@@ -130,18 +134,22 @@ public class MainMenu extends Frame {
 		}
 
 		/**
-		 * This method combines all setting for adding a new {@link Component} to
-		 * the {@link GridBagPanel}.
+		 * This method combines all setting for adding a new {@link Component}
+		 * to the {@link GridBagPanel}.
 		 *
-		 * @param comp The {@link Component} you want to add
-		 * @param x Column, starts at 0
-		 * @param y Row, starts at 0
-		 * @param width Width in rows
-		 * @param height Height in columns
+		 * @param comp
+		 *            The {@link Component} you want to add
+		 * @param x
+		 *            Column, starts at 0
+		 * @param y
+		 *            Row, starts at 0
+		 * @param width
+		 *            Width in rows
+		 * @param height
+		 *            Height in columns
 		 */
-		private void addToGridBagPane(final Component comp, final int x,
-			final int y, final int width, final int height)
-		{
+		private void addToGridBagPane(final Component comp, final int x, final int y, final int width,
+				final int height) {
 			final GridBagConstraints gbc = new GridBagConstraints();
 			gbc.gridx = x;
 			gbc.gridy = y;
@@ -162,26 +170,22 @@ public class MainMenu extends Frame {
 			int pos = 0;
 			// Create a stack
 			addLabel(PluginMessages.getString("Label.CreateStack"), pos);
-			final Button createStack = new Button(PluginMessages.getString(
-				"Button.CreateStack"));
+			final Button createStack = new Button(PluginMessages.getString("Button.CreateStack"));
 			addButton(createStack, pos, false);
 			pos++;
 			// Open the StackSetup
 			addLabel(PluginMessages.getString("Label.StackSetup"), pos);
-			final Button stackSetup = new Button(PluginMessages.getString(
-				"Button.StackSetup"));
+			final Button stackSetup = new Button(PluginMessages.getString("Button.StackSetup"));
 			addButton(stackSetup, pos, true);
 			pos++;
 			// Open the drift correction
 			addLabel(PluginMessages.getString("Label.DriftSetup"), pos);
-			final Button driftCorrection = new Button(PluginMessages.getString(
-				"Button.DriftSetup"));
+			final Button driftCorrection = new Button(PluginMessages.getString("Button.DriftSetup"));
 			addButton(driftCorrection, pos, true);
 			pos++;
 			// Open the Elemental-Map tool
 			addLabel(PluginMessages.getString("Label.MapSetup"), pos);
-			final Button elementalMap = new Button(PluginMessages.getString(
-				"Button.MapSetup"));
+			final Button elementalMap = new Button(PluginMessages.getString("Button.MapSetup"));
 			addButton(elementalMap, pos, true);
 		}
 	} // END GridBagPane
@@ -193,8 +197,8 @@ public class MainMenu extends Frame {
 	private class MainMenuListener implements ActionListener {
 
 		/**
-		 * Creates an instance of {@link MainMenuListener} using the constructor of
-		 * {@link ActionListener}.
+		 * Creates an instance of {@link MainMenuListener} using the constructor
+		 * of {@link ActionListener}.
 		 */
 		public MainMenuListener() {
 			super();
@@ -202,28 +206,20 @@ public class MainMenu extends Frame {
 
 		@Override
 		public void actionPerformed(final ActionEvent e) {
-			if (e.getActionCommand() == PluginMessages.getString(
-				"Button.ChangeStack") | e.getActionCommand() == PluginMessages
-					.getString("Button.SelectStack"))
-			{
+			if (e.getActionCommand() == PluginMessages.getString("Button.ChangeStack")
+					| e.getActionCommand() == PluginMessages.getString("Button.SelectStack")) {
 				changeStack();
 				return;
 			}
-			if (e.getActionCommand() == PluginMessages.getString(
-				"Button.CreateStack"))
-			{
+			if (e.getActionCommand() == PluginMessages.getString("Button.CreateStack")) {
 				createStack();
 				return;
 			}
-			if (e.getActionCommand() == PluginMessages.getString(
-				"Button.StackSetup"))
-			{
+			if (e.getActionCommand() == PluginMessages.getString("Button.StackSetup")) {
 				openStackSetupDialog();
 				return;
 			}
-			if (e.getActionCommand() == PluginMessages.getString(
-				"Button.DriftSetup"))
-			{
+			if (e.getActionCommand() == PluginMessages.getString("Button.DriftSetup")) {
 				openDriftSetupDialog();
 				return;
 			}
@@ -234,42 +230,39 @@ public class MainMenu extends Frame {
 		}
 
 		/**
-		 * A dialog is opened to choose the {@link ImagePlus} that is used by the
-		 * plugIn. If no {@link ImagePlus} is opened an message dialog is displayed.
-		 * If only 1 {@link ImagePlus} is opened this {@link ImagePlus} is assigned.
+		 * A dialog is opened to choose the {@link ImagePlus} that is used by
+		 * the plugIn. If no {@link ImagePlus} is opened an message dialog is
+		 * displayed. If only 1 {@link ImagePlus} is opened this
+		 * {@link ImagePlus} is assigned.
 		 */
 		private void changeStack() {
 			if (WindowManager.getCurrentImage() == null) {
 				pluginAPI.initDatasetAPI(null);
 				stackSelectionPanel.updateStackSelection();
-				LogWriter.showWarningAndWriteLog(PluginMessages.getString(
-					"Error.NoImage"));
-			}
-			else if (WindowManager.getImageCount() == 1) {
+				LogWriter.showWarningAndWriteLog(PluginMessages.getString("Error.NoImage"));
+			} else if (WindowManager.getImageCount() == 1) {
 				pluginAPI.initDatasetAPI(WindowManager.getCurrentImage());
 				stackSelectionPanel.updateStackSelection();
-			}
-			else {
+			} else {
 				new ChangeStackDialog();
 			}
 		}
 
 		/**
-		 * All open {@link ImagePlus} are combined to one {@link ImagePlus}. If less
-		 * than 2 {@link ImagePlus} are opened a message dialog is displayed.
+		 * All open {@link ImagePlus} are combined to one {@link ImagePlus}. If
+		 * less than 2 {@link ImagePlus} are opened a message dialog is
+		 * displayed.
 		 */
 		private void createStack() {
 			if (WindowManager.getImageCount() < 2) {
-				LogWriter.showWarningAndWriteLog(PluginMessages.getString(
-					"Error.InsufficientImages"));
-			}
-			else {
+				LogWriter.showWarningAndWriteLog(PluginMessages.getString("Error.InsufficientImages"));
+			} else {
 				// This is a build in function of IJ
 				// new since v0.6:
-				// I can't catch errors of ImageToStack, that is why i check
+				// I can't catch errors of ImageToStack, that is why I check
 				// if there is only 1 image left. For example, if there are 2
 				// stacks ImageToStack won't work.
-				new ImagesToStack().run(null);
+				new ImagesToStack().convertImagesToStack();
 				if (WindowManager.getImageCount() == 1) {
 					final ImagePlus imp = WindowManager.getCurrentImage();
 					// check if a stack has been created (eg. the user can
@@ -278,10 +271,8 @@ public class MainMenu extends Frame {
 						pluginAPI.initDatasetAPI(imp);
 						pluginAPI.getDatasetAPI().getImagePlus().changes = true;
 						stackSelectionPanel.updateStackSelection();
-						LogWriter.writeLog("The stack \"" + imp.getShortTitle() +
-							"\" has been created.");
-						ImagePlusTool.saveImagePlus(pluginAPI.getDatasetAPI()
-							.getImagePlus(), true);
+						LogWriter.writeLog("The stack \"" + imp.getShortTitle() + "\" has been created.");
+						ImagePlusTool.saveImagePlus(pluginAPI.getDatasetAPI().getImagePlus(), true);
 					}
 				}
 			}
@@ -289,25 +280,18 @@ public class MainMenu extends Frame {
 
 		/**
 		 * A {@link DriftSetupDialog} is displayed. If no {@link ImageStack} is
-		 * opened or the stack size is less than 2 a message Dialog is displayed.
+		 * opened or the stack size is less than 2 a message Dialog is
+		 * displayed.
 		 */
 		private void openDriftSetupDialog() {
 			if (PluginAPI.getInstance().getDatasetAPI() == null) {
-				LogWriter.showWarningAndWriteLog(PluginMessages.getString(
-					"Error.NoImage"));
-			}
-			else {
+				LogWriter.showWarningAndWriteLog(PluginMessages.getString("Error.NoImage"));
+			} else {
 				if (PluginAPI.getInstance().getDatasetAPI().getStackSize() < 2) {
-					LogWriter.showWarningAndWriteLog(PluginMessages.getString(
-						"Error.NoStack"));
-				}
-				else if (PluginAPI.getInstance().getDatasetAPI().getImagePlus()
-					.getRoi() == null)
-				{
-					LogWriter.showWarningAndWriteLog(PluginMessages.getString(
-						"Error.NoROI"));
-				}
-				else {
+					LogWriter.showWarningAndWriteLog(PluginMessages.getString("Error.NoStack"));
+				} else if (PluginAPI.getInstance().getDatasetAPI().getImagePlus().getRoi() == null) {
+					LogWriter.showWarningAndWriteLog(PluginMessages.getString("Error.NoROI"));
+				} else {
 					MainMenu.this.disableMainMenuButtons(true);
 					new DriftSetupDialog();
 				}
@@ -315,23 +299,18 @@ public class MainMenu extends Frame {
 		}
 
 		/**
-		 * A {@link MapSetupDialog} is displayed. If no {@link ImageStack} is opened
-		 * or the stack size is less than 3 a message Dialog is displayed.
+		 * A {@link MapSetupDialog} is displayed. If no {@link ImageStack} is
+		 * opened or the stack size is less than 3 a message Dialog is
+		 * displayed.
 		 */
 		private void openMapSetupDialog() {
 			if (PluginAPI.getInstance().getDatasetAPI() == null) {
-				LogWriter.showWarningAndWriteLog(PluginMessages.getString(
-					"Error.NoImage"));
-			}
-			else if (PluginAPI.getInstance().getDatasetAPI().getStackSize() < 2) {
-				LogWriter.showWarningAndWriteLog(PluginMessages.getString(
-					"Error.NoStack"));
-			}
-			else if (PluginAPI.getInstance().getDatasetAPI().getStackSize() < 3) {
-				LogWriter.showWarningAndWriteLog(PluginMessages.getString(
-					"Error.StackToSmall"));
-			}
-			else {
+				LogWriter.showWarningAndWriteLog(PluginMessages.getString("Error.NoImage"));
+			} else if (PluginAPI.getInstance().getDatasetAPI().getStackSize() < 2) {
+				LogWriter.showWarningAndWriteLog(PluginMessages.getString("Error.NoStack"));
+			} else if (PluginAPI.getInstance().getDatasetAPI().getStackSize() < 3) {
+				LogWriter.showWarningAndWriteLog(PluginMessages.getString("Error.StackToSmall"));
+			} else {
 				MainMenu.this.disableMainMenuButtons(true);
 				new MapSetupDialog();
 			}
@@ -343,14 +322,10 @@ public class MainMenu extends Frame {
 		 */
 		private void openStackSetupDialog() {
 			if (PluginAPI.getInstance().getDatasetAPI() == null) {
-				LogWriter.showWarningAndWriteLog(PluginMessages.getString(
-					"Error.NoImage"));
-			}
-			else if (PluginAPI.getInstance().getDatasetAPI().getStackSize() < 2) {
-				LogWriter.showWarningAndWriteLog(PluginMessages.getString(
-					"Error.NoStack"));
-			}
-			else {
+				LogWriter.showWarningAndWriteLog(PluginMessages.getString("Error.NoImage"));
+			} else if (PluginAPI.getInstance().getDatasetAPI().getStackSize() < 2) {
+				LogWriter.showWarningAndWriteLog(PluginMessages.getString("Error.NoStack"));
+			} else {
 				new StackSetupDialog();
 			}
 		}
@@ -386,10 +361,8 @@ public class MainMenu extends Frame {
 			final FlowLayout flowLayout = new FlowLayout(FlowLayout.LEADING);
 			flowLayout.setHgap(NORTH_PANE_GAP);
 			this.setLayout(flowLayout);
-			usedStackLabel = new Label(PluginMessages.getString(
-				"Label.NoStackSelected"));
-			changeStackButton = new Button(PluginMessages.getString(
-				"Button.SelectStack"));
+			usedStackLabel = new Label(PluginMessages.getString("Label.NoStackSelected"));
+			changeStackButton = new Button(PluginMessages.getString("Button.SelectStack"));
 			changeStackButton.addActionListener(mainMenuListener);
 			this.add(changeStackButton);
 			this.add(usedStackLabel);
@@ -415,17 +388,12 @@ public class MainMenu extends Frame {
 		 */
 		public void updateStackSelection() {
 			if (PluginAPI.getInstance().getDatasetAPI() == null) {
-				usedStackLabel.setText(PluginMessages.getString(
-					"Label.NoStackSelected"));
-				changeStackButton.setLabel(PluginMessages.getString(
-					"Button.SelectStack"));
+				usedStackLabel.setText(PluginMessages.getString("Label.NoStackSelected"));
+				changeStackButton.setLabel(PluginMessages.getString("Button.SelectStack"));
 				MainMenu.this.disableMainMenuButtons(false);
-			}
-			else {
-				usedStackLabel.setText(PluginAPI.getInstance().getDatasetAPI()
-					.getImagePlus().getTitle());
-				changeStackButton.setLabel(PluginMessages.getString(
-					"Button.ChangeStack"));
+			} else {
+				usedStackLabel.setText(PluginAPI.getInstance().getDatasetAPI().getImagePlus().getTitle());
+				changeStackButton.setLabel(PluginMessages.getString("Button.ChangeStack"));
 				MainMenu.this.enableMainMenuButtons();
 			}
 		}
@@ -474,14 +442,14 @@ public class MainMenu extends Frame {
 	private StackSelectionPanel stackSelectionPanel;
 
 	/**
-	 * Creates a new instance of {@link MainMenu} with all components and sets it
-	 * visible.
+	 * Creates a new instance of {@link MainMenu} with all components and sets
+	 * it visible.
 	 */
 	public MainMenu() {
 		super(PluginMessages.getString("Title.MainMenu"));
 		mainMenuListener = new MainMenuListener();
-		this.setLayout(new BorderLayout(PluginConstants.LAYOUT__BORDER_LAYOUT_GAP,
-			PluginConstants.LAYOUT__BORDER_LAYOUT_GAP));
+		this.setLayout(
+				new BorderLayout(PluginConstants.LAYOUT__BORDER_LAYOUT_GAP, PluginConstants.LAYOUT__BORDER_LAYOUT_GAP));
 		this.setBackground(ImageJ.backgroundColor);
 		northPanel = new Panel();
 		// I use a GridLayout because the inserted components use the complete
@@ -547,8 +515,9 @@ public class MainMenu extends Frame {
 	/**
 	 * Disables all {@link Button} at the {@link MainMenu}.
 	 *
-	 * @param disableStackSelection If false, all {@link Button}s that allow a
-	 *          stack selection will stay enabled.
+	 * @param disableStackSelection
+	 *            If false, all {@link Button}s that allow a stack selection
+	 *            will stay enabled.
 	 */
 	public void disableMainMenuButtons(final boolean disableStackSelection) {
 		if (disableStackSelection == true) {
@@ -559,8 +528,7 @@ public class MainMenu extends Frame {
 				}
 			}
 			stackSelectionPanel.disableStackSelection();
-		}
-		else {
+		} else {
 			for (final Button element : gridBagPane.disabledButtons) {
 				element.setEnabled(false);
 			}
@@ -587,16 +555,16 @@ public class MainMenu extends Frame {
 	 * Enables a specific {@link Button} at the instance of the
 	 * {@link MapResultPanel}.
 	 *
-	 * @param key The key that is used to map the {@link Button} at the
-	 *          {@link Hashtable} buttonTable in {@link MapResultPanel}.
+	 * @param key
+	 *            The key that is used to map the {@link Button} at the
+	 *            {@link Hashtable} buttonTable in {@link MapResultPanel}.
 	 */
 	public void enableMapResultButton(final String key) {
 		if (key.startsWith("key_show")) {
 			mapResultPanel.enableButton(key);
 			final String key_result = key.substring(8);
 			mapResultPanel.enableButton("key_export" + key_result);
-		}
-		else {
+		} else {
 			mapResultPanel.enableButton(key);
 		}
 	}
@@ -604,25 +572,24 @@ public class MainMenu extends Frame {
 	/**
 	 * Updates the {@link ProgressBar} at the {@link MainMenu}.
 	 *
-	 * @param value A new value between 0 and 100
+	 * @param value
+	 *            A new value between 0 and 100
 	 */
 	public void setProgress(final int value) {
 		IJ.showProgress(value, 100);
 	}
 
 	/**
-	 * Parts of the {@link MainMenu} are replaced by new components to access the
-	 * results of elemental mapping.
+	 * Parts of the {@link MainMenu} are replaced by new components to access
+	 * the results of elemental mapping.
 	 */
 	public void showMapResultPanel() {
 		this.setTitle(PluginMessages.getString("Titel.MapResultDialog"));
-		mapResultDescription = new DescriptionPanel(PluginMessages.getString(
-			"Label.MapResultInfo"));
-		mapResultDescription.setDetailedDescription(String.format(PluginMessages
-			.getString("Label.MapResultDetailedInfo"), PluginConstants.ERROR__NON,
-			PluginConstants.ERROR__SIGNAL_LESS_THAN_ZERO,
-			PluginConstants.ERROR__A_NOT_POSSIBLE_TO_CALCULATE,
-			PluginConstants.ERROR__CONVERGENCE, PluginConstants.ERROR__NAN));
+		mapResultDescription = new DescriptionPanel(PluginMessages.getString("Label.MapResultInfo"));
+		mapResultDescription.setDetailedDescription(String.format(
+				PluginMessages.getString("Label.MapResultDetailedInfo"), PluginConstants.ERROR__NON,
+				PluginConstants.ERROR__SIGNAL_LESS_THAN_ZERO, PluginConstants.ERROR__A_NOT_POSSIBLE_TO_CALCULATE,
+				PluginConstants.ERROR__CONVERGENCE, PluginConstants.ERROR__NAN));
 		mapResultPanel = new MapResultPanel();
 		northPanel.remove(stackSelectionPanel);
 		northPanel.add(mapResultDescription);
