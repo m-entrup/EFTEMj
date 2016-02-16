@@ -15,6 +15,7 @@ import org.apache.commons.math3.fitting.WeightedObservedPoint;
 import org.apache.commons.math3.fitting.leastsquares.LeastSquaresBuilder;
 import org.apache.commons.math3.fitting.leastsquares.LeastSquaresProblem;
 import org.apache.commons.math3.linear.DiagonalMatrix;
+
 import de.m_entrup.EFTEMj_lib.lma.PowerLawFunction;
 import ij.IJ;
 import ij.ImageJ;
@@ -41,7 +42,7 @@ public class EELS_SpectrumFitPlugin implements ExtendedPlugInFilter {
 		if (arg1 != null) {
 			final Window win = arg1.getWindow();
 			if (win instanceof PlotWindow && win.isVisible()) {
-				PlotWindow plotWin = (PlotWindow) win;
+				final PlotWindow plotWin = (PlotWindow) win;
 				oldPlot = plotWin.getPlot();
 				pl = new PointList(oldPlot.getXValues(), oldPlot.getYValues());
 				return DOES_ALL;
@@ -198,15 +199,15 @@ public class EELS_SpectrumFitPlugin implements ExtendedPlugInFilter {
 		}
 
 		public void performFit() {
-			ArrayList<WeightedObservedPoint> points =
+			final ArrayList<WeightedObservedPoint> points =
 				new ArrayList<WeightedObservedPoint>();
 			for (int i = 0; i < filteredX.size(); i++) {
 				points.add(new WeightedObservedPoint(Math.sqrt(filteredY.get(i)),
 					filteredX.get(i), filteredY.get(i)));
 			}
 			if (points.size() < 2) return;
-			SpectrumFitter fitter = new SpectrumFitter();
-			double[] coeffs = fitter.fit(points);
+			final SpectrumFitter fitter = new SpectrumFitter();
+			final double[] coeffs = fitter.fit(points);
 			fittedY = new ArrayList<Double>();
 			signalX = new ArrayList<Double>();
 			signalY = new ArrayList<Double>();
@@ -226,21 +227,21 @@ public class EELS_SpectrumFitPlugin implements ExtendedPlugInFilter {
 
 			@Override
 			protected LeastSquaresProblem getProblem(
-				Collection<WeightedObservedPoint> points)
+				final Collection<WeightedObservedPoint> points)
 			{
 				final int len = points.size();
 				final double[] target = new double[len];
 				final double[] weights = new double[len];
-				double[] initialGuess = { 20, -2 };
+				final double[] initialGuess = { 20, -2 };
 
 				int i = 0;
-				for (WeightedObservedPoint point : points) {
+				for (final WeightedObservedPoint point : points) {
 					target[i] = point.getY();
 					weights[i] = point.getWeight();
 					i += 1;
 				}
 
-				PowerLawFunction func = new PowerLawFunction();
+				final PowerLawFunction func = new PowerLawFunction();
 				final AbstractCurveFitter.TheoreticalValuesFunction model =
 					new AbstractCurveFitter.TheoreticalValuesFunction(func, points);
 
