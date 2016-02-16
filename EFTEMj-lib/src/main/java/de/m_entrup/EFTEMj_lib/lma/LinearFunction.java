@@ -1,17 +1,16 @@
 
 package de.m_entrup.EFTEMj_lib.lma;
 
-public class PowerLawFunction implements EELS_BackgroundFunction {
+public class LinearFunction implements EELS_BackgroundFunction {
 
 	@Override
 	public double value(double t, double... parameters) {
-		return parameters[0] * Math.pow(t, parameters[1]);
+		return parameters[0] + t * parameters[1];
 	}
 
 	@Override
 	public double[] gradient(double t, double... parameters) {
-		return new double[] { Math.pow(t, parameters[1]), parameters[0] * Math.pow(
-			t, parameters[1]) * Math.log(t) };
+		return new double[] { 1, t };
 	}
 
 	/* (non-Javadoc)
@@ -28,6 +27,6 @@ public class PowerLawFunction implements EELS_BackgroundFunction {
 	 */
 	@Override
 	public String getFunctionName() {
-		return "Power law function";
+		return "Linear function";
 	}
 }
