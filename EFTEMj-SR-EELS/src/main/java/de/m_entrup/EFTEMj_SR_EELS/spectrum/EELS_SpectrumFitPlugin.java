@@ -94,7 +94,12 @@ public class EELS_SpectrumFitPlugin implements ExtendedPlugInFilter {
 		gd.addSlider("Upper limit", pl.getMin(), pl.getMax(), pl.getMax());
 		gd.addPreviewCheckbox(arg2);
 		gd.showDialog();
-		if (gd.wasCanceled()) return DONE;
+		if (gd.wasCanceled()) {
+			if (newPlotWin != null) {
+				newPlotWin.close();
+			}
+			return DONE;
+		}
 		return DOES_ALL;
 	}
 
