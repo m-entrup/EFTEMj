@@ -6,10 +6,12 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.math3.exception.ConvergenceException;
 import org.apache.commons.math3.fitting.AbstractCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoint;
 import org.apache.commons.math3.fitting.leastsquares.LeastSquaresBuilder;
@@ -36,15 +38,18 @@ public class EELS_SpectrumFitPlugin implements ExtendedPlugInFilter {
 	private GenericDialog gd;
 	private int startX;
 	private int stopX;
+	private double prvLowerLimit = Double.POSITIVE_INFINITY;
+	private double prvUpperLimit = Double.NEGATIVE_INFINITY;
 
 	@Override
-	public int setup(final String arg0, final ImagePlus arg1) {
-		if (arg1 != null) {
-			final Window win = arg1.getWindow();
+	public int setup(final String arg0, final ImagePlus imp) {
+		if (imp != null) {
+			final Window win = imp.getWindow();
 			if (win instanceof PlotWindow && win.isVisible()) {
 				final PlotWindow plotWin = (PlotWindow) win;
 				oldPlot = plotWin.getPlot();
-				pl = new PointList(oldPlot.getXValues(), oldPlot.getYValues());
+				pl = new PointList(oldPlot.getXValues(), oldPlot.getYValues(), oldPlot
+					.getLimits());
 				return DOES_ALL;
 			}
 		}
@@ -53,31 +58,43 @@ public class EELS_SpectrumFitPlugin implements ExtendedPlugInFilter {
 
 	@Override
 	public void run(final ImageProcessor arg0) {
-		double temp = gd.getNextNumber();
-		startX = (int) ((temp >= pl.getMin()) ? temp : pl.getMin());
-		temp = gd.getNextNumber();
-		stopX = (int) ((temp <= pl.getMax()) ? temp : pl.getMax());
-		if (startX >= stopX) return;
-		pl.filterXValues();
-		pl.filterYValues();
-		newPlotCopy();
-		pl.performFit();
-		newPlot.setColor("red");
-		newPlot.addPoints(pl.getXValues(), pl.getFittedY(), Plot.CIRCLE);
-		newPlot.setColor("green");
-		newPlot.addPoints(pl.getSignalX(), pl.getSignalY(), Plot.LINE);
-		newPlot.setColor("blue");
-		newPlot.addPoints(pl.getFilteredXValues(), pl.getFilteredYValues(),
-			Plot.BOX);
-		newPlot.setColor("black"); // to get a black line for the main curve
-		newPlot.setLimitsToFit(false);
-		if (newPlotWin != null) {
-			newPlotWin.drawPlot(newPlot);
+		final double lowerLimit = gd.getNextNumber();
+		final double upperLimit = gd.getNextNumber();
+		final boolean showNevativeSignal = gd.getNextBoolean();
+		if (lowerLimit != prvLowerLimit | upperLimit != prvUpperLimit) {
+			startX = (int) ((lowerLimit >= pl.getMin()) ? lowerLimit : pl.getMin());
+			stopX = (int) ((upperLimit <= pl.getMax()) ? upperLimit : pl.getMax());
+			if (startX >= stopX) return;
+			pl.filterXValues();
+			pl.filterYValues();
+			newPlotCopy();
+			pl.performFit();
+			newPlot.setColor("red");
+			newPlot.addPoints(pl.getXValues(), pl.getFittedY(), Plot.CIRCLE);
+			newPlot.setColor("green");
+			newPlot.addPoints(pl.getSignalX(), pl.getSignalY(), Plot.LINE);
+			newPlot.setColor("blue");
+			newPlot.addPoints(pl.getFilteredXValues(), pl.getFilteredYValues(),
+				Plot.BOX);
+			newPlot.setColor("black"); // to get a black line for the main curve
+			prvLowerLimit = lowerLimit;
+			prvUpperLimit = upperLimit;
+			if (newPlotWin != null) {
+				newPlotWin.drawPlot(newPlot);
+			}
+			else {
+				newPlotWin = newPlot.show();
+			}
+		}
+		if (!showNevativeSignal) {
+			newPlot.setLimitsToFit(false);
+			final double[] limits = newPlot.getLimits();
+			newPlot.setLimits(pl.getMin(), pl.getMax(), 0, limits[3]);
 		}
 		else {
-			newPlotWin = newPlot.show();
+			newPlot.setLimitsToFit(false);
 		}
-
+		newPlot.updateImage();
 	}
 
 	@Override
@@ -91,8 +108,10 @@ public class EELS_SpectrumFitPlugin implements ExtendedPlugInFilter {
 		final PlugInFilterRunner arg2)
 	{
 		gd = new GenericDialog("EELS background fit");
+		gd.addMessage("Background fit intervall");
 		gd.addSlider("Lower limit", pl.getMin(), pl.getMax(), pl.getMin());
 		gd.addSlider("Upper limit", pl.getMin(), pl.getMax(), pl.getMax());
+		gd.addCheckbox("Show_negative Signal", false);
 		gd.addPreviewCheckbox(arg2);
 		gd.showDialog();
 		if (gd.wasCanceled()) {
@@ -114,8 +133,8 @@ public class EELS_SpectrumFitPlugin implements ExtendedPlugInFilter {
 	}
 
 	private void newPlotCopy() {
-		newPlot = new Plot("Fit of " + oldPlot.getTitle(), "", "", oldPlot
-			.getXValues(), oldPlot.getYValues());
+		newPlot = new Plot("Fit of " + oldPlot.getTitle(), "", "", pl.getXArray(),
+			pl.getYArray());
 		newPlot.useTemplate(oldPlot, Plot.COPY_LABELS);
 	}
 
@@ -128,24 +147,32 @@ public class EELS_SpectrumFitPlugin implements ExtendedPlugInFilter {
 		private ArrayList<Double> fittedY;
 		private ArrayList<Double> signalX;
 		private ArrayList<Double> signalY;
-		private final float min;
-		private final float max;
+		private final Double min;
+		private final Double max;
 
-		public PointList(final float[] xVals, final float[] yVals) {
+		public PointList(final float[] xVals, final float[] yVals,
+			final double[] limits)
+		{
 			valuesX = new ArrayList<Double>();
 			valuesY = new ArrayList<Double>();
 			filteredX = new ArrayList<Double>();
 			filteredY = new ArrayList<Double>();
+			fittedY = new ArrayList<Double>();
+			signalX = new ArrayList<Double>();
+			signalY = new ArrayList<Double>();
 			for (int i = 0; i < xVals.length; i++) {
-				valuesX.add((double) xVals[i]);
-				valuesY.add((double) yVals[i]);
-				filteredX.add((double) xVals[i]);
-				filteredY.add((double) yVals[i]);
+				if (xVals[i] > limits[0] & xVals[i] < limits[1]) {
+					valuesX.add((double) xVals[i]);
+					valuesY.add((double) yVals[i]);
+					filteredX.add((double) xVals[i]);
+					filteredY.add((double) yVals[i]);
+					fittedY.add(0.);
+					signalX.add((double) xVals[i]);
+					signalY.add((double) yVals[i]);
+				}
 			}
-			final float[] sorted = Arrays.copyOf(xVals, xVals.length);
-			Arrays.sort(sorted);
-			this.min = sorted[0];
-			this.max = sorted[sorted.length - 1];
+			this.min = Collections.min(valuesX);
+			this.max = Collections.max(valuesX);
 		}
 
 		public ArrayList<Double> getSignalX() {
@@ -157,15 +184,25 @@ public class EELS_SpectrumFitPlugin implements ExtendedPlugInFilter {
 		}
 
 		public float getMin() {
-			return min;
+			return min.floatValue();
 		}
 
 		public float getMax() {
-			return max;
+			return max.floatValue();
 		}
 
 		public ArrayList<Double> getXValues() {
 			return valuesX;
+		}
+
+		public double[] getXArray() {
+			return ArrayUtils.toPrimitive(valuesX.toArray(new Double[valuesX
+				.size()]));
+		}
+
+		public double[] getYArray() {
+			return ArrayUtils.toPrimitive(valuesY.toArray(new Double[valuesY
+				.size()]));
 		}
 
 		public ArrayList<Double> getFilteredXValues() {
@@ -207,14 +244,20 @@ public class EELS_SpectrumFitPlugin implements ExtendedPlugInFilter {
 			}
 			if (points.size() < 2) return;
 			final SpectrumFitter fitter = new SpectrumFitter();
-			final double[] coeffs = fitter.fit(points);
-			fittedY = new ArrayList<Double>();
-			signalX = new ArrayList<Double>();
-			signalY = new ArrayList<Double>();
-			for (int i = 0; i < valuesX.size(); i++) {
-				fittedY.add(coeffs[0] * Math.pow(valuesX.get(i), coeffs[1]));
-				signalX.add(valuesX.get(i));
-				signalY.add(valuesY.get(i) - fittedY.get(i));
+			try {
+				final double[] coeffs = fitter.fit(points);
+				fittedY = new ArrayList<Double>();
+				signalX = new ArrayList<Double>();
+				signalY = new ArrayList<Double>();
+				for (int i = 0; i < valuesX.size(); i++) {
+					fittedY.add(coeffs[0] * Math.pow(valuesX.get(i), coeffs[1]));
+					signalX.add(valuesX.get(i));
+					signalY.add(valuesY.get(i) - fittedY.get(i));
+				}
+			}
+			catch (final ConvergenceException e) {
+				IJ.log(e.getLocalizedMessage());
+				return;
 			}
 
 		}
