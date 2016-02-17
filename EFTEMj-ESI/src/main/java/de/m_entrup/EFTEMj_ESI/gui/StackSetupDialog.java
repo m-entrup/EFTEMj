@@ -372,8 +372,8 @@ public class StackSetupDialog extends EFTEMFrame {
 				eLossField.setValue(datasetAPI.getELossArray()[i]);
 			}
 			else {
-				eLossField.setValue(ELossTool.eLossFromTitle(datasetAPI.getImagePlus(),
-					i));
+				eLossField.setValue(ELossTool.eLossFromSliceLabel(datasetAPI
+					.getImagePlus(), i));
 			}
 			textFields[i] = eLossField;
 			addElement(eLossField, 2, i + 3, 1, 1);

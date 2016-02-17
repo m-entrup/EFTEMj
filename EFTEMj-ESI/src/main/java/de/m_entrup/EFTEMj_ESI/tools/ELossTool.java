@@ -30,7 +30,11 @@ package de.m_entrup.EFTEMj_ESI.tools;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.configuration.CompositeConfiguration;
+import org.apache.commons.configuration.ConfigurationException;
+
 import de.m_entrup.EFTEMj_ESI.plugin.PluginConstants;
+import de.m_entrup.EFTEMj_ESI.shared.ESI_ConfigurationManager;
 import ij.ImagePlus;
 import ij.ImageStack;
 
@@ -40,9 +44,14 @@ import ij.ImageStack;
  */
 public class ELossTool {
 
+	private static String configKeyPrefix = "ESI." + ELossTool.class
+		.getSimpleName() + ".";
+	public static String databaseTitlePatternKey = configKeyPrefix +
+		"titlePattern";
+
 	/**
 	 * By the use of regular expressions the energy loss is extracted from the
-	 * title of an image.
+	 * label of a slice.
 	 *
 	 * @param imp The {@link ImagePlus} contains the images.
 	 * @param index The index of the image where you want to extract the energy
@@ -50,7 +59,9 @@ public class ELossTool {
 	 * @return The energy loss in eV that has been found. If the label does not
 	 *         contain an readable energy loss 0 is returned.
 	 */
-	public static float eLossFromTitle(final ImagePlus imp, final int index) {
+	public static float eLossFromSliceLabel(final ImagePlus imp,
+		final int index)
+	{
 		final ImageStack stack = imp.getStack();
 		String label;
 		if (index == 0 & stack.getSize() == 1) {
@@ -64,7 +75,7 @@ public class ELossTool {
 
 	/**
 	 * By the use of regular expressions the energy loss is extracted from the
-	 * title of an image.
+	 * label of a slice.
 	 *
 	 * @param imageStack The {@link ImageStack} that contains the image at
 	 *          <code>(index+1)</code>.
@@ -73,11 +84,26 @@ public class ELossTool {
 	 * @return The energy loss in eV that has been found. If the label does not
 	 *         contain an readable energy loss 0 is returned.
 	 */
-	public static float eLossFromTitle(final ImageStack imageStack,
+	public static float eLossFromSliceLabel(final ImageStack imageStack,
 		final int index)
 	{
 		final String label = imageStack.getShortSliceLabel(index + 1);
 		return findELoss(label);
+	}
+
+	/**
+	 * By the use of regular expressions the energy loss is extracted from the
+	 * title of an image.
+	 *
+	 * @param imp The {@link ImagePlus} contains the images.
+	 * @param index The index of the image where you want to extract the energy
+	 *          loss. <code>index</code> starts at 0.
+	 * @return The energy loss in eV that has been found. If the label does not
+	 *         contain an readable energy loss 0 is returned.
+	 */
+	public static float eLossFromTitle(final ImagePlus imp, final int index) {
+		final String title = imp.getTitle();
+		return findELoss(title, index);
 	}
 
 	/**
@@ -101,6 +127,51 @@ public class ELossTool {
 			String eLossStr = label.substring(matcher2.start(), matcher2.end() - 2);
 			eLossStr = eLossStr.replace(",", ".");
 			return stringToFloat(eLossStr);
+		}
+		return 0;
+	}
+
+	/**
+	 * Tries to find a pattern that describes the energy losses of a spectrum
+	 * imaging stack. The default pattern is defined in EFTEMj-ESI.properties. The
+	 * pattern must contain at least 2 groups: start value and increment. The
+	 * default pattern contains 3 groups: start, stop and increment.
+	 *
+	 * @param title A String that may contain an eLoss.
+	 * @param index The index of the image where you want to extract the energy
+	 *          loss. <code>index</code> starts at 0.
+	 * @return The eLoss fount at the String, 0 if no eLoss was found.
+	 */
+	private static float findELoss(final String title, final int index) {
+		try {
+			final CompositeConfiguration config = ESI_ConfigurationManager
+				.getConfiguration();
+			final String pattern = config.getString(databaseTitlePatternKey);
+			final Matcher matcher = Pattern.compile(pattern).matcher(title);
+			if (matcher.find()) {
+				if (matcher.groupCount() == 2) {
+					final float start = stringToFloat(matcher.group(1));
+					final float inc = stringToFloat(matcher.group(2));
+					return start - index * inc;
+				}
+				else if (matcher.groupCount() == 3) {
+					final float start = stringToFloat(matcher.group(1));
+					final float stop = stringToFloat(matcher.group(2));
+					final float inc = stringToFloat(matcher.group(3));
+					if (start > stop) {
+						return start - index * inc;
+					}
+					else {
+						return start + index * inc;
+					}
+				}
+				else {
+					return 0;
+				}
+			}
+		}
+		catch (final ConfigurationException e) {
+			return 0;
 		}
 		return 0;
 	}
