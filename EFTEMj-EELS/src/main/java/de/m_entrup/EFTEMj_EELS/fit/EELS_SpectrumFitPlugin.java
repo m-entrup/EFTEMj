@@ -93,6 +93,8 @@ public class EELS_SpectrumFitPlugin implements ExtendedPlugInFilter {
 			prvLowerLimit = lowerLimit;
 			prvUpperLimit = upperLimit;
 			if (newPlotWin != null) {
+				final double[] limits = oldPlot.getLimits();
+				newPlot.setLimits(pl.getMin(), pl.getMax(), 0, limits[3]);
 				newPlotWin.drawPlot(newPlot);
 			}
 			else {

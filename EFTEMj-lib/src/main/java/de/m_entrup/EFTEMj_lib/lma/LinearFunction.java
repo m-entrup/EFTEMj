@@ -1,6 +1,12 @@
 
 package de.m_entrup.EFTEMj_lib.lma;
 
+/**
+ * There is no physical reason for using a linear background model. There are
+ * acceptable results only for high energy losses (>1000eV).
+ * 
+ * @author Michael Entrup b. Epping
+ */
 public class LinearFunction implements EELS_BackgroundFunction {
 
 	@Override

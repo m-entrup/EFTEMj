@@ -1,6 +1,11 @@
 
 package de.m_entrup.EFTEMj_lib.lma;
 
+/**
+ * This is the standard for fitting the background signal of an EEL spectrum.
+ * 
+ * @author Michael Entrup b. Epping
+ */
 public class PowerLawFunction implements EELS_BackgroundFunction {
 
 	@Override
