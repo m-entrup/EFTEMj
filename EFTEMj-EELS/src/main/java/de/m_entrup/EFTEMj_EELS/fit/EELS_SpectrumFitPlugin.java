@@ -99,22 +99,23 @@ public class EELS_SpectrumFitPlugin implements ExtendedPlugInFilter {
 				newPlotWin = newPlot.show();
 			}
 		}
-		if (!showNevativeSignal) {
-			/**
-			 * Without this try-catch-block it can happen, that IJ shows a
-			 * NullPointerException at the log and the preview is cancelled.
-			 */
-			try {
+		/**
+		 * Without this try-catch-block it can happen, that IJ shows a
+		 * NullPointerException at the log and the preview is cancelled.
+		 */
+		try {
+			if (!showNevativeSignal) {
 				newPlot.setLimitsToFit(false);
 				final double[] limits = newPlot.getLimits();
 				newPlot.setLimits(pl.getMin(), pl.getMax(), 0, limits[3]);
 			}
-			catch (NullPointerException e) {
-				return;
+
+			else {
+				newPlot.setLimitsToFit(false);
 			}
 		}
-		else {
-			newPlot.setLimitsToFit(false);
+		catch (NullPointerException e) {
+			return;
 		}
 		newPlot.updateImage();
 	}
