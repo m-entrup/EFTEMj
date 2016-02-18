@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package de.m_entrup.EFTEMj_SR_EELS.spectrum;
+package de.m_entrup.EFTEMj_EELS.importer;
 
 import java.io.File;
 import java.io.IOException;

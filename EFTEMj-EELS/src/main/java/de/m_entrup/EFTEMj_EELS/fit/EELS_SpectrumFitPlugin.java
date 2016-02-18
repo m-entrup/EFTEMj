@@ -1,5 +1,5 @@
 
-package de.m_entrup.EFTEMj_SR_EELS.spectrum;
+package de.m_entrup.EFTEMj_EELS.fit;
 
 import java.awt.Window;
 import java.io.File;
@@ -19,6 +19,7 @@ import org.apache.commons.math3.fitting.leastsquares.LeastSquaresBuilder;
 import org.apache.commons.math3.fitting.leastsquares.LeastSquaresProblem;
 import org.apache.commons.math3.linear.DiagonalMatrix;
 
+import de.m_entrup.EFTEMj_EELS.importer.EELS_SpectrumFromMsaPlugin;
 import de.m_entrup.EFTEMj_lib.lma.EELS_BackgroundFunction;
 import de.m_entrup.EFTEMj_lib.lma.FunctionList;
 import ij.IJ;
@@ -99,9 +100,18 @@ public class EELS_SpectrumFitPlugin implements ExtendedPlugInFilter {
 			}
 		}
 		if (!showNevativeSignal) {
-			newPlot.setLimitsToFit(false);
-			final double[] limits = newPlot.getLimits();
-			newPlot.setLimits(pl.getMin(), pl.getMax(), 0, limits[3]);
+			/**
+			 * Without this try-catch-block it can happen, that IJ shows a
+			 * NullPointerException at the log and the preview is cancelled.
+			 */
+			try {
+				newPlot.setLimitsToFit(false);
+				final double[] limits = newPlot.getLimits();
+				newPlot.setLimits(pl.getMin(), pl.getMax(), 0, limits[3]);
+			}
+			catch (NullPointerException e) {
+				return;
+			}
 		}
 		else {
 			newPlot.setLimitsToFit(false);

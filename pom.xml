@@ -19,6 +19,7 @@
 		<module>EFTEMj-lib</module>
 		<module>EFTEMj-ESI</module>
 		<module>EFTEMj-SR-EELS</module>
+		<module>EFTEMj-EELS</module>
 	</modules>
 
 	<name>EFTEMj</name>
