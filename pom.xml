@@ -96,6 +96,10 @@
 			<groupId>gov.nist.math</groupId>
 			<artifactId>jama</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>sc.fiji</groupId>
+			<artifactId>IO_</artifactId>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>
