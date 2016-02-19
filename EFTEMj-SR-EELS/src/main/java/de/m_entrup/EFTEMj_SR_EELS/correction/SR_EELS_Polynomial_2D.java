@@ -52,6 +52,8 @@ public class SR_EELS_Polynomial_2D extends Polynomial_2D {
 	private static SR_EELS_FloatProcessor transformWidth;
 	private static SR_EELS_FloatProcessor transformY1;
 
+	private double maxWidth;
+
 	public SR_EELS_Polynomial_2D(final int m, final int n) {
 		super(m, n);
 	}
@@ -84,7 +86,7 @@ public class SR_EELS_Polynomial_2D extends Polynomial_2D {
 				(2 * getParam(0, 2));
 		final double maxPos = -getParam(0, 1) / (2 * getParam(0, 2));
 		final double[] maxPoint = { 0, maxPos };
-		final double maxValue = val(maxPoint);
+		maxWidth = val(maxPoint);
 		if (Double.isNaN(rootL) || rootL < -CameraSetup.getFullHeight() / 2) rootL =
 			-CameraSetup.getFullHeight() / 2;
 		if (Double.isNaN(rootH) || rootH > CameraSetup.getFullHeight() / 2 - 1)
@@ -96,9 +98,9 @@ public class SR_EELS_Polynomial_2D extends Polynomial_2D {
 		 */
 		final LinkedHashMap<Integer, Double> map =
 			new LinkedHashMap<Integer, Double>();
-		final double a00 = getParam(0, 0) / maxValue;
-		final double a01 = getParam(0, 1) / maxValue;
-		final double a02 = getParam(0, 2) / maxValue;
+		final double a00 = getParam(0, 0) / maxWidth;
+		final double a01 = getParam(0, 1) / maxWidth;
+		final double a02 = getParam(0, 2) / maxWidth;
 		int index = 0;
 		for (int x = (int) Math.ceil(rootL); x <= rootH; x++) {
 			final double num = 3 * Math.pow(2 * x + a01 / a02, 2);
@@ -313,6 +315,10 @@ public class SR_EELS_Polynomial_2D extends Polynomial_2D {
 			transformWidth.getBinningY(), transformWidth.getOriginX(), transformWidth
 				.getOriginY());
 		return fp;
+	}
+
+	public double getPixelHeight() {
+		return 1. / maxWidth;
 	}
 
 	public float getY2(final float[] x2) {

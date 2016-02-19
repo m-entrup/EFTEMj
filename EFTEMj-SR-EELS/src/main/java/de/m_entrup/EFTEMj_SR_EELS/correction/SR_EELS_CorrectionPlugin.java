@@ -52,6 +52,7 @@ import ij.ImageJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.gui.GenericDialog;
+import ij.measure.Calibration;
 import ij.plugin.filter.ExtendedPlugInFilter;
 import ij.plugin.filter.PlugInFilterRunner;
 import ij.process.FloatProcessor;
@@ -107,6 +108,7 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 	 * </p>
 	 */
 	private SR_EELS_FloatProcessor inputProcessor;
+	private ImagePlus inputImp;
 	private SR_EELS_FloatProcessor outputProcessor;
 	private String title;
 	/**
@@ -143,6 +145,7 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 			outputImage.show();
 			return NO_CHANGES | DONE;
 		}
+		inputImp = imp;
 		return FLAGS;
 	}
 
@@ -173,6 +176,9 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 		 */
 		outputProcessor = widthFunction.createOutputImage();
 		outputImage = new ImagePlus(title + "_corrected", outputProcessor);
+		final Calibration cal = new Calibration(inputImp);
+		cal.pixelHeight = widthFunction.getPixelHeight();
+		outputImage.setCalibration(cal);
 		final CoordinateCorrector coordinateCorrection =
 			new FullCoordinateCorrection(inputProcessor, outputProcessor);
 		final IntensityCorrector intensityCorrection =
