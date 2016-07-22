@@ -6,7 +6,7 @@
 		<artifactId>pom-EFTEMj</artifactId>
 		<version>1.4.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>EFETEMj-pyLib</artifactId>
+	<artifactId>EFTEMj-pyLib</artifactId>
 
 	<!-- The imagej-maven-plugin will copy the jar to the folder 'jaras'. I 
 		need the plugin to be in 'jars/Lib' for Jython to find it. Therefore imagej-maven-plugin 
