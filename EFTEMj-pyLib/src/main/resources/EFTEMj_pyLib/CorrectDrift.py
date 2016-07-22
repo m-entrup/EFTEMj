@@ -40,7 +40,7 @@ def correct_drift(img1, img2, display_cc=False):
     title = img2.getTitle()
     img2_dk = Duplicator().run(img2)
     img2_dk.setTitle('DK-' + title)
-    IJ.run(img2_dk, 'Translate...', 'x=%d y=%d interpolation=None' % (x_off, y_off))
+    IJ.run(img2_dk, 'Translate...', 'x=%d y=%d interpolation=None' % (-x_off, -y_off))
     img2_dk.copyScale(img2)
     img2_dk.show()
     return img1, img2_dk
