@@ -9,9 +9,9 @@ info:       A script that calculates the Jump-Ratio of two images.
 
 from __future__ import with_statement, division
 
-from EFTEMj_pyLibs import CorrectDrift as drift
-from EFTEMj_pyLibs import HelperDialogs as dialogs
-from EFTEMj_pyLibs import Tools as tools
+from EFTEMj_pyLib import CorrectDrift as drift
+from EFTEMj_pyLib import HelperDialogs as dialogs
+from EFTEMj_pyLib import Tools as tools
 
 from ij import IJ, WindowManager
 from ij.gui import GenericDialog

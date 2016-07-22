@@ -8,7 +8,7 @@ info:       This module contains different usefull functions.
 
 from __future__ import with_statement, division
 
-from EFTEMj_pyLibs import HelperDialogs as dialogs
+from EFTEMj_pyLib import HelperDialogs as dialogs
 
 from ij import IJ, ImagePlus, ImageStack, WindowManager
 

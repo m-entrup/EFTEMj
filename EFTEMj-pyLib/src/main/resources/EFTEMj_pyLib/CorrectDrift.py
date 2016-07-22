@@ -8,9 +8,9 @@ info:       This module will correct the drift between two images.
 
 from __future__ import with_statement, division
 
-from EFTEMj_pyLibs import CrossCorrelation as cc
-from EFTEMj_pyLibs import pySIFT
-from EFTEMj_pyLibs import Tools as tools
+from EFTEMj_pyLib import CrossCorrelation as cc
+from EFTEMj_pyLib import pySIFT
+from EFTEMj_pyLib import Tools as tools
 
 import operator, pprint, math
 

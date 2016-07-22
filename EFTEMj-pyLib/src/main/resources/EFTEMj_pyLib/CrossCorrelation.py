@@ -9,7 +9,7 @@ info:       This module calculates the normalised Cross-correlation of two image
 
 from __future__ import with_statement, division
 
-from EFTEMj_pyLibs import Tools as tools
+from EFTEMj_pyLib import Tools as tools
 
 import math
 from ij import IJ, WindowManager, ImagePlus

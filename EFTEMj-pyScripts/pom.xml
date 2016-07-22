@@ -6,7 +6,7 @@
 		<artifactId>pom-EFTEMj</artifactId>
 		<version>1.4.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>EFTEMj-pyScripts_</artifactId>
+	<artifactId>EFTEMj-pyScripts</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>org.scijava</groupId>

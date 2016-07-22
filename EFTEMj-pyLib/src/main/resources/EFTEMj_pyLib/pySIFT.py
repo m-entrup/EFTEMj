@@ -8,7 +8,7 @@ info:       This module calculates the drift using SIFT.
 
 from __future__ import with_statement, division
 
-from EFTEMj_pyLibs import Tools as tools
+from EFTEMj_pyLib import Tools as tools
 
 import math
 
