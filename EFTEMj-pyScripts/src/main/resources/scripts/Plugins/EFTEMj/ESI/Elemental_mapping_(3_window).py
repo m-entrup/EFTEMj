@@ -19,8 +19,6 @@ from EFTEMj_pyLib import ElementalMapping
 
 from ij import IJ, WindowManager
 from ij.gui import GenericDialog
-from ij.plugin import ImageCalculator
-from ij.process import ImageStatistics as Stats
 
 
 def get_setup():
@@ -59,18 +57,21 @@ def run_script():
     pre1_imp, pre2_imp, post_imp = tools.stack_to_list_of_imp(corrected_stack)
 
     mapping = ElementalMapping.ThreeWindow(pre1_imp, pre2_imp, post_imp)
-    map_imp, snr_imp = mapping.get_result()
-    '''
-    snr_imp.changes = True
-    snr_imp.copyScale(post_in)
-    IJ.run(snr_imp, 'Enhance Contrast', 'saturated=0.35')
-    snr_imp.show()
-    '''
-    map_imp.changes = True
-    map_imp.copyScale(post_in)
-    map_imp.setDisplayRange(post_in.getDisplayRangeMin(), post_in.getDisplayRangeMax())
-    map_imp.show()
+    map_imp, snr_imp, r_imp, lnA_imp = mapping.get_result()
 
+    for imp in (map_imp, snr_imp, r_imp, lnA_imp):
+        imp.copyScale(post_in)
+        show_imp(imp)
+
+def show_imp(imp):
+    '''Displays the given ImagePlus.
+
+    The image is marked as modified.
+    The contrast gets enhanced.
+    '''
+    imp.changes = True
+    IJ.run(imp, 'Enhance Contrast', 'saturated=0.35')
+    imp.show()
 
 if __name__ == '__main__':
     run_script()
