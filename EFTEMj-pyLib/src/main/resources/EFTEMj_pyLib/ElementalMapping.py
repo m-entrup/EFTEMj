@@ -56,17 +56,13 @@ class ThreeWindow:
 
 def calc_lnA(Nb1, Nb2, E1, E2):
     if Nb1 > 0 and Nb2 > 0:
-        #return math.log(Nb1 / Nb2) / math.log(E2 / E1) * math.log(Nb1) + math.log(E1)
-        return math.log((Nb1 / Nb2)**math.log(Nb1)) / math.log(E2 / E1) + math.log(E1)
+        return (math.log(Nb1) - math.log(Nb2)) / (math.log(E2) - math.log(E1)) * math.log(E1) + math.log(Nb1)
     else:
         return Float.NaN
 
 def calc_r(Nb1, Nb2, E1, E2):
     if Nb1 >0 and Nb2 > 0:
-        # Three versions that lead to the same results:
-        return math.log(Nb1) / math.log(E2 / E1) - math.log(Nb2) / math.log(E2 / E1)
-        #return math.log(Nb1) / (math.log(E2) - math.log(E1)) - math.log(Nb2) / (math.log(E2) - math.log(E1))
-        #return math.log(Nb1 / Nb2) / math.log(E2 / E1)
+        return (math.log(Nb1) - math.log(Nb2)) / (math.log(E2) - math.log(E1))
     else:
         return Float.NaN
 
