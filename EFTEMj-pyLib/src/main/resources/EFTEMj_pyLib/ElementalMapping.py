@@ -14,6 +14,8 @@ import math, re
 from ij import IJ, ImagePlus
 from ij.process import FloatProcessor
 
+from java.lang import Float
+
 class ThreeWindow:
 
     def __init__(self, pre1, pre2, post):
@@ -31,16 +33,16 @@ class ThreeWindow:
     def calc_map(self):
         E1 = self.eloss_pre1
         E2 = self.eloss_pre2
-        self.map_imp = ImagePlus('Map', FloatProcessor(self.post_imp.getWidth(), self.post_imp.getHeight()))
-        for y in range(self.post_imp.getHeight()):
-            for x in range(self.post_imp.getWidth()):
-                Nb1 = self.pre1_imp.getProcessor().getf(x, y)
-                Nb2 = self.pre2_imp.getProcessor().getf(x, y)
-                sig = self.post_imp.getProcessor().getf(x, y)
-                if Nb1 > 0 and Nb2 > 0 and sig > 0:
-	                lnA = 0.5 * math.log(Nb1) + math.log(Nb2) + math.log(E1) + math.log(E2)
-	                r = math.log(Nb1 / Nb2) / math.log(E2 / E1)
-	                self.map_imp.getProcessor().setf(x, y, sig - math.exp(lnA) * math.pow(self.eloss_post, -1 * r))
+        Es = self.eloss_post
+        print len(self.pre1_imp.getProcessor().getPixels())
+        lnAs = [calc_lnA(Nb1, Nb2, E1, E2) for Nb1, Nb2 in zip(self.pre1_imp.getProcessor().getPixels(), self.pre2_imp.getProcessor().getPixels())]
+        rs = [calc_r(Nb1, Nb2, E1, E2) for Nb1, Nb2 in zip(self.pre1_imp.getProcessor().getPixels(), self.pre2_imp.getProcessor().getPixels())]
+        sigs = [calc_sig(sig, lnA, r, Es) for sig, lnA, r in zip(self.post_imp.getProcessor().getPixels(), lnAs, rs)]
+        self.map_imp = ImagePlus('Map', FloatProcessor(self.post_imp.getWidth(), self.post_imp.getHeight(), sigs))
+        from jarray import array
+        ImagePlus('a-Map', FloatProcessor(self.post_imp.getWidth(), self.post_imp.getHeight(), array(lnAs, 'f'))).show()
+        ImagePlus('r-Map', FloatProcessor(self.post_imp.getWidth(), self.post_imp.getHeight(), array(rs, 'f'))).show()
+
 
     def calc_snr(self):
         self.snr_imp = ImagePlus('SNR', self.post_imp.getProcessor())
@@ -51,3 +53,25 @@ class ThreeWindow:
         if not self.snr_imp:
             self.calc_snr()
         return self.map_imp, self.snr_imp
+
+def calc_lnA(Nb1, Nb2, E1, E2):
+    if Nb1 > 0 and Nb2 > 0:
+        #return math.log(Nb1 / Nb2) / math.log(E2 / E1) * math.log(Nb1) + math.log(E1)
+        return math.log((Nb1 / Nb2)**math.log(Nb1)) / math.log(E2 / E1) + math.log(E1)
+    else:
+        return Float.NaN
+
+def calc_r(Nb1, Nb2, E1, E2):
+    if Nb1 >0 and Nb2 > 0:
+        # Three versions that lead to the same results:
+        return math.log(Nb1) / math.log(E2 / E1) - math.log(Nb2) / math.log(E2 / E1)
+        #return math.log(Nb1) / (math.log(E2) - math.log(E1)) - math.log(Nb2) / (math.log(E2) - math.log(E1))
+        #return math.log(Nb1 / Nb2) / math.log(E2 / E1)
+    else:
+        return Float.NaN
+
+def calc_sig(sig, lnA, r, Es):
+    if not Float.isNaN(lnA) and not Float.isNaN(r) and sig > 0:
+        return float(sig) - (math.exp(lnA) * math.pow(Es, -r))
+    else:
+        return Float.NaN

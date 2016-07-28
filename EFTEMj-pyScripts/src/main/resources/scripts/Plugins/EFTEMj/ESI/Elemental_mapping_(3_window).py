@@ -60,12 +60,12 @@ def run_script():
 
     mapping = ElementalMapping.ThreeWindow(pre1_imp, pre2_imp, post_imp)
     map_imp, snr_imp = mapping.get_result()
-
+    '''
     snr_imp.changes = True
     snr_imp.copyScale(post_in)
     IJ.run(snr_imp, 'Enhance Contrast', 'saturated=0.35')
     snr_imp.show()
-
+    '''
     map_imp.changes = True
     map_imp.copyScale(post_in)
     map_imp.setDisplayRange(post_in.getDisplayRangeMin(), post_in.getDisplayRangeMax())
