@@ -16,3 +16,7 @@ hs_err_pid*
 target/
 Elemental-Mapping.log
 *.pydevproject
+bin/
+include/
+lib/
+pip-selfcheck.json
