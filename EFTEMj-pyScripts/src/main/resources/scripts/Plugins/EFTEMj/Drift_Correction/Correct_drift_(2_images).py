@@ -55,7 +55,7 @@ def correct_drift_gui():
     There is no returned value.
     """
     img1, img2 = select_images()
-    if (img1 and img2):
+    if img1 and img2:
         drift.correct_drift(img1, img2, True)
 
 

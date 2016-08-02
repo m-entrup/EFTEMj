@@ -29,7 +29,7 @@ def get_setup():
     modes = ['SIFT', 'CC']
     gd = GenericDialog('3-window-method setup')
     gd.addMessage('Select the mode  for drift correction\n' +
-        'and the images to process.')
+                  'and the images to process.')
     gd.addChoice('Mode:', options, options[0])
     image_ids = WindowManager.getIDList()
     if not image_ids or len(image_ids) < 2:
@@ -53,7 +53,7 @@ def run_script():
     selected_mode, pre1_in, pre2_in, post_in = get_setup()
     if not selected_mode:
         return
-    corrected_stack = drift.get_corrected_stack((pre1_in, pre2_in, post_in), mode = selected_mode)
+    corrected_stack = drift.get_corrected_stack((pre1_in, pre2_in, post_in), mode=selected_mode)
     pre1_imp, pre2_imp, post_imp = tools.stack_to_list_of_imp(corrected_stack)
 
     mapping = ElementalMapping.ThreeWindow(pre1_imp, pre2_imp, post_imp)

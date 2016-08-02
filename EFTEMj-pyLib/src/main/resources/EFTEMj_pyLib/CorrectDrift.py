@@ -8,11 +8,11 @@ info:       This module will correct the drift between two images.
 
 from __future__ import with_statement, division
 
+import operator, pprint, math
+
 from EFTEMj_pyLib import CrossCorrelation as cc
 from EFTEMj_pyLib import pySIFT
 from EFTEMj_pyLib import Tools as tools
-
-import operator, pprint, math
 
 from ij import IJ, ImagePlus
 from ij.plugin import Duplicator
@@ -46,7 +46,7 @@ def correct_drift(img1, img2, display_cc=False):
     return img1, img2_dk
 
 
-def get_corrected_stack(images, mode = 'CC'):
+def get_corrected_stack(images, mode='CC'):
     ''' Returns a drift corrected stack using the given method for drift detection.
     :param images: A list containing ImagePlus objects.
     :param mode: The method used for drift detection (e.g. CC, SIFT).
@@ -56,7 +56,7 @@ def get_corrected_stack(images, mode = 'CC'):
     return corrected_stack
 
 
-def get_drift_matrix(images, mode = 'CC'):
+def get_drift_matrix(images, mode='CC'):
     ''' Returns the drift matrix of the given Images.
     For N images a NxN matrix is created.
     :param images: A list containing ImagePlus objects.
@@ -86,7 +86,7 @@ def get_drift_matrix_cc(images):
     images = cc.scale_to_power_of_two(images)
     drift_matrix = [[]] * len(images)
     for i, _ in enumerate(drift_matrix):
-        drift_matrix[i] = [(0,0)] * len(images)
+        drift_matrix[i] = [(0, 0)] * len(images)
     # print 'Initial matrix: ', drift_matrix
     for i in range(len(images)):
         # print  'i=%i: ' % i, range(i + 1, len(images))
@@ -120,7 +120,7 @@ def get_drift_matrix_sift(images):
 
 
 
-def get_corrected_stack_using_vector(images, drift_vector, suffix = ''):
+def get_corrected_stack_using_vector(images, drift_vector, suffix=''):
     ''' Returns a drift corrected stack using the given drift vector.
     :param images: A list of length N containing ImagePlus objects.
     :param drift_matrix: A list of length N that contains the measured drift.
@@ -133,12 +133,12 @@ def get_corrected_stack_using_vector(images, drift_vector, suffix = ''):
     return corrected_stack
 
 
-def get_corrected_stack_using_matrix(images, drift_matrix, suffix = ''):
+def get_corrected_stack_using_matrix(images, drift_matrix, suffix=''):
     ''' Returns a drift corrected stack using the given drift matrix.
     :param images: A list of length N containing ImagePlus objects.
     :param drift_matrix: A NxN matrix that contains the measured drift between N images.
     '''
-    drift_vector =  drift_vector_from_drift_matrix(drift_matrix)
+    drift_vector = drift_vector_from_drift_matrix(drift_matrix)
     return get_corrected_stack_using_vector(images, drift_vector, suffix)
 
 
@@ -148,15 +148,19 @@ def drift_vector_from_drift_matrix(drift_matrix):
     '''
     barycenters = [tools.mean_of_list_of_tuples(row) for row in drift_matrix]
     # print 'List of centers: ', centers
-    mod_matrix = [[tuple(map(operator.sub, cell, barycenters[i])) for cell in row]
-        for i, row in enumerate(drift_matrix)]
+    mod_matrix = [[tuple(map(operator.sub, cell, barycenters[i]))
+                   for cell in row]
+                  for i, row in enumerate(drift_matrix)]
     # print 'Modified drift matrix:'
     # pprint.pprint(mod_matrix)
     rot_matrix = [list(x) for x in zip(*mod_matrix)]
     # print 'Rotated matrix:'
     # pprint.pprint(rot_matrix)
     shift_vector = [tuple(map(operator.neg, tup))
-        for tup in [tools.mean_of_list_of_tuples(row) for row in rot_matrix]]
+                    for tup in [tools.mean_of_list_of_tuples(row)
+                                for row in rot_matrix
+                               ]
+                   ]
     return shift_vector
 
 

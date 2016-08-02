@@ -25,7 +25,7 @@ def get_setup():
     modes = ['SIFT', 'CC']
     gd = GenericDialog('Jump-ratio setup')
     gd.addMessage('Select the mode  for drift correction\n' +
-        'and the images to process.')
+                  'and the images to process.')
     gd.addChoice('Mode:', options, options[0])
     image_ids = WindowManager.getIDList()
     if not image_ids or len(image_ids) < 2:
@@ -50,7 +50,9 @@ def run_script():
     corrected_stack = drift.get_corrected_stack((img1_in, img2_in), mode = selected_mode)
     img1, img2 = tools.stack_to_list_of_imp(corrected_stack)
     img_ratio = ImageCalculator().run('Divide create', img2, img1)
-    img_ratio.setTitle('Jump-ratio [%s divided by %s]' % (img2.getShortTitle(), img1.getShortTitle()))
+    img_ratio.setTitle('Jump-ratio [%s divided by %s]' % (img2.getShortTitle(),
+                                                          img1.getShortTitle())
+                      )
     img_ratio.changes = True
     img_ratio.copyScale(img1_in)
     img_ratio.show()

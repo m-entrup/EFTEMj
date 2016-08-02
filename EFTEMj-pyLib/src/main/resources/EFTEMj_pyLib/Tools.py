@@ -18,7 +18,8 @@ def perform_func_on_list_of_tuples(func, list_of_tuples):
     :param func: A function that needs a list as argument.
     :param list_of_tuples: A list that contains tuples, each of the same size.
     '''
-    # Actually it's a tuple of tuples, but this name reflects how the structure of the construct is changed.
+    # Actually it's a tuple of tuples,
+    # but this name reflects how the structure of the construct is changed.
     tuple_of_lists = tuple(zip(*list_of_tuples))
     return tuple(func(item) for item in tuple_of_lists)
 
@@ -27,18 +28,20 @@ def mean_of_list_of_tuples(list_of_tuples):
     ''' Returns the mean vector of a list of vectors.
     :param list_of_tuples: The tuples represent vectors (e.g. Points in 2D space).
     '''
-    def func(vals):
+    def mean(vals):
+        '''Returns the mean value of the lists content.'''
         return sum(vals)/len(vals)
-    return perform_func_on_list_of_tuples(func, list_of_tuples)
+    return perform_func_on_list_of_tuples(mean, list_of_tuples)
 
 
 def center_of_list_of_tuples(list_of_tuples):
     ''' Returns the center vector of a list of vectors $c_i = (min_i + max_i) / 2$.
     :param list_of_tuples: The tuples represent vectors (e.g. Points in 2D space).
     '''
-    def func(vals):
+    def mid(vals):
+        '''Returns the centre of the given list.'''
         return (max(vals) + min(vals)) / 2
-    return perform_func_on_list_of_tuples(func, list_of_tuples)
+    return perform_func_on_list_of_tuples(mid, list_of_tuples)
 
 
 def stack_from_list_of_imp(list_of_imps):
@@ -72,6 +75,7 @@ def get_images(minimum=0, maximum=None, exact=None):
     if not (minimum or maximum or exact):
         exact = int(IJ.getNumber("How many images do you want to process?", 3))
     def check_count(count):
+        '''Returns True if the count of images is as required.'''
         # print count, exact, minimum, maximum
         if exact:
             if not count == exact:
@@ -105,7 +109,10 @@ def get_images(minimum=0, maximum=None, exact=None):
     elif maximum:
         img_count = maximum
         image_titles.append('None')
-    images_selected = dialogs.create_selection_dialog(image_titles, range(img_count), 'Select images for drift correction')
+    images_selected = dialogs.create_selection_dialog(image_titles,
+                                                      range(img_count),
+                                                      'Select images for drift correction'
+                                                     )
     # dialogs.create_selection_dialog() returns None if canceled
     if not images_selected:
         return None

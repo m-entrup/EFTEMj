@@ -30,7 +30,8 @@ def create_selection_dialog(image_titles, defaults, title='Select images for pro
     """
     Show a dialog to select the images to process and return a list of the selected ones (index).
     :param image_titles: A list of image titles presented for selection.
-    :param defaults: The titles to be selected by default. The length of this list defines the number of selectable images.
+    :param defaults: The titles to be selected by default.
+                     The length of this list defines the number of selectable images.
     :param title: the title of the dialog (default 'Select images for processing').
     """
     gd = GenericDialog(title)

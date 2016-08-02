@@ -9,15 +9,14 @@ info:       This module calculates the normalised Cross-correlation of two image
 
 from __future__ import with_statement, division
 
+import math
+
 from EFTEMj_pyLib import Tools as tools
 
-import math
 from ij import IJ, WindowManager, ImagePlus
-from ij.measure import Calibration as Cal
 from ij.process import ImageStatistics as Stats, FHT
 from ij.gui import Line, PointRoi
-from ij.plugin import FFTMath, CanvasResizer
-from java.lang import Integer
+from ij.plugin import CanvasResizer
 
 def _calc_correlation(img1, img2):
     '''
@@ -26,13 +25,13 @@ def _calc_correlation(img1, img2):
     :param img1: The ImagePlus to be used as reference.
     :param img2: The ImagePlus its correlation to the first ImagePlus is calculated.
     '''
-    fht1  = img1.getProperty('FHT')
-    if not fht1 == None:
+    fht1 = img1.getProperty('FHT')
+    if not fht1 is None:
         h1 = FHT(fht1)
     else:
         h1 = FHT(img1.getProcessor())
-    fht2  = img2.getProperty('FHT')
-    if not fht2 == None:
+    fht2 = img2.getProperty('FHT')
+    if not fht2 is None:
         h2 = FHT(fht2)
     else:
         h2 = FHT(img2.getProcessor())
@@ -42,10 +41,10 @@ def _calc_correlation(img1, img2):
     if not img1.getWidth() == img2.getWidth():
         IJ.error('FFT Math', 'Images must be the same size')
         return
-    if fht1 == None:
+    if fht1 is None:
         IJ.showStatus('Transform image1')
         h1.transform()
-    if fht2 == None:
+    if fht2 is None:
         IJ.showStatus('Transform image2')
         h2.transform()
     IJ.showStatus('Complex conjugate multiply')
@@ -79,7 +78,9 @@ def perform_correlation(img1, img2):
     result = _calc_correlation(img1, img2)
     '''
     Previous version:
-    IJ.run(img1, 'FD Math...', 'image1=[' + img2.getTitle() + '] operation=Correlate image2=[' + img1.getTitle() + '] result=[' + title + ']  do');
+    IJ.run(img1, 'FD Math...', 'image1=[' + img2.getTitle() +
+           '] operation=Correlate image2=[' + img1.getTitle()
+           + '] result=[' + title + ']  do');
     result = WindowManager.getImage(title)
     Alternative to IJ.run where no configuration is possible:
     cc = FFTMath()
@@ -155,9 +156,9 @@ def get_drift(cc_img):
     This function is designed for use on CrossCorrelation images.
     :param cc_img: An ImagePlus showing a CrossCorrelation.
     '''
-    x, y = get_max(cc_img)
-    x_off = x - cc_img.getWidth() / 2
-    y_off = y - cc_img.getHeight() / 2
+    max_x, max_y = get_max(cc_img)
+    x_off = max_x - cc_img.getWidth() / 2
+    y_off = max_y - cc_img.getHeight() / 2
     return x_off, y_off
 
 def __create_scalebar(imp):
@@ -166,20 +167,29 @@ def __create_scalebar(imp):
     :param imp: The imagePlus the scale bar is added to.
     '''
     width = imp.getWidth()
-    fontSize = width / 4096 * 150
-    scaleBarColor = 'White'
+    font_size = width / 4096 * 150
+    scale_bar_color = 'White'
     cal = imp.getCalibration()
-    pixelWidth = cal.getX(1.)
-    if width*pixelWidth > 10:
-        barWidth = 10 * round(width*pixelWidth / 80)
-    elif (width*pixelWidth > 1):
-        barWidth = math.floor((width*pixelWidth / 8) + 1)
+    pixel_width = cal.getX(1.)
+    if width * pixel_width > 10:
+        bar_width = 10 * round(width * pixel_width / 80)
+    elif width * pixel_width > 1:
+        bar_width = math.floor((width * pixel_width / 8) + 1)
     else:
-        barWidth = 0.01 * math.floor(100 * width*pixelWidth / 8)
+        bar_width = 0.01 * math.floor(100 * width * pixel_width / 8)
 
-    barHeight = fontSize / 3
-    #print(barWidth, barHeight, fontSize, scaleBarColor)
-    IJ.run(imp, 'Scale Bar...', 'width=%d height=%d font=%d color=%s background=None location=[Lower Right] bold overlay' % (barWidth, barHeight, fontSize, scaleBarColor))
+    bar_height = font_size / 3
+    #print(bar_width, bar_height, font_size, scale_bar_color)
+    scale_bar_settings = 'width=%d \
+                          height=%d \
+                          font=%d \
+                          color=%s \
+                          background=None \
+                          location=[Lower Right] \
+                          bold \
+                          overlay'
+    IJ.run(imp, 'Scale Bar...',
+           scale_bar_settings % (bar_width, bar_height, font_size, scale_bar_color))
 
 
 def __create_calbar(imp):
@@ -187,10 +197,17 @@ def __create_calbar(imp):
     Creates a calibration bar and adds it to an ImagePlus. Nothing is returned.
     :param imp: The imagePlus the calibration bar is added to.
     '''
-    fontSize = 10
+    font_size = 10
     zoom = imp.getWidth() / 4096 * 10
-    IJ.run(imp, 'Calibration Bar...',
-                   'location=[Upper Right] fill=White label=Black number=3 decimal=2 font=%d zoom=%d overlay' % (fontSize, zoom))
+    cal_bar_settings = 'location=[Upper Right] \
+                        fill=White \
+                        label=Black \
+                        number=3 \
+                        decimal=2 \
+                        font=%d \
+                        zoom=%d \
+                        overlay'
+    IJ.run(imp, 'Calibration Bar...', cal_bar_settings % (font_size, zoom))
 
 def scale_to_power_of_two(images):
     ''' Renturn a list o images with with and height as power of two.
@@ -204,6 +221,10 @@ def scale_to_power_of_two(images):
         new_size *= 2
     resizer = CanvasResizer()
     def resize(imp):
+        '''Return a rezized version of imp.
+
+        Width and height will be a power of 2.
+        '''
         x_off = int(math.floor((new_size - imp.getWidth()) / 2))
         y_off = int(math.floor((new_size - imp.getHeight()) / 2))
         # print x_off, y_off
