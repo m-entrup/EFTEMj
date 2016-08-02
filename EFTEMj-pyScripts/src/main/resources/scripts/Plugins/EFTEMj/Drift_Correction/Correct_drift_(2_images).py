@@ -60,6 +60,7 @@ def correct_drift_gui():
 
 
 def run_script():
+    '''Function to be run when this file is used as a script'''
     correct_drift_gui()
 
 

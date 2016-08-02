@@ -14,6 +14,7 @@ from EFTEMj_pyLib import Tools as tools
 
 
 def run_script():
+    '''Function to be run when this file is used as a script'''
     images = tools.get_images()
     if not images:
         return

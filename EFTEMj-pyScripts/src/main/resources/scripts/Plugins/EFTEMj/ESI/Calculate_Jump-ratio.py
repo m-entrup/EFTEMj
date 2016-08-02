@@ -10,7 +10,6 @@ info:       A script that calculates the Jump-Ratio of two images.
 from __future__ import with_statement, division
 
 from EFTEMj_pyLib import CorrectDrift as drift
-from EFTEMj_pyLib import HelperDialogs as dialogs
 from EFTEMj_pyLib import Tools as tools
 
 from ij import IJ, WindowManager
@@ -44,6 +43,7 @@ def get_setup():
 
 
 def run_script():
+    '''Function to be run when this file is used as a script'''
     selected_mode, img1_in, img2_in = get_setup()
     if not selected_mode:
         return

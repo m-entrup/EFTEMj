@@ -13,7 +13,6 @@ from sys import modules
 modules.clear()
 
 from EFTEMj_pyLib import CorrectDrift as drift
-from EFTEMj_pyLib import HelperDialogs as dialogs
 from EFTEMj_pyLib import Tools as tools
 from EFTEMj_pyLib import ElementalMapping
 
@@ -50,6 +49,7 @@ def get_setup():
 
 
 def run_script():
+    '''Function to be run when this file is used as a script'''
     selected_mode, pre1_in, pre2_in, post_in = get_setup()
     if not selected_mode:
         return
