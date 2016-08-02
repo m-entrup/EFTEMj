@@ -17,6 +17,13 @@ from EFTEMj_pyLib import Tools as tools
 from ij import IJ, ImagePlus
 from ij.plugin import Duplicator
 
+def get_options():
+    '''Returns a list of drift correction mode titles.'''
+    return ['Scale-invariant feature transform', 'Normalized cross-correlation', 'None']
+
+def get_modes():
+    '''Return a list of modes that are available for drift correction.'''
+    return ['SIFT', 'CC', 'None']
 
 def correct_drift(img1, img2, display_cc=False):
     ''' Returns two ImagePlus objects that are drift corrected to each other.
@@ -51,6 +58,8 @@ def get_corrected_stack(images, mode='CC'):
     :param images: A list containing ImagePlus objects.
     :param mode: The method used for drift detection (e.g. CC, SIFT).
     '''
+    if mode == 'None':
+        return get_corrected_stack_using_vector(images, [(0, 0)] * len(images))
     drift_matrix = get_drift_matrix(images, mode)
     corrected_stack = get_corrected_stack_using_matrix(images, drift_matrix, mode)
     return corrected_stack
@@ -75,6 +84,7 @@ def get_drift_matrix_cc(images):
     :param images: A list containing ImagePlus objects.
     '''
     def get_drift(i, j, images):
+        '''Returns the drift of imagej compared to image i'''
         cc_img = cc.perform_correlation(images[i], images[j])
         offset = cc.get_drift(cc_img)
         ''' DEBUG
@@ -173,11 +183,18 @@ def shift_images(img_list, shift_vector):
     shift_vector = [(math.floor(shift[0]), math.floor(shift[1])) for shift in shift_vector]
     shifted_list = [Duplicator().run(img) for img in img_list]
     def make_title(i):
+        '''Returns a new image title that contains the performed shift.'''
         old_title = img_list[i].getTitle()
-        new_title = 'DK#%d&%d#%s' % (shift_vector[i][0],shift_vector[i][1], old_title)
-        return new_title
+        if shift_vector[i][0] != 0 and shift_vector[i][1] != 0:
+            new_title = 'DK#%d&%d#%s' % (shift_vector[i][0], shift_vector[i][1], old_title)
+            return new_title
+        else:
+            return old_title
     for i, img in enumerate(shifted_list):
         img.setTitle(make_title(i))
     for i, img in enumerate(shifted_list):
-        IJ.run(img, 'Translate...', 'x=%d y=%d interpolation=None' % (shift_vector[i][0], shift_vector[i][1]))
+        IJ.run(img,
+               'Translate...',
+               'x=%d y=%d interpolation=None' % (shift_vector[i][0], shift_vector[i][1])
+              )
     return shifted_list

@@ -8,23 +8,20 @@ info:       This module calculates the drift using SIFT.
 
 from __future__ import with_statement, division
 
-from EFTEMj_pyLib import Tools as tools
-
-import math
-
-from ij import IJ, WindowManager, ImageStack, ImagePlus
+from ij import IJ, ImagePlus
 
 from java.util import ArrayList, Vector
 from java.lang import Float
 
-from mpicbg.imagefeatures import FloatArray2DSIFT, Feature
-from mpicbg.ij import SIFT, InverseTransformMapping
+from mpicbg.imagefeatures import FloatArray2DSIFT
+from mpicbg.ij import SIFT
 from mpicbg.models import TranslationModel2D
 
 class Param:
     '''A dataset that holds parameters used by the SIFT algorithm.
     You can modify an instance of this object to customize the SIFT detection.
     '''
+    # pylint: disable=too-few-public-methods
     sift = FloatArray2DSIFT.Param()
     # Closest/next closest neighbour distance ratio
     rod = 0.92
@@ -43,19 +40,22 @@ class pySIFT:
     It is designed to measure the drift of all images with each other.
     '''
 
-    def __init__(self, img_list, params = None):
+    def __init__(self, img_list, params=None):
         '''Create an instance of pySIFT.
-        :param img_list: All SIFT calculations are done with the given list of ImagePlus objects (Classes that extend ImagePlus are allowed).#
-        :param params: Pass a modified instance of Param to customize the SIFT detection (default: None).
+        :param img_list: All SIFT calculations are done with the given list
+                         of ImagePlus objects (Classes that extend ImagePlus are allowed).
+        :param params: Pass a modified instance of Param
+                       to customize the SIFT detection (default: None).
         '''
         self.images = []
         def check(img):
+            '''Returns True if img is a an ImagePlus or a class that extends it.'''
             # Check if the given object extends ImagePlus:
-            return ImagePlus().class.isAssignableFrom(img.class)
+            return isinstance(img, ImagePlus)
         for img in img_list:
             if check(img):
                 self.images.append(img)
-        if params and type(params) == Param:
+        if params and isinstance(params, Param):
             self.param = params
         else:
             self.param = Param()
@@ -82,12 +82,23 @@ class pySIFT:
             if index1 == index2:
                 self.drift_matrix[index1][index2] = (0, 0)
             model = TranslationModel2D()
-            mapping = InverseTransformMapping(model)
-            candidates = FloatArray2DSIFT.createMatches(self.all_features[index1], self.all_features[index2], 1.5, None, Float.MAX_VALUE, self.param.rod)
+            candidates = FloatArray2DSIFT.createMatches(self.all_features[index1],
+                                                        self.all_features[index2],
+                                                        1.5,
+                                                        None,
+                                                        Float.MAX_VALUE,
+                                                        self.param.rod
+                                                       )
             # print '%i potentially corresponding features identified' % len(candidates)
             inliers = Vector()
-            model.filterRansac(candidates, inliers, 1000, self.param.maxEpsilon, self.param.minInlierRatio)
-            self.drift_matrix[index1][index2] = (model.createAffine().translateX, model.createAffine().translateY)
+            model.filterRansac(candidates,
+                               inliers,
+                               1000,
+                               self.param.maxEpsilon,
+                               self.param.minInlierRatio
+                              )
+            self.drift_matrix[index1][index2] = (model.createAffine().translateX,
+                                                 model.createAffine().translateY)
         return self.drift_matrix[index1][index2]
 
     def get_drift_matrix(self):

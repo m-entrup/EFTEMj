@@ -24,8 +24,8 @@ def get_setup():
     ''' Returns the drift correction mode and three image.
     The order of return values is drift detection mode, pre-edge 1, pre-edge 2, post-edge.
     '''
-    options = ['Scale-invariant feature transform', 'Normalized cross-correlation']
-    modes = ['SIFT', 'CC']
+    options = drift.get_options()
+    modes = drift.get_modes()
     gd = GenericDialog('3-window-method setup')
     gd.addMessage('Select the mode  for drift correction\n' +
                   'and the images to process.')
