@@ -20,6 +20,7 @@
 		<module>EFTEMj-ESI</module>
 		<module>EFTEMj-SR-EELS</module>
 		<module>EFTEMj-EELS</module>
+		<module>EFTEMj-ij2-commands</module>
 	</modules>
 
 	<name>EFTEMj</name>
