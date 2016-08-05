@@ -20,6 +20,8 @@
 		<module>EFTEMj-ESI</module>
 		<module>EFTEMj-SR-EELS</module>
 		<module>EFTEMj-EELS</module>
+		<module>EFTEMj-pyLib</module>
+		<module>EFTEMj-pyScripts</module>
 	</modules>
 
 	<name>EFTEMj</name>
