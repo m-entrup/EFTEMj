@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>sc.fiji</groupId>
 		<artifactId>pom-fiji</artifactId>
-		<version>24.1.0</version>
+		<version>24.2.0</version>
 	</parent>
 
 	<groupId>de.m-entrup</groupId>
@@ -20,9 +20,6 @@
 		<module>EFTEMj-ESI</module>
 		<module>EFTEMj-SR-EELS</module>
 		<module>EFTEMj-EELS</module>
-		<module>EFTEMj-pyScripts</module>
-		<module>EFTEMj-pyLib</module>
-
 	</modules>
 
 	<name>EFTEMj</name>
@@ -102,10 +99,6 @@
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>IO_</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>mpicbg</groupId>
-			<artifactId>mpicbg</artifactId>
 		</dependency>
 	</dependencies>
 
