@@ -1,5 +1,10 @@
 # Diverse Notzizen zu EFTEMj
 
+## Umgang mit Branches
+
+Für Releases habe ich bisher Branches mit der vollständigen Versionsnummer angelegt (z.B. 1.3.0). Beginnend mit Version 1.5.0 werde ich für den Branch nur noch den Namen v1.5 verwenden. Die volle Versionsnummer werde ich in den Tags verwenden, welche Github für das releases Feature nutzt.
+Der master Branch wird nach einem Release eines neuen minor Branch (z.B. 1.4.0) auf die nächst höhere minor Version gesetzt (1.4.0-SNAPSHOT -> 1.5.0-SNAPSHOT). Versionen ohne SNAPSHOT sind generell nur für die release Branches vorgesehen. Verbesserungen an den bestehenden Plugins werden als patch Releases in die release Branches eingepflegt. Neue Plugins werden nicht zu einem release Branch hinzugefügt, sondern in separaten Branches, die auf dem aktuellen master Branch aufbauen.
+
 ## Curvefitting
 
 ### ImageJ
