@@ -4,25 +4,7 @@
 	<parent>
 		<groupId>de.m-entrup</groupId>
 		<artifactId>pom-EFTEMj</artifactId>
-		<version>1.4.0-SNAPSHOT</version>
+		<version>1.4.2</version>
 	</parent>
 	<artifactId>EFTEMj-pyLib</artifactId>
-
-	<!-- The imagej-maven-plugin will copy the jar to the folder 'jaras'. I 
-		need the plugin to be in 'jars/Lib' for Jython to find it. Therefore imagej-maven-plugin 
-		is deactivated in this module. -->
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>net.imagej</groupId>
-				<artifactId>imagej-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy-jars</id>
-						<phase>none</phase>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
 </project>

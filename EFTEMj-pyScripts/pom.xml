@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>de.m-entrup</groupId>
 		<artifactId>pom-EFTEMj</artifactId>
-		<version>1.4.0-SNAPSHOT</version>
+		<version>1.4.2</version>
 	</parent>
 	<artifactId>EFTEMj-pyScripts</artifactId>
 	<dependencies>
