@@ -51,7 +51,7 @@ mvn -Dimagej.app.directory=/path/to/Fiji.app/
 ```
 The parameter ``-D`` will set the system property (in ths case ``imagej.app.directory``) to the given value. Just replace ``/path/to/Fiji.app/`` by the path to your installed ImageJ/Fiji.
 
-The EFTEMj-pyLib jar will not be copied correct, when using the imagej-maven-plugin. You have to move it by hand from the ``target`` directory to ``jars/Lib``, where ImageJ will search for python modules.
+The EFTEMj-pyLib jar will not be copied correct, when using the imagej-maven-plugin. You have to move it by hand from the ``jars`` directory to ``jars/Lib``, where ImageJ will search for python modules.
 
 [Update Site]: http://imagej.net/Update_Sites
 [Updater]: http://imagej.net/Updater
