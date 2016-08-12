@@ -3,7 +3,7 @@
   <parent>
     <groupId>de.m-entrup</groupId>
     <artifactId>pom-EFTEMj</artifactId>
-    <version>1.4.0-SNAPSHOT</version>
+    <version>1.5.0-SNAPSHOT</version>
   </parent>
   <artifactId>EFTEMj-ij2-commands</artifactId>
 </project>
