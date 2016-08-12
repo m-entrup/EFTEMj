@@ -28,6 +28,12 @@ This module is part of my PhD thesis. Spatially Resolved EELS (SR-EELS) is a tec
 ### EFTEMj-lib
 This module includes code that is used by more than one other module.
 
+### EFTEMj-pyScripts
+This module contains a set of python scripts. On the one hand they extend other EFTEMj modules. On the other hand they demonstrate how to use self written python modules to use in ImageJ scripts. Therefore the module	EFTEMj-pyLib is required to run this scripts.
+
+### EFTEMj-pyLib
+This module contains a python module to be used in python scripts for ImageJ. Python modules make it easy to reuse code in python scripts.
+
 ## Developing EFTEMj
 EFTEMj uses maven to manage dependencies and to control the build process. An introduction to maven is given by the [ImageJ wiki][ImageJMaven]. The source code published in this repository is sufficient to build EFTEMj.
 
@@ -44,6 +50,8 @@ To copy the jar files and all necessary dependencies to ImageJ a maven plugin is
 mvn -Dimagej.app.directory=/path/to/Fiji.app/
 ```
 The parameter ``-D`` will set the system property (in ths case ``imagej.app.directory``) to the given value. Just replace ``/path/to/Fiji.app/`` by the path to your installed ImageJ/Fiji.
+
+The EFTEMj-pyLib jar will not be copied correct, when using the imagej-maven-plugin. You have to move it by hand from the ``jars`` directory to ``jars/Lib``, where ImageJ will search for python modules.
 
 [Update Site]: http://imagej.net/Update_Sites
 [Updater]: http://imagej.net/Updater

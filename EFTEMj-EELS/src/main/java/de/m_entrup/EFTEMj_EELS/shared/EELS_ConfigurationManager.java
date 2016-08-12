@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package shared;
+package de.m_entrup.EFTEMj_EELS.shared;
 
 import java.io.InputStream;
 

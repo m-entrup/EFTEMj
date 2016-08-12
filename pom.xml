@@ -12,7 +12,7 @@
 
 	<groupId>de.m-entrup</groupId>
 	<artifactId>pom-EFTEMj</artifactId>
-	<version>1.4.0-SNAPSHOT</version>
+	<version>1.5.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<modules>
@@ -21,6 +21,8 @@
 		<module>EFTEMj-SR-EELS</module>
 		<module>EFTEMj-EELS</module>
 		<module>EFTEMj-ij2-commands</module>
+		<module>EFTEMj-pyLib</module>
+		<module>EFTEMj-pyScripts</module>
 	</modules>
 
 	<name>EFTEMj</name>
@@ -100,6 +102,10 @@
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>IO_</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>mpicbg</groupId>
+			<artifactId>mpicbg</artifactId>
 		</dependency>
 	</dependencies>
 
