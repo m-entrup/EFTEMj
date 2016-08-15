@@ -30,45 +30,105 @@ public class ESI_ResolutionCommand implements Command {
 	@Parameter(label = "Electron beam energy (keV)", callback = "primaryEnergyChanged")
 	private double primaryEnergy = 200;
 
-	private double wavelength = calcWavelength(primaryEnergy);
+	private double wavelength = calcWavelength();
 
-	private double speed = calcSpeed(primaryEnergy);
+	private double speed = calcSpeed();
 
 	@Parameter(label = "Wavelength (pm)", visibility = ItemVisibility.MESSAGE)
-	private double lambda = 1. * Math.round(wavelength * 100) / 100;
+	private double lambda = round(wavelength, 2);
 
 	@Parameter(label = "Energy loss (eV)", callback = "updateDelocalisation")
 	private double energyLoss = 0;
 
-	@Parameter(label = "Collection half angle (mrad)", callback = "updateDelocalisation")
+	@Parameter(label = "Slit width (eV)", callback = "updateChromaticAberration")
+	private double slitWidth = 20;
+
+	@Parameter(label = "Collection half angle (mrad)", callback = "collectionHalfAngleChanged")
 	private double collectionHalfAngle = 10;
 
-	@Parameter(label = "Delocalisation (pm)", visibility = ItemVisibility.MESSAGE)
-	private double delocalisation = calcDelocalisation(primaryEnergy, energyLoss, collectionHalfAngle);
-
-	@Parameter(label = "Focal length (mm)")
+	@Parameter(label = "Focal length (mm)", callback = "focalLengthChanged")
 	private double focalLength = 1.72;
 
-	@Parameter(label = "Aperture diameter (µm)")
+	@Parameter(label = "Aperture diameter (µm)", callback = "updateCollectionHalfAngle")
 	private double apertureDiameter = 40;
 
-	@Parameter(label = "Spherical aberation (mm)")
+	@Parameter(label = "Chromatic aberation (mm)", callback = "updateChromaticAberration")
+	private double chromaticAberration = 1.2;
+
+	@Parameter(label = "Spherical aberation (mm)", callback = "updateSphericalAberration")
 	private double sphericalAberation = 1.2;
 
-	@Parameter(label = "Chromatic aberation (mm)")
-	private double chromaticAberation = 1.2;
+	private double chromatic = calcChromaticAberration();
+
+	@Parameter(label = "Error disc by chromatic aberration (nm)", visibility = ItemVisibility.MESSAGE)
+	private double chromaticRounded = round(chromatic, 3);
+
+	private double spherical = calcSphericalAberration();
+
+	@Parameter(label = "Error disc by spherical aberration (nm)", visibility = ItemVisibility.MESSAGE)
+	private double sphericalRounded = round(spherical, 3);
+
+	private double delocalisation = calcDelocalisation();
+
+	@Parameter(label = "Delocalisation (nm)", visibility = ItemVisibility.MESSAGE)
+	private double delocalisationRounded = round(delocalisation, 3);
+
+	private double diffractionLimit = calcDiffrationLimit();
+
+	@Parameter(label = "Diffration limit (nm)", visibility = ItemVisibility.MESSAGE)
+	private double diffractionLimitRounded = round(diffractionLimit, 3);
 
 	@Parameter(visibility = ItemVisibility.MESSAGE)
 	private final String labelPlot = PLOT_SETTINGS;
+	private boolean apertureWasChanged = false;
 
 	/**
 	 * A callback to update the wavelength when the primary energy changes.
 	 */
 	protected void primaryEnergyChanged() {
-		wavelength = calcWavelength(primaryEnergy);
-		speed = calcSpeed(primaryEnergy);
+		wavelength = calcWavelength();
+		speed = calcSpeed();
 		lambda = 1. * Math.round(wavelength * 100) / 100;
 		updateDelocalisation();
+		updateChromaticAberration();
+		updateDiffrationLimit();
+	}
+
+	/**
+	 * A callback to update different values when the collection half angle
+	 * changes.
+	 */
+	protected void collectionHalfAngleChanged() {
+		updateApertureDiameter();
+		updateDelocalisation();
+		updateChromaticAberration();
+		updateSphericalAberration();
+		updateDiffrationLimit();
+		apertureWasChanged = false;
+	}
+
+	/**
+	 * A callback to update the collection half angle or the diameter of the
+	 * objective aperture when the focal length changes.
+	 */
+	protected void focalLengthChanged() {
+		if (apertureWasChanged == true) {
+			updateCollectionHalfAngle();
+		} else {
+			updateApertureDiameter();
+		}
+	}
+
+	/**
+	 * @param value
+	 *            to be rounded.
+	 * @param digits
+	 *            after the decimal point.
+	 * @return a value rounded to the given precision.
+	 */
+	private double round(double value, int digits) {
+		double factor = Math.pow(10, digits);
+		return 1. * Math.round(value * factor) / factor;
 	}
 
 	/**
@@ -76,7 +136,58 @@ public class ESI_ResolutionCommand implements Command {
 	 * primary energy, the energy loss and the collection half-angle changes.
 	 */
 	protected void updateDelocalisation() {
-		delocalisation = calcDelocalisation(primaryEnergy, energyLoss, collectionHalfAngle);
+		delocalisation = calcDelocalisation();
+		delocalisationRounded = round(delocalisation, 3);
+	}
+
+	/**
+	 * A callback to update the chromatic error. You have to call it if the
+	 * chromatic aberration, the slit width, the primary energy and the
+	 * collection half-angle changes.
+	 */
+	protected void updateChromaticAberration() {
+		chromatic = calcChromaticAberration();
+		chromaticRounded = round(chromatic, 3);
+	}
+
+	/**
+	 * A callback to update the spherical error. You have to call it if the
+	 * spherical aberration and the collection half-angle changes.
+	 */
+	protected void updateSphericalAberration() {
+		spherical = calcSphericalAberration();
+		sphericalRounded = round(spherical, 3);
+	}
+
+	/**
+	 * A callback to update the diffraction limit. You have to call it if the
+	 * primary energy and the collection half-angle changes.
+	 */
+	protected void updateDiffrationLimit() {
+		diffractionLimit = calcDiffrationLimit();
+		diffractionLimitRounded = round(diffractionLimit, 3);
+	}
+
+	/**
+	 * A callback to update the diameter of the objective aperture. You have to
+	 * call it if the collection half angle and the focal length changes.
+	 */
+	protected void updateApertureDiameter() {
+		double _angle = collectionHalfAngle / 1000;
+		double _focalLength = focalLength / 1000;
+		apertureDiameter = 2 * Math.sin(_angle) * _focalLength * Math.pow(10, 6);
+	}
+
+	/**
+	 * A callback to update the collection half angle. You have to call it if
+	 * the diameter of the objective aperture and the focal length changes.
+	 */
+	protected void updateCollectionHalfAngle() {
+		double _radius = 0.5 * apertureDiameter / Math.pow(10, 6);
+		double _focalLength = focalLength / 1000;
+		collectionHalfAngle = Math.asin(_radius / _focalLength) * 1000;
+		collectionHalfAngleChanged();
+		apertureWasChanged = true;
 	}
 
 	/**
@@ -85,8 +196,8 @@ public class ESI_ResolutionCommand implements Command {
 	 * @return the wavelength of to electron with the given energy in pm. A
 	 *         relativistic correction of the mass is considered.
 	 */
-	protected double calcWavelength(double energy) {
-		return 1240. / Math.sqrt(energy * (energy + 2 * 511));
+	protected double calcWavelength() {
+		return 1240. / Math.sqrt(primaryEnergy * (primaryEnergy + 2 * 511));
 	}
 
 	/**
@@ -95,8 +206,8 @@ public class ESI_ResolutionCommand implements Command {
 	 * @return the relativistic speed of an electron with the given energy in
 	 *         m/s.
 	 */
-	protected double calcSpeed(double energy) {
-		return LIGHT_SPEED * Math.sqrt(1 - (1 / (1 + energy / 511)));
+	protected double calcSpeed() {
+		return LIGHT_SPEED * Math.sqrt(1 - (1 / (1 + primaryEnergy / 511)));
 	}
 
 	/**
@@ -108,20 +219,47 @@ public class ESI_ResolutionCommand implements Command {
 	 *            of collection in mrad. This is the half angle.
 	 * @return the delocalisation by inelastic scattering in pm.
 	 */
-	protected double calcDelocalisation(double energy, double loss, double angle) {
-		if (loss == 0)
+	protected double calcDelocalisation() {
+		if (energyLoss == 0)
 			return 0;
 		// Convert keV -> eV
-		double _energy = energy * 1000;
+		double _energy = primaryEnergy * 1000;
 		// Convert eV -> J
-		double _loss = loss * ELECTRON_CHARGE;
+		double _loss = energyLoss * ELECTRON_CHARGE;
 		// Convert mrad -> rad
-		double _angle = angle / 1000;
-		double cAngle = loss / (2. * _energy);
+		double _angle = collectionHalfAngle / 1000;
+		double cAngle = energyLoss / (2. * _energy);
 		System.out.println(speed);
 		return H_BAR * speed * _angle / (_loss * Math.sqrt(
 				(Math.pow(_angle, 2) + Math.pow(cAngle, 2)) * Math.log(1 + Math.pow(_angle, 2) / Math.pow(cAngle, 2))))
-				* 2 * Math.pow(10, 12);
+				* 2 * Math.pow(10, 9);
+	}
+
+	/**
+	 * @return the diameter of error disk created by the chromatic aberration in
+	 *         pm.
+	 */
+	protected double calcChromaticAberration() {
+		double _aberration = chromaticAberration / 1000;
+		double _energy = primaryEnergy * 1000;
+		double _angle = collectionHalfAngle / 1000;
+		return _aberration * slitWidth / _energy * _angle * Math.pow(10, 9);
+	}
+
+	/**
+	 * @return the diameter of error disk created by the spherical aberration in
+	 *         pm.
+	 */
+	protected double calcSphericalAberration() {
+		double _aberration = sphericalAberation / 1000;
+		double _angle = collectionHalfAngle / 1000;
+		return _aberration * Math.pow(_angle, 3) * Math.pow(10, 9);
+	}
+
+	protected double calcDiffrationLimit() {
+		double _wavelength = wavelength / Math.pow(10, 12);
+		double _angle = collectionHalfAngle / 1000;
+		return 0.6 * _wavelength / _angle * Math.pow(10, 9);
 	}
 
 	@Override
