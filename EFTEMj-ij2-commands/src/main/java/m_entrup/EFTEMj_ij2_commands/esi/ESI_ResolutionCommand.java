@@ -1,6 +1,5 @@
 package m_entrup.EFTEMj_ij2_commands.esi;
 
-import org.jscience.physics.amount.Constants;
 import org.scijava.ItemVisibility;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
@@ -20,6 +19,10 @@ public class ESI_ResolutionCommand implements Command {
 
 	private static final String MICROSCOPE_LABEL = "-- Microscope properties --";
 	private static final String PLOT_SETTINGS = "-- Plot settings --";
+
+	private static final double ELECTRON_CHARGE = 1.6021766208e-19;
+	private static final double H_BAR = 1.054571800e-34;
+	private static final double LIGHT_SPEED = 299792458;
 
 	@Parameter(visibility = ItemVisibility.MESSAGE)
 	private final String labelMic = MICROSCOPE_LABEL;
@@ -93,7 +96,7 @@ public class ESI_ResolutionCommand implements Command {
 	 *         m/s.
 	 */
 	protected double calcSpeed(double energy) {
-		return Constants.c.getEstimatedValue() * Math.sqrt(1 - (1 / (1 + energy / 511)));
+		return LIGHT_SPEED * Math.sqrt(1 - (1 / (1 + energy / 511)));
 	}
 
 	/**
@@ -111,12 +114,12 @@ public class ESI_ResolutionCommand implements Command {
 		// Convert keV -> eV
 		double _energy = energy * 1000;
 		// Convert eV -> J
-		double _loss = loss * Constants.e.getEstimatedValue();
+		double _loss = loss * ELECTRON_CHARGE;
 		// Convert mrad -> rad
 		double _angle = angle / 1000;
 		double cAngle = loss / (2. * _energy);
 		System.out.println(speed);
-		return Constants.ℏ.getEstimatedValue() * speed * _angle / (_loss * Math.sqrt(
+		return H_BAR * speed * _angle / (_loss * Math.sqrt(
 				(Math.pow(_angle, 2) + Math.pow(cAngle, 2)) * Math.log(1 + Math.pow(_angle, 2) / Math.pow(cAngle, 2))))
 				* 2 * Math.pow(10, 12);
 	}
