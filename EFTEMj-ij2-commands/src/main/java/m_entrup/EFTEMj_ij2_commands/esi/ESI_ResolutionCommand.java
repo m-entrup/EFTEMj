@@ -78,6 +78,11 @@ public class ESI_ResolutionCommand implements Command {
 	@Parameter(label = "Diffration limit (nm)", visibility = ItemVisibility.MESSAGE)
 	private double diffractionLimitRounded = round(diffractionLimit, 3);
 
+	private double totalResolution = calcTotalResolution();
+
+	@Parameter(label = "Total theoretical spatial resolution", visibility = ItemVisibility.MESSAGE)
+	private double totalResolutionRounded = round(totalResolution, 3);
+
 	@Parameter(visibility = ItemVisibility.MESSAGE)
 	private final String labelPlot = PLOT_SETTINGS;
 	private boolean apertureWasChanged = false;
@@ -138,6 +143,7 @@ public class ESI_ResolutionCommand implements Command {
 	protected void updateDelocalisation() {
 		delocalisation = calcDelocalisation();
 		delocalisationRounded = round(delocalisation, 3);
+		updateTotalResolution();
 	}
 
 	/**
@@ -148,6 +154,7 @@ public class ESI_ResolutionCommand implements Command {
 	protected void updateChromaticAberration() {
 		chromatic = calcChromaticAberration();
 		chromaticRounded = round(chromatic, 3);
+		updateTotalResolution();
 	}
 
 	/**
@@ -157,6 +164,7 @@ public class ESI_ResolutionCommand implements Command {
 	protected void updateSphericalAberration() {
 		spherical = calcSphericalAberration();
 		sphericalRounded = round(spherical, 3);
+		updateTotalResolution();
 	}
 
 	/**
@@ -166,6 +174,7 @@ public class ESI_ResolutionCommand implements Command {
 	protected void updateDiffrationLimit() {
 		diffractionLimit = calcDiffrationLimit();
 		diffractionLimitRounded = round(diffractionLimit, 3);
+		updateTotalResolution();
 	}
 
 	/**
@@ -188,6 +197,14 @@ public class ESI_ResolutionCommand implements Command {
 		collectionHalfAngle = Math.asin(_radius / _focalLength) * 1000;
 		collectionHalfAngleChanged();
 		apertureWasChanged = true;
+	}
+
+	/**
+	 * A callback to update the total theoretical spatial resolution.
+	 */
+	protected void updateTotalResolution() {
+		totalResolution = calcTotalResolution();
+		totalResolutionRounded = round(totalResolution, 3);
 	}
 
 	/**
@@ -229,15 +246,14 @@ public class ESI_ResolutionCommand implements Command {
 		// Convert mrad -> rad
 		double _angle = collectionHalfAngle / 1000;
 		double cAngle = energyLoss / (2. * _energy);
-		System.out.println(speed);
 		return H_BAR * speed * _angle / (_loss * Math.sqrt(
 				(Math.pow(_angle, 2) + Math.pow(cAngle, 2)) * Math.log(1 + Math.pow(_angle, 2) / Math.pow(cAngle, 2))))
 				* 2 * Math.pow(10, 9);
 	}
 
 	/**
-	 * @return the diameter of error disk created by the chromatic aberration in
-	 *         pm.
+	 * @return the diameter the of error disk created by the chromatic
+	 *         aberration in pm.
 	 */
 	protected double calcChromaticAberration() {
 		double _aberration = chromaticAberration / 1000;
@@ -247,8 +263,8 @@ public class ESI_ResolutionCommand implements Command {
 	}
 
 	/**
-	 * @return the diameter of error disk created by the spherical aberration in
-	 *         pm.
+	 * @return the diameter of the error disk created by the spherical
+	 *         aberration in pm.
 	 */
 	protected double calcSphericalAberration() {
 		double _aberration = sphericalAberation / 1000;
@@ -256,14 +272,29 @@ public class ESI_ResolutionCommand implements Command {
 		return _aberration * Math.pow(_angle, 3) * Math.pow(10, 9);
 	}
 
+	/**
+	 * @return the diameter of the error disk created by the diffraction limit.
+	 */
 	protected double calcDiffrationLimit() {
 		double _wavelength = wavelength / Math.pow(10, 12);
 		double _angle = collectionHalfAngle / 1000;
 		return 0.6 * _wavelength / _angle * Math.pow(10, 9);
 	}
 
+	protected double calcTotalResolution() {
+		return Math.sqrt(Math.pow(delocalisation, 2) + Math.pow(chromatic, 2) + Math.pow(diffractionLimit, 2)
+				+ Math.pow(spherical, 2));
+	}
+
 	@Override
 	public void run() {
+		double[] apertures = { 10, 20, 30, 40, 50, 60, 80 };
+		for (double diameter : apertures) {
+			apertureDiameter = diameter;
+			updateCollectionHalfAngle();
+			collectionHalfAngleChanged();
+			System.out.println(diameter + " µm: " + totalResolutionRounded + " nm");
+		}
 		// TODO Create a dialog to choose 2 images/stacks and the properties to
 		// copy.
 	}
