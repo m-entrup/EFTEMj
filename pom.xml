@@ -5,9 +5,9 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>sc.fiji</groupId>
-		<artifactId>pom-fiji</artifactId>
-		<version>24.2.0</version>
+		<groupId>org.scijava</groupId>
+		<artifactId> pom-scijava</artifactId>
+		<version>11.4.0</version>
 	</parent>
 
 	<groupId>de.m-entrup</groupId>
@@ -75,6 +75,7 @@
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>ij</artifactId>
+			<version>1.51g</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-configuration</groupId>
@@ -89,22 +90,26 @@
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>fiji-lib</artifactId>
+			<version>2.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-math3</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>gov.nist.math</groupId>
-			<artifactId>jama</artifactId>
+			<groupId>gov.nist.math.jama</groupId>
+			<artifactId>gov.nist.math.jama</artifactId>
+			<version>1.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>IO_</artifactId>
+			<version>3.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>mpicbg</groupId>
 			<artifactId>mpicbg</artifactId>
+			<version>1.1.1</version>
 		</dependency>
 	</dependencies>
 
