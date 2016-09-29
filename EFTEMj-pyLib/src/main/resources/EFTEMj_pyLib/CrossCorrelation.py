@@ -1,7 +1,7 @@
 '''
 file:       CrossCorrelation.py
 author:     Michael Entrup b. Epping (michael.entrup@wwu.de)
-version:    20160720
+version:    20160929
 info:       This module calculates the normalised Cross-correlation of two images.
             There are aditional functions to style the result or find the position of the maximum.
 '''
@@ -216,7 +216,7 @@ def scale_to_power_of_two(images):
     dim = [(imp.getWidth(), imp.getHeight()) for imp in images]
     min_dim = min(tools.perform_func_on_list_of_tuples(min, dim))
     new_size = 2
-    while new_size < min_dim / 2:
+    while new_size <= min_dim / 2:
         new_size *= 2
     def resize(imp):
         '''Returns a rezized version of imp.
@@ -233,7 +233,27 @@ def scale_to_power_of_two(images):
 Testing section:
 '''
 if __name__ == '__main__':
-	imp1 = IJ.openImage("http://imagej.nih.gov/ij/images/TEM_filter_sample.jpg");
-	imp2 = scale_to_power_of_two((imp1,))[0]
-	assert(imp2.getWidth() == 256 and imp2.getHeight() == 256)
-	print('Tests completed.')
+    print('Testing the function scale_to_power_of_two()...')
+    imp1 = IJ.openImage("http://imagej.nih.gov/ij/images/TEM_filter_sample.jpg")
+    width = imp1.getWidth()
+    height = imp1.getHeight()
+    imp2 = scale_to_power_of_two((imp1,))[0]
+    assert(imp2.getWidth() == 256 and imp2.getHeight() == 256)
+    assert(imp1.getWidth() == width and imp1.getHeight() == height)
+
+    print('Testing the functions perform_correlation() and get_drift()...')
+    imp1 = IJ.openImage("http://imagej.nih.gov/ij/images/TEM_filter_sample.jpg")
+    width = imp1.getWidth()
+    height = imp1.getHeight()
+    offset_x = 15
+    offset_y = 15
+    imp2 = imp1.crop()
+    IJ.run(imp2,
+           "Translate...",
+           "x=%d y=%d interpolation=None" % (offset_x, offset_y)
+          )
+    imp_cc =  perform_correlation(*scale_to_power_of_two([imp1, imp2]))
+    drift = get_drift(imp_cc)
+    assert(abs(drift[0] - offset_x) < 1 and abs(drift[1] - offset_y) < 1)
+    assert(imp1.getWidth() == width and imp1.getHeight() == height)
+    print('Tests completed.')

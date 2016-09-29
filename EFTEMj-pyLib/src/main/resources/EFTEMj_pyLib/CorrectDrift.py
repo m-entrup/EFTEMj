@@ -73,7 +73,7 @@ def get_corrected_stack_linear(images, mode='CC'):
     '''
     drift_vertor = [(0, 0)] * len(images)
     if mode == 'CC' or mode == 'SIFT':
-    	get_drift_vector(images, mode)
+    	drift_vector = get_drift_vector(images, mode)
     return get_corrected_stack_using_vector(images, drift_vector)
 
 

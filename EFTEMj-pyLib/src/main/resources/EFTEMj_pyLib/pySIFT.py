@@ -128,25 +128,25 @@ class pySIFT:
 Testing section:
 '''
 if __name__ == '__main__':
-	imp1 = IJ.openImage("http://imagej.nih.gov/ij/images/TEM_filter_sample.jpg");
-	imp2 = imp1.crop();
-	imp3 = imp1.crop();
-	offset_x = 15
-	offset_y = 15
-	IJ.run(imp2,
-		   "Translate...",
-		   "x=%d y=%d interpolation=None" % (offset_x, offset_y)
-		  )
-	IJ.run(imp3,
-		   "Translate...",
-		   "x=%d y=%d interpolation=None" % (-offset_x, -offset_y)
-		  )
-	sift = pySIFT([imp1, imp2, imp3])
-	drift_vec = sift.get_drift_vector()
-	drift2 = drift_vec[1]
-	drift3 = drift_vec[2]
-	assert(abs(drift2[0] - offset_x) < 1)
-	assert(abs(drift2[1] - offset_y) < 1)
-	assert(abs(drift3[0] + offset_x) < 1)
-	assert(abs(drift3[1] + offset_y) < 1)
-	print('Test completed.')
+    imp1 = IJ.openImage("http://imagej.nih.gov/ij/images/TEM_filter_sample.jpg");
+    imp2 = imp1.crop();
+    imp3 = imp1.crop();
+    offset_x = 15
+    offset_y = 15
+    IJ.run(imp2,
+           "Translate...",
+           "x=%d y=%d interpolation=None" % (offset_x, offset_y)
+          )
+    IJ.run(imp3,
+           "Translate...",
+           "x=%d y=%d interpolation=None" % (-offset_x, -offset_y)
+          )
+    sift = pySIFT([imp1, imp2, imp3])
+    drift_vec = sift.get_drift_vector()
+    drift2 = drift_vec[1]
+    drift3 = drift_vec[2]
+    assert(abs(drift2[0] - offset_x) < 1)
+    assert(abs(drift2[1] - offset_y) < 1)
+    assert(abs(drift3[0] + offset_x) < 1)
+    assert(abs(drift3[1] + offset_y) < 1)
+    print('Test completed.')
