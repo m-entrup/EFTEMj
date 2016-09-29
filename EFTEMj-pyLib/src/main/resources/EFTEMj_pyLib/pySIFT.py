@@ -1,4 +1,3 @@
-﻿# coding=utf-8
 '''
 file:       pySIFT.py
 author:     Michael Entrup b. Epping (michael.entrup@wwu.de)

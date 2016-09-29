@@ -1,4 +1,3 @@
-﻿# coding=utf-8
 """
 file:       HelperDialogs.py
 author:     Michael Entrup b. Epping (michael.entrup@wwu.de)

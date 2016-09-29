@@ -1,4 +1,3 @@
-﻿# coding=utf-8
 '''
 file:       CrossCorrelation.py
 author:     Michael Entrup b. Epping (michael.entrup@wwu.de)
