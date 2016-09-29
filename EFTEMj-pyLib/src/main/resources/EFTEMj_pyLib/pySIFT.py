@@ -1,7 +1,7 @@
 '''
 file:       pySIFT.py
 author:     Michael Entrup b. Epping (michael.entrup@wwu.de)
-version:    20160720
+version:    20160929
 info:       This module calculates the drift using SIFT.
 '''
 
@@ -58,6 +58,7 @@ class pySIFT:
             self.param = params
         else:
             self.param = Param()
+        self.drift_vector = [None] * len(self.images)
         self.drift_matrix = [[]] * len(self.images)
         for i, _ in enumerate(self.drift_matrix):
             self.drift_matrix[i] = [None] * len(self.images)
@@ -110,3 +111,42 @@ class pySIFT:
                 self.drift_matrix[i][j] = self.get_drift(i, j)
         IJ.showProgress(1.0)
         return self.drift_matrix
+
+    def get_drift_vector(self):
+        '''Returns a vector of length N that represents the drift of all images with the first one.
+        '''
+        full_progress = len(self.images) - 1
+        self.drift_vector[0] = (0., 0.)
+        for i in range(1, len(self.images)):
+            IJ.showProgress(i / full_progress)
+            self.drift_vector[i] = self.get_drift(i - 1, i)
+            self.drift_vector[i] = tuple([a + b for a,b in zip(self.drift_vector[i - 1], self.drift_vector[i])])
+        IJ.showProgress(1.0)
+        return self.drift_vector
+
+'''
+Testing section:
+'''
+if __name__ == '__main__':
+	imp1 = IJ.openImage("http://imagej.nih.gov/ij/images/TEM_filter_sample.jpg");
+	imp2 = imp1.crop();
+	imp3 = imp1.crop();
+	offset_x = 15
+	offset_y = 15
+	IJ.run(imp2,
+		   "Translate...",
+		   "x=%d y=%d interpolation=None" % (offset_x, offset_y)
+		  )
+	IJ.run(imp3,
+		   "Translate...",
+		   "x=%d y=%d interpolation=None" % (-offset_x, -offset_y)
+		  )
+	sift = pySIFT([imp1, imp2, imp3])
+	drift_vec = sift.get_drift_vector()
+	drift2 = drift_vec[1]
+	drift3 = drift_vec[2]
+	assert(abs(drift2[0] - offset_x) < 1)
+	assert(abs(drift2[1] - offset_y) < 1)
+	assert(abs(drift3[0] + offset_x) < 1)
+	assert(abs(drift3[1] + offset_y) < 1)
+	print('Test completed.')

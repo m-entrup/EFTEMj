@@ -1,7 +1,7 @@
 '''
 file:       CorrectDrift.py
 author:     Michael Entrup b. Epping (michael.entrup@wwu.de)
-version:    20160720
+version:    20160929
 info:       This module will correct the drift between two images.
 '''
 
@@ -32,6 +32,7 @@ def correct_drift(img1, img2, display_cc=False):
     :param img2: The image to be shifted.
     :param display_cc: Activate displaying the CrossCorrelation image (default False).
     '''
+    img1, img2 = cc.scale_to_power_of_two([img1, img2])
     result = cc.perform_correlation(img1, img2)
     x_off, y_off = cc.get_shift(result)
     # style after maximum detection
@@ -62,6 +63,18 @@ def get_corrected_stack(images, mode='CC'):
     drift_matrix = get_drift_matrix(images, mode)
     corrected_stack = get_corrected_stack_using_matrix(images, drift_matrix, mode)
     return corrected_stack
+
+
+def get_corrected_stack_linear(images, mode='CC'):
+    ''' Returns a drift corrected stack using the given method for drift detection.
+    This version uses a linear drift detection (image by image).
+    :param images: A list containing ImagePlus objects.
+    :param mode: The method used for drift detection (e.g. CC, SIFT).
+    '''
+    drift_vertor = [(0, 0)] * len(images)
+    if mode == 'CC' or mode == 'SIFT':
+    	get_drift_vector(images, mode)
+    return get_corrected_stack_using_vector(images, drift_vector)
 
 
 def get_drift_matrix(images, mode='CC'):
@@ -106,7 +119,7 @@ def get_drift_matrix_cc(images):
             print shift
             '''
             # print 'Matrix element: ', i, j
-            # print 'Adding value: ', drift
+            # print 'Adding value: ', img_drift
             drift_matrix[i][j] = img_drift
             drift_matrix[j][i] = tuple([-val for val in img_drift])
     # print 'Drift matrix:'
@@ -127,6 +140,62 @@ def get_drift_matrix_sift(images):
     # pprint(sift.get_drift_matrix())
     return sift.get_drift_matrix()
 
+
+def get_drift_vector(images, mode='CC'):
+    ''' Returns the drift vector of the given Images.
+    For N images a vector of length N is created.
+    :param images: A list containing ImagePlus objects.
+    :param mode: The method used for drift detection (e.g. CC, SIFT).
+    '''
+    if mode == 'CC':
+        return get_drift_vector_cc(images)
+    elif mode == 'SIFT':
+        return get_drift_vector_sift(images)
+    return None
+
+
+def get_drift_vector_cc(images):
+    ''' Returns the drift vector of the given images.
+    Cross correlation is used for drift detection.
+    :param images: A list containing ImagePlus objects.
+    '''
+    def get_drift(i, j, images):
+        '''Returns the drift of imagej compared to image i'''
+        cc_img = cc.perform_correlation(images[i], images[j])
+        offset = cc.get_drift(cc_img)
+        ''' DEBUG
+        print 'Reference: %s at index %i' % (images[i],i)
+        print 'Drifted image: %s at index %i' % (images[j],j)
+        print 'Offset: %d,%d\n' % offset
+        '''
+        return offset
+    images = cc.scale_to_power_of_two(images)
+    drift_vector = [None] * len(images)
+    drift_vector[0] = (0., 0.)
+    # print 'Initial vector: ', drift_vector
+    for i in range(1, len(images)):
+        img_drift = get_drift(i - 1, i, images)
+        # print 'Vector element: ', i
+        # print 'Adding value: ', img_drift
+        drift_vector[i] = img_drift
+        drift_vector[i] = tuple([a + b for a,b in zip(drift_vector[i - 1], drift_vector[i])])
+    # print 'Drift vector:'
+    # pprint(drift_vector)
+    return drift_vector
+
+
+def get_drift_vector_sift(images):
+    ''' Returns the drift vector of the given images.
+    Scale-invariant feature transform is used for drift detection.
+    :param images: A list containing ImagePlus objects.
+    '''
+    sift = pySIFT.pySIFT(images)
+    ''' DEBUG
+    for x in sift.all_features:
+        print(x.size())
+    '''
+    # pprint(sift.get_drift_matrix())
+    return sift.get_drift_vector()
 
 
 def get_corrected_stack_using_vector(images, drift_vector, suffix=''):
@@ -197,3 +266,33 @@ def shift_images(img_list, shift_vector):
                'x=%d y=%d interpolation=None' % (shift_vector[i][0], shift_vector[i][1])
               )
     return shifted_list
+
+
+'''
+Testing section:
+'''
+if __name__ == '__main__':
+	imp1 = IJ.openImage("http://imagej.nih.gov/ij/images/TEM_filter_sample.jpg");
+	IJ.run(imp1, "32-bit", "");
+	imp2 = imp1.crop();
+	imp3 = imp1.crop();
+	offset_x = 15
+	offset_y = 15
+	IJ.run(imp2,
+		   "Translate...",
+		   "x=%d y=%d interpolation=None" % (offset_x, offset_y)
+		  )
+	IJ.run(imp3,
+		   "Translate...",
+		   "x=%d y=%d interpolation=None" % (-offset_x, -offset_y)
+		  )
+	for mode in ('CC', 'SIFT'):
+		drift_vec = get_drift_vector([imp1, imp2, imp3], mode)
+		print('Drift vector: ' + str(drift_vec))
+		drift2 = drift_vec[1]
+		drift3 = drift_vec[2]
+		assert(abs(drift2[0] - offset_x) < 1)
+		assert(abs(drift2[1] - offset_y) < 1)
+		assert(abs(drift3[0] + offset_x) < 1)
+		assert(abs(drift3[1] + offset_y) < 1)
+	print('Tests completed.')

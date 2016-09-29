@@ -209,23 +209,31 @@ def __create_calbar(imp):
     IJ.run(imp, 'Calibration Bar...', cal_bar_settings % (font_size, zoom))
 
 def scale_to_power_of_two(images):
-    ''' Renturn a list o images with with and height as power of two.
+    ''' Renturns a list of images with width and height as power of two.
     The original image is centered.
     :param images: A list of images to process.
     '''
     dim = [(imp.getWidth(), imp.getHeight()) for imp in images]
-    max_dim = max(tools.perform_func_on_list_of_tuples(max, dim))
+    min_dim = min(tools.perform_func_on_list_of_tuples(min, dim))
     new_size = 2
-    while new_size < max_dim:
+    while new_size < min_dim / 2:
         new_size *= 2
-    resizer = CanvasResizer()
     def resize(imp):
-        '''Return a rezized version of imp.
-
+        '''Returns a rezized version of imp.
         Width and height will be a power of 2.
         '''
-        x_off = int(math.floor((new_size - imp.getWidth()) / 2))
-        y_off = int(math.floor((new_size - imp.getHeight()) / 2))
+        x_off = int(math.floor((imp.getWidth() - new_size) / 2))
+        y_off = int(math.floor((imp.getHeight() - new_size) / 2))
         # print x_off, y_off
-        return resizer.expandImage(imp.getProcessor(), new_size, new_size, x_off, y_off)
-    return [ImagePlus(imp.getTitle(), resize(imp)) for imp in images]
+        imp.setRoi(x_off, y_off, new_size, new_size)
+        return imp.crop()
+    return [resize(imp) for imp in images]
+
+'''
+Testing section:
+'''
+if __name__ == '__main__':
+	imp1 = IJ.openImage("http://imagej.nih.gov/ij/images/TEM_filter_sample.jpg");
+	imp2 = scale_to_power_of_two((imp1,))[0]
+	assert(imp2.getWidth() == 256 and imp2.getHeight() == 256)
+	print('Tests completed.')
