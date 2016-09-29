@@ -14,7 +14,6 @@ from EFTEMj_pyLib import pySIFT
 from EFTEMj_pyLib import Tools as tools
 
 from ij import IJ, ImagePlus
-from ij.plugin import Duplicator
 
 def get_options():
     '''Returns a list of drift correction mode titles.'''
@@ -32,8 +31,8 @@ def correct_drift(img1, img2, display_cc=False):
     :param img2: The image to be shifted.
     :param display_cc: Activate displaying the CrossCorrelation image (default False).
     '''
-    img1, img2 = cc.scale_to_power_of_two([img1, img2])
-    result = cc.perform_correlation(img1, img2)
+    img1_cc, img2_cc = cc.scale_to_power_of_two([img1, img2])
+    result = cc.perform_correlation(img1_cc, img2_cc)
     x_off, y_off = cc.get_shift(result)
     # style after maximum detection
     if not display_cc:
@@ -61,7 +60,7 @@ def get_corrected_stack(images, mode='CC'):
     if mode == 'None':
         return get_corrected_stack_using_vector(images, [(0, 0)] * len(images))
     drift_matrix = get_drift_matrix(images, mode)
-    corrected_stack = get_corrected_stack_using_matrix(images, drift_matrix, mode)
+    corrected_stack = get_corrected_stack_using_matrix(images, drift_matrix)
     return corrected_stack
 
 
@@ -73,8 +72,9 @@ def get_corrected_stack_linear(images, mode='CC'):
     '''
     drift_vertor = [(0, 0)] * len(images)
     if mode == 'CC' or mode == 'SIFT':
-    	drift_vector = get_drift_vector(images, mode)
-    return get_corrected_stack_using_vector(images, drift_vector)
+        drift_vector = get_drift_vector(images, mode)
+    corrected_stack = get_corrected_stack_using_vector(images, drift_vector)
+    return corrected_stack
 
 
 def get_drift_matrix(images, mode='CC'):
@@ -95,9 +95,9 @@ def get_drift_matrix_cc(images):
     Cross correlation is used for drift detection.
     :param images: A list containing ImagePlus objects.
     '''
-    def get_drift(i, j, images):
+    def get_drift(i, j, _images):
         '''Returns the drift of imagej compared to image i'''
-        cc_img = cc.perform_correlation(images[i], images[j])
+        cc_img = cc.perform_correlation(_images[i], _images[j])
         offset = cc.get_drift(cc_img)
         ''' DEBUG
         print 'Reference: %s at index %i' % (images[i],i)
@@ -105,7 +105,7 @@ def get_drift_matrix_cc(images):
         print 'Offset: %d,%d\n' % offset
         '''
         return offset
-    images = cc.scale_to_power_of_two(images)
+    images_cc = cc.scale_to_power_of_two(images)
     drift_matrix = [[]] * len(images)
     for i, _ in enumerate(drift_matrix):
         drift_matrix[i] = [(0, 0)] * len(images)
@@ -113,7 +113,7 @@ def get_drift_matrix_cc(images):
     for i in range(len(images)):
         # print  'i=%i: ' % i, range(i + 1, len(images))
         for j in range(i + 1, len(images)):
-            img_drift = get_drift(i, j, images)
+            img_drift = get_drift(i, j, images_cc)
             ''' DEBUG
             print 'Appending to %i/%i:' % (i, j)
             print shift
@@ -159,9 +159,9 @@ def get_drift_vector_cc(images):
     Cross correlation is used for drift detection.
     :param images: A list containing ImagePlus objects.
     '''
-    def get_drift(i, j, images):
+    def get_drift(i, j, _images):
         '''Returns the drift of imagej compared to image i'''
-        cc_img = cc.perform_correlation(images[i], images[j])
+        cc_img = cc.perform_correlation(_images[i], _images[j])
         offset = cc.get_drift(cc_img)
         ''' DEBUG
         print 'Reference: %s at index %i' % (images[i],i)
@@ -169,16 +169,16 @@ def get_drift_vector_cc(images):
         print 'Offset: %d,%d\n' % offset
         '''
         return offset
-    images = cc.scale_to_power_of_two(images)
+    images_cc = cc.scale_to_power_of_two(images)
     drift_vector = [None] * len(images)
     drift_vector[0] = (0., 0.)
     # print 'Initial vector: ', drift_vector
     for i in range(1, len(images)):
-        img_drift = get_drift(i - 1, i, images)
+        img_drift = get_drift(i - 1, i, images_cc)
         # print 'Vector element: ', i
         # print 'Adding value: ', img_drift
         drift_vector[i] = img_drift
-        drift_vector[i] = tuple([a + b for a,b in zip(drift_vector[i - 1], drift_vector[i])])
+        drift_vector[i] = tuple([a + b for a, b in zip(drift_vector[i - 1], drift_vector[i])])
     # print 'Drift vector:'
     # pprint(drift_vector)
     return drift_vector
@@ -234,11 +234,20 @@ def drift_vector_from_drift_matrix(drift_matrix):
     rot_matrix = [list(x) for x in zip(*mod_matrix)]
     # print 'Rotated matrix:'
     # pprint.pprint(rot_matrix)
-    shift_vector = [tuple(map(operator.neg, tup))
+    drift_vector = [tup
                     for tup in [tools.mean_of_list_of_tuples(row)
                                 for row in rot_matrix
                                ]
                    ]
+    return drift_vector
+
+
+def shift_vector_from_drift_matrix(drift_matrix):
+    ''' Returns a list of tuples that represents the optimized shift vector.
+    :param drift_matrix: A NxN matrix that contains the measured drift between N images.
+    '''
+    drift_vector = drift_vector_from_drift_matrix(drift_matrix)
+    shift_vector = [tuple(map(operator.neg, tup)) for tup in drift_vector]
     return shift_vector
 
 
@@ -249,7 +258,7 @@ def shift_images(img_list, shift_vector):
     :param shift_vector: A List of x-, y-coordinates to define the shift per image.
     '''
     shift_vector = [(math.floor(shift[0]), math.floor(shift[1])) for shift in shift_vector]
-    shifted_list = [Duplicator().run(img) for img in img_list]
+    shifted_list = [img.crop() for img in img_list]
     def make_title(i):
         '''Returns a new image title that contains the performed shift.'''
         old_title = img_list[i].getTitle()
@@ -272,27 +281,51 @@ def shift_images(img_list, shift_vector):
 Testing section:
 '''
 if __name__ == '__main__':
-	imp1 = IJ.openImage("http://imagej.nih.gov/ij/images/TEM_filter_sample.jpg");
-	IJ.run(imp1, "32-bit", "");
-	imp2 = imp1.crop();
-	imp3 = imp1.crop();
-	offset_x = 15
-	offset_y = 15
-	IJ.run(imp2,
-		   "Translate...",
-		   "x=%d y=%d interpolation=None" % (offset_x, offset_y)
-		  )
-	IJ.run(imp3,
-		   "Translate...",
-		   "x=%d y=%d interpolation=None" % (-offset_x, -offset_y)
-		  )
-	for mode in ('CC', 'SIFT'):
-		drift_vec = get_drift_vector([imp1, imp2, imp3], mode)
-		print('Drift vector: ' + str(drift_vec))
-		drift2 = drift_vec[1]
-		drift3 = drift_vec[2]
-		assert(abs(drift2[0] - offset_x) < 1)
-		assert(abs(drift2[1] - offset_y) < 1)
-		assert(abs(drift3[0] + offset_x) < 1)
-		assert(abs(drift3[1] + offset_y) < 1)
-	print('Tests completed.')
+    print('Testing the function get_drift_vector() for CC and SIFT...')
+    imp1 = IJ.openImage("http://imagej.nih.gov/ij/images/TEM_filter_sample.jpg")
+    width = imp1.getWidth()
+    height = imp1.getHeight()
+    IJ.run(imp1, "32-bit", "");
+    imp2 = imp1.crop();
+    imp3 = imp1.crop();
+    offset_x = 15
+    offset_y = 15
+    IJ.run(imp2,
+           "Translate...",
+           "x=%d y=%d interpolation=None" % (offset_x, offset_y)
+          )
+    IJ.run(imp3,
+           "Translate...",
+           "x=%d y=%d interpolation=None" % (-offset_x, -offset_y)
+          )
+    for mode in ('CC', 'SIFT'):
+        drift_vec = get_drift_vector([imp1, imp2, imp3], mode)
+        print('Drift vector: ' + str(drift_vec))
+        drift2 = drift_vec[1]
+        drift3 = drift_vec[2]
+        assert(abs(drift2[0] - offset_x) < 1)
+        assert(abs(drift2[1] - offset_y) < 1)
+        assert(abs(drift3[0] + offset_x) < 1)
+        assert(abs(drift3[1] + offset_y) < 1)
+
+    print('Testing the functions get_drift_matrix(), drift_vector_from_drift_matrix() ' + \
+          'and shift_vector_from_drift_matrix() for CC and SIFT...'
+         )
+    for mode in ('CC', 'SIFT'):
+        drift_matrix = get_drift_matrix([imp1, imp2, imp3], mode)
+        drift_vec = drift_vector_from_drift_matrix(drift_matrix)
+        shift_vec = shift_vector_from_drift_matrix(drift_matrix)
+        print('Drift matrix: ' + str(drift_matrix))
+        print('Drift vector: ' + str(drift_vec))
+        print('Shift vector: ' + str(shift_vec))
+        _, drift2, drift3 = drift_vec
+        _, shift2, shift3 = shift_vec
+        assert(abs(drift2[0] - offset_x) < 1)
+        assert(abs(drift2[1] - offset_y) < 1)
+        assert(abs(drift3[0] + offset_x) < 1)
+        assert(abs(drift3[1] + offset_y) < 1)
+        assert(abs(shift2[0] + offset_x) < 1)
+        assert(abs(shift2[1] + offset_y) < 1)
+        assert(abs(shift3[0] - offset_x) < 1)
+        assert(abs(shift3[1] - offset_y) < 1)
+    print('Tests completed.')

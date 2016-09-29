@@ -226,7 +226,9 @@ def scale_to_power_of_two(images):
         y_off = int(math.floor((imp.getHeight() - new_size) / 2))
         # print x_off, y_off
         imp.setRoi(x_off, y_off, new_size, new_size)
-        return imp.crop()
+        imp_dup = imp.crop()
+        IJ.run(imp, "Select None", "")
+        return imp_dup
     return [resize(imp) for imp in images]
 
 '''
