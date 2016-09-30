@@ -53,7 +53,11 @@ class pySIFT:
             return isinstance(img, ImagePlus)
         for img in img_list:
             if check(img):
-                self.images.append(img)
+                img_dup = img.crop()
+                mean = img_dup.getProcessor().getStatistics().mean
+                IJ.run(img_dup, "Divide...", "value=%f" % (mean,))
+                IJ.run(img_dup, "Enhance Contrast", "saturated=0.1")
+                self.images.append(img_dup)
         if params and isinstance(params, Param):
             self.param = params
         else:
