@@ -203,7 +203,8 @@ def get_corrected_stack_using_vector(images, drift_vector, suffix=''):
     :param images: A list of length N containing ImagePlus objects.
     :param drift_matrix: A list of length N that contains the measured drift.
     '''
-    stack = tools.stack_from_list_of_imp(shift_images(images, drift_vector))
+    shift_vector = shift_vector_from_drift_vector(drift_vector)
+    stack = tools.stack_from_list_of_imp(shift_images(images, shift_vector))
     title = 'Drift corrected stack'
     if suffix:
         title += ' (%s)' % (suffix)
@@ -247,6 +248,14 @@ def shift_vector_from_drift_matrix(drift_matrix):
     :param drift_matrix: A NxN matrix that contains the measured drift between N images.
     '''
     drift_vector = drift_vector_from_drift_matrix(drift_matrix)
+    shift_vector = [tuple(map(operator.neg, tup)) for tup in drift_vector]
+    return shift_vector
+
+
+def shift_vector_from_drift_vector(drift_vector):
+    ''' Returns a list of tuples that represents the optimized shift vector.
+    :param drift_vector: A vector of length N that contains the measured drift between N images.
+    '''
     shift_vector = [tuple(map(operator.neg, tup)) for tup in drift_vector]
     return shift_vector
 
