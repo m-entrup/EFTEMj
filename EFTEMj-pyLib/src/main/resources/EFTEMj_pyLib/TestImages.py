@@ -39,8 +39,10 @@ class DriftTestImageCreator:
             self.images = []
         if mode == 'simple':
             self._create_simple_images(count)
-        if mode == 'complex':
+        elif mode == 'complex':
             self._create_complex_images(count)
+        else:
+            IJ.showProgress(1)
 
 
     def _create_simple_images(self, count):
