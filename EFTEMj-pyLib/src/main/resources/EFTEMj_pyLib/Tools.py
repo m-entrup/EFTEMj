@@ -128,3 +128,84 @@ def copy_scale(list_of_imps_from, list_of_imps_to):
     '''Uses the ImagePlus method copyScale() to copy the calibration.'''
     for imp_from, imp_to in zip(list_of_imps_from, list_of_imps_to):
         imp_to.copyScale(imp_from)
+
+def batch_open_images(path, file_type=None, name_filter=None, recursive=False):
+    '''Open all files in the given folder.
+    :param path: The path from were to open the images. String and java.io.File are allowed.
+    :param file_type: Only accept files with the given extension (default: None).
+    :param name_filter: Only accept files that contain the given string (default: None).
+    :param recursive: Process directories recursively (default: False).
+    '''
+    import os
+    from java.io import File
+    if type(path) is File:
+        path = path.getAbsolutePath()
+
+    def check_type(string):
+        if file_type:
+            if type(file_type) in [list, tuple]:
+                for file_type_ in file_type:
+                    if string.endswith(file_type_):
+                        return True
+                    else:
+                        continue
+            else:
+                if string.endswith(file_type):
+                    return True
+                else:
+                    return False
+            return False
+        else:
+            return True
+
+    def check_filter(string):
+        if name_filter:
+            if type(name_filter) in [list, tuple]:
+                for name_filter_ in name_filter:
+                    if name_filter_ in string:
+                        return True
+                    else:
+                        continue
+            else:
+                if name_filter in string:
+                    return True
+                else:
+                    return False
+            return False
+        else:
+            return True
+
+    path_to_images = []
+    path = os.path.expanduser(path)
+    path = os.path.expandvars(path)
+    if not recursive:
+        for file_name in os.listdir(path):
+            full_path = os.path.join(path, file_name)
+            if os.path.isfile(full_path):
+                if check_type(file_name):
+                    if check_filter(file_name):
+                        path_to_images.append(full_path)
+    else:
+        for directory, dir_names, file_names in os.walk(path):
+            for file_name in file_names:
+                full_path = os.path.join(directory, file_name)
+                if check_type(file_name):
+                    if check_filter(file_name):
+                        path_to_images.append(full_path)
+    images = []
+    for img_path in path_to_images:
+        try:
+            imp = IJ.openImage(img_path)
+            if imp:
+                images.append(imp)
+        except Exception, err:
+            IJ.log(str(err))
+    return images
+
+
+if __name__ == '__main__':
+    path = '~/Temp/BatchOpener-Test'
+    images = batch_open_images(path, None, None, True)
+    print('- - Result - -')
+    for image in images:
+        print(image)
