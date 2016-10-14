@@ -14,6 +14,7 @@ from EFTEMj_pyLib import pySIFT
 from EFTEMj_pyLib import Tools as tools
 
 from ij import IJ, ImagePlus
+from ij.plugin import Duplicator
 
 def get_options():
     '''Returns a list of drift correction mode titles.'''
