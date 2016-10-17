@@ -1,7 +1,7 @@
 """
 file:       Correct_drift_(2_images).py
 author:     Michael Entrup b. Epping (michael.entrup@wwu.de)
-version:    20160720
+version:    20161017
 info:       A script that corrects the drift between two images.
             The images are not changed. A copy of the second image is shifted.
             The normalized cross correlation used for drift detection is displayed.
@@ -9,11 +9,13 @@ info:       A script that corrects the drift between two images.
 
 from __future__ import with_statement, division
 
+# pylint: disable-msg=E0401
 from EFTEMj_pyLib import HelperDialogs as dialogs
 from EFTEMj_pyLib import CorrectDrift as drift
 
 from ij import IJ, WindowManager
 from ij.plugin import Duplicator
+# pylint: enable-msg=E0401
 
 
 def select_images():

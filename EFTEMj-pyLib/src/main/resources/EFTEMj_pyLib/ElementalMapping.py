@@ -1,18 +1,23 @@
 '''
 file:       ElementalMapping.py
 author:     Michael Entrup b. Epping (michael.entrup@wwu.de)
-version:    20160725
+version:    20161017
 info:       This module contains different classes to calculate elemental mpas.
 '''
 
 from __future__ import with_statement, division
 
-import math, re
+import math
+import re
 
+# pylint: disable-msg=E0401
 from ij import IJ, ImagePlus
 from ij.process import FloatProcessor
 
 from java.lang import Float
+# jarray.array() is used to convert from a list to a java array.
+from jarray import array
+# pylint: enable-msg=E0401
 
 class ThreeWindow:
     '''This class is used to calculate the elemental map and the SNR using the three window method.
@@ -27,6 +32,7 @@ class ThreeWindow:
     '''
 
     # pylint: disable=too-many-instance-attributes
+    # pylint: disable-msg=C0103
     sigs = None
     snrs = None
     rs = None
@@ -165,6 +171,7 @@ class ThreeWindow:
 
     def _calc_snr(self, sig, var_sig):
         '''A helper function used by calc_snr().'''
+        # pylint: disable-msg=R0201
         if not Float.isNaN(sig) and not Float.isNaN(var_sig):
             return sig / math.sqrt(var_sig)
         else:
@@ -176,8 +183,6 @@ class ThreeWindow:
 
         If the calculation of results was not done before, ths method invokes the calculation.
         '''
-        # jarray.array() is used to convert from a list to a java array.
-        from jarray import array
         if not self.sigs:
             self.calc_map()
         lnA_imp = ImagePlus('Map of parameter ln(a)',
@@ -213,4 +218,5 @@ class ThreeWindow:
 
 def calc_pow(x, lnA, r):
     '''Returns the result of the power law function.'''
+    # pylint: disable-msg=C0103
     return math.exp(lnA) * math.pow(x, -r)

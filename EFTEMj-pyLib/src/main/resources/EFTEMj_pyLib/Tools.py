@@ -1,15 +1,20 @@
 '''
 file:       Tools.py
 author:     Michael Entrup b. Epping (michael.entrup@wwu.de)
-version:    20160720
+version:    20161017
 info:       This module contains different usefull functions.
 '''
 
 from __future__ import with_statement, division
 
+import os
+
+# pylint: disable-msg=E0401
 from EFTEMj_pyLib import HelperDialogs as dialogs
 
+from java.io import File
 from ij import IJ, ImagePlus, ImageStack, WindowManager
+# pylint: enable-msg=E0401
 
 
 def perform_func_on_list_of_tuples(func, list_of_tuples):
@@ -60,8 +65,8 @@ def stack_to_list_of_imp(imp_stack):
     size = imp_stack.getStackSize()
     labels = [imp_stack.getStack().getShortSliceLabel(i) for i in range(1, size + 1)]
     ips = [imp_stack.getStack().getProcessor(i) for i in range(1, size + 1)]
-    images = [ImagePlus(label, ip) for label, ip in zip(labels, ips)]
-    return images
+    image_list = [ImagePlus(label, ip) for label, ip in zip(labels, ips)]
+    return image_list
 
 
 def get_images(minimum=0, maximum=None, exact=None):
@@ -120,8 +125,8 @@ def get_images(minimum=0, maximum=None, exact=None):
         images_selected.remove(len(image_ids))
     if not check_count(len(images_selected)):
         return None
-    images = [WindowManager.getImage(image_ids[selection]) for selection in images_selected]
-    return images
+    image_list = [WindowManager.getImage(image_ids[selection]) for selection in images_selected]
+    return image_list
 
 
 def copy_scale(list_of_imps_from, list_of_imps_to):
@@ -129,83 +134,96 @@ def copy_scale(list_of_imps_from, list_of_imps_to):
     for imp_from, imp_to in zip(list_of_imps_from, list_of_imps_to):
         imp_to.copyScale(imp_from)
 
-def batch_open_images(path, file_type=None, name_filter=None, recursive=False):
+
+def check_type(file_name, file_extension):
+    '''Check if the given file is of the correct file type.
+    :param file_name: Name of the file to check.
+    :param file_extension: A string (or list/tuple of strings) that represents the file type.
+    '''
+    if file_extension:
+        if isinstance(file_extension, list) or isinstance(file_extension, tuple):
+            for file_type_ in file_extension:
+                if file_name.endswith(file_type_):
+                    return True
+                else:
+                    continue
+        else:
+            return bool(file_name.endswith(file_extension))
+        return False
+    else:
+        return True
+
+
+def check_filter(file_name, filter_string):
+    '''Check if the given filename contains a certain string.
+    :param file_name: Name of the file to check.
+    :param filter_string: A string (or list/tuple of strings) that represents the filter.
+    '''
+    if filter_string:
+        if isinstance(filter_string, list) or isinstance(filter_string, tuple):
+            for name_filter_ in filter_string:
+                if name_filter_ in file_name:
+                    return True
+                else:
+                    continue
+        else:
+            return bool(filter_string in file_name)
+        return False
+    else:
+        return True
+
+
+def batch_open_images(directory, file_type=None, name_filter=None, recursive=False):
     '''Open all files in the given folder.
     :param path: The path from were to open the images. String and java.io.File are allowed.
     :param file_type: Only accept files with the given extension (default: None).
     :param name_filter: Only accept files that contain the given string (default: None).
     :param recursive: Process directories recursively (default: False).
     '''
-    import os
-    from java.io import File
-    if type(path) is File:
-        path = path.getAbsolutePath()
-
-    def check_type(string):
-        if file_type:
-            if type(file_type) in [list, tuple]:
-                for file_type_ in file_type:
-                    if string.endswith(file_type_):
-                        return True
-                    else:
-                        continue
-            else:
-                if string.endswith(file_type):
-                    return True
-                else:
-                    return False
-            return False
-        else:
-            return True
-
-    def check_filter(string):
-        if name_filter:
-            if type(name_filter) in [list, tuple]:
-                for name_filter_ in name_filter:
-                    if name_filter_ in string:
-                        return True
-                    else:
-                        continue
-            else:
-                if name_filter in string:
-                    return True
-                else:
-                    return False
-            return False
-        else:
-            return True
+    if isinstance(path, File):
+        directory = directory.getAbsolutePath()
 
     path_to_images = []
-    path = os.path.expanduser(path)
-    path = os.path.expandvars(path)
+    directory = os.path.expanduser(directory)
+    directory = os.path.expandvars(directory)
     if not recursive:
-        for file_name in os.listdir(path):
-            full_path = os.path.join(path, file_name)
-            if os.path.isfile(full_path):
-                if check_type(file_name):
-                    if check_filter(file_name):
-                        path_to_images.append(full_path)
+        for file_name in os.listdir(directory):
+            full_path = os.path.join(directory, file_name)
+            if os.path.isfile(full_path) \
+            and check_type(file_name, file_type) \
+            and check_filter(file_name, name_filter):
+                path_to_images.append(full_path)
     else:
-        for directory, dir_names, file_names in os.walk(path):
+        for directory, _, file_names in os.walk(directory):
             for file_name in file_names:
                 full_path = os.path.join(directory, file_name)
-                if check_type(file_name):
-                    if check_filter(file_name):
-                        path_to_images.append(full_path)
-    images = []
+                if check_type(file_name, file_type) \
+                and check_filter(file_name, name_filter):
+                    path_to_images.append(full_path)
+    image_list = []
     for img_path in path_to_images:
-        try:
-            imp = IJ.openImage(img_path)
-            if imp:
-                images.append(imp)
-        except Exception, err:
-            IJ.log(str(err))
-    return images
+        imp = IJ.openImage(img_path)
+        if imp:
+            image_list.append(imp)
+    return image_list
 
 
 if __name__ == '__main__':
+    # pylint: disable-msg=C0103
     path = '~/Temp/BatchOpener-Test'
+    images = batch_open_images(path, None, None, False)
+    print('- - Result - -')
+    for image in images:
+        print(image)
     images = batch_open_images(path, None, None, True)
+    print('- - Result - -')
+    for image in images:
+        print(image)
+    images = batch_open_images(path, ['tif', 'jpg'], 'SIFT', True)
+    print('- - Result - -')
+    for image in images:
+        print(image)
+    images = batch_open_images(path, 'png', ('SIFT', 'dpi'), True)
     print('- - Result - -')
     for image in images:
         print(image)

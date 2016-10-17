@@ -1,13 +1,15 @@
 '''
 file:       TestImages.py
 author:     Michael Entrup b. Epping (michael.entrup@wwu.de)
-version:    20160930
+version:    20161017
 info:       This module creates test images.
 '''
 
 from __future__ import division
 
+# pylint: disable-msg=E0401
 from ij import IJ
+# pylint: enable-msg=E0401
 
 class DriftTestImageCreator:
     '''
@@ -46,8 +48,8 @@ class DriftTestImageCreator:
 
 
     def _create_simple_images(self, count):
-        w, h = self.dim_simple
-        ref = IJ.createImage('Ref', '32-bit black', w, h, 1)
+        width, height = self.dim_simple
+        ref = IJ.createImage('Ref', '32-bit black', width, height, 1)
         self._create_rect_and_noise(ref, self.roi_simple)
         self.images.append(ref)
         IJ.showProgress(1 / count)
@@ -56,9 +58,11 @@ class DriftTestImageCreator:
             roi_off = list(self.roi_simple[:])
             roi_off[0] = randint(0.5 * self.roi_simple[0], 1.5 * self.roi_simple[0])
             roi_off[1] = randint(0.5 * self.roi_simple[0], 1.5 * self.roi_simple[0])
-            imp = IJ.createImage('Img', '32-bit black', w, h, 1)
+            imp = IJ.createImage('Img', '32-bit black', width, height, 1)
             self._create_rect_and_noise(imp, roi_off)
-            imp.setTitle('%d,%d' % (roi_off[0] - self.roi_simple[0], roi_off[1] - self.roi_simple[1]))
+            imp.setTitle('%d,%d' % (roi_off[0] - self.roi_simple[0],
+                                    roi_off[1] - self.roi_simple[1]
+                                   ))
             self.images.append(imp)
             IJ.showProgress(i / count)
 
@@ -76,7 +80,9 @@ class DriftTestImageCreator:
             roi_off[0] = randint(0.5 * self.roi_complex[0], 1.5 * self.roi_complex[0])
             roi_off[1] = randint(0.5 * self.roi_complex[1], 1.5 * self.roi_complex[1])
             imp = self._crop_and_noise(source, roi_off)
-            imp.setTitle('%d,%d' % (self.roi_complex[0] - roi_off[0], self.roi_complex[1] - roi_off[1]))
+            imp.setTitle('%d,%d' % (self.roi_complex[0] - roi_off[0],
+                                    self.roi_complex[1] - roi_off[1]
+                                   ))
             self.images.append(imp)
             IJ.showProgress(i / count)
         source.close()
@@ -110,20 +116,21 @@ class DriftTestImageCreator:
 Testing section:
 '''
 if __name__ == '__main__':
+    # pylint: disable-msg=C0103
     creator = DriftTestImageCreator()
     from random import randrange
     count_simple = randrange(1, 100)
     print('Creating %d simple test images...' % (count_simple,))
     creator.create_images(count=count_simple, mode='simple')
     imgs_simple = creator.get_images()
-    assert(len(imgs_simple) == count_simple)
+    assert len(imgs_simple) == count_simple
     for img in imgs_simple:
-        assert(img.getWidth() == 512 and img.getHeight() == 512)
+        assert img.getWidth() == 512 and img.getHeight() == 512
     count_complex = randrange(1, 10)
     print('Creating %d complex test images...' % (count_complex,))
     creator.create_images(count=count_complex, mode='complex')
     imgs_complex = creator.get_images()
-    assert(len(imgs_complex) == count_complex)
+    assert len(imgs_complex) == count_complex
     for img in imgs_complex:
-        assert(img.getWidth() == 3000 and img.getHeight() == 3000)
+        assert img.getWidth() == 3000 and img.getHeight() == 3000
     print('Tests completed.')

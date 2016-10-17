@@ -1,7 +1,7 @@
 '''
 file:       Correct_drift_(CC_linear).py
 author:     Michael Entrup b. Epping (michael.entrup@wwu.de)
-version:    20160929
+version:    20161017
 info:       A script that corrects the drift between any number of images.
             Normalized cross correlation is used for drift detection.
             The images are not changed. A stack is created that holds the corrected images.
@@ -9,8 +9,10 @@ info:       A script that corrects the drift between any number of images.
 
 from __future__ import with_statement, division
 
+# pylint: disable-msg=E0401
 from EFTEMj_pyLib import CorrectDrift as drift
 from EFTEMj_pyLib import Tools as tools
+# pylint: enable-msg=E0401
 
 
 def run_script():

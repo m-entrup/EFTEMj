@@ -1,20 +1,24 @@
 '''
 file:       CorrectDrift.py
 author:     Michael Entrup b. Epping (michael.entrup@wwu.de)
-version:    20160929
+version:    20161017
 info:       This module will correct the drift between two images.
 '''
 
 from __future__ import with_statement, division
 
-import operator, pprint, math
+import operator
+#import pprint
+import math
 
+# pylint: disable-msg=E0401
 from EFTEMj_pyLib import CrossCorrelation as cc
-from EFTEMj_pyLib import pySIFT
+from EFTEMj_pyLib import PySIFT
 from EFTEMj_pyLib import Tools as tools
 
 from ij import IJ, ImagePlus
 from ij.plugin import Duplicator
+# pylint: enable-msg=E0401
 
 def get_options():
     '''Returns a list of drift correction mode titles.'''
@@ -60,8 +64,8 @@ def get_corrected_stack(images, mode='CC'):
     '''
     if mode == 'None':
         return get_corrected_stack_using_vector(images, [(0, 0)] * len(images))
-    drift_matrix = get_drift_matrix(images, mode)
-    corrected_stack = get_corrected_stack_using_matrix(images, drift_matrix)
+    drift = get_drift_matrix(images, mode)
+    corrected_stack = get_corrected_stack_using_matrix(images, drift)
     return corrected_stack
 
 
@@ -71,7 +75,7 @@ def get_corrected_stack_linear(images, mode='CC'):
     :param images: A list containing ImagePlus objects.
     :param mode: The method used for drift detection (e.g. CC, SIFT).
     '''
-    drift_vertor = [(0, 0)] * len(images)
+    drift_vector = [(0, 0)] * len(images)
     if mode == 'CC' or mode == 'SIFT':
         drift_vector = get_drift_vector(images, mode)
     corrected_stack = get_corrected_stack_using_vector(images, drift_vector)
@@ -133,7 +137,7 @@ def get_drift_matrix_sift(images):
     Scale-invariant feature transform is used for drift detection.
     :param images: A list containing ImagePlus objects.
     '''
-    sift = pySIFT.pySIFT(images)
+    sift = PySIFT.PySIFT(images)
     ''' DEBUG
     for x in sift.all_features:
         print(x.size())
@@ -190,7 +194,7 @@ def get_drift_vector_sift(images):
     Scale-invariant feature transform is used for drift detection.
     :param images: A list containing ImagePlus objects.
     '''
-    sift = pySIFT.pySIFT(images)
+    sift = PySIFT.PySIFT(images)
     ''' DEBUG
     for x in sift.all_features:
         print(x.size())
@@ -199,6 +203,7 @@ def get_drift_vector_sift(images):
     return sift.get_drift_vector()
 
 
+# pylint: disable-msg=C0103
 def get_corrected_stack_using_vector(images, drift_vector, suffix=''):
     ''' Returns a drift corrected stack using the given drift vector.
     :param images: A list of length N containing ImagePlus objects.
@@ -211,8 +216,10 @@ def get_corrected_stack_using_vector(images, drift_vector, suffix=''):
         title += ' (%s)' % (suffix)
     corrected_stack = ImagePlus(title, stack)
     return corrected_stack
+# pylint: enable-msg=C0103
 
 
+# pylint: disable-msg=C0103
 def get_corrected_stack_using_matrix(images, drift_matrix, suffix=''):
     ''' Returns a drift corrected stack using the given drift matrix.
     :param images: A list of length N containing ImagePlus objects.
@@ -220,6 +227,7 @@ def get_corrected_stack_using_matrix(images, drift_matrix, suffix=''):
     '''
     drift_vector = drift_vector_from_drift_matrix(drift_matrix)
     return get_corrected_stack_using_vector(images, drift_vector, suffix)
+# pylint: enable-msg=C0103
 
 
 def drift_vector_from_drift_matrix(drift_matrix):
@@ -291,13 +299,14 @@ def shift_images(img_list, shift_vector):
 Testing section:
 '''
 if __name__ == '__main__':
+    # pylint: disable-msg=C0103
     print('Testing the function get_drift_vector() for CC and SIFT...')
     imp1 = IJ.openImage("http://imagej.nih.gov/ij/images/TEM_filter_sample.jpg")
     width = imp1.getWidth()
     height = imp1.getHeight()
-    IJ.run(imp1, "32-bit", "");
-    imp2 = imp1.crop();
-    imp3 = imp1.crop();
+    IJ.run(imp1, "32-bit", "")
+    imp2 = imp1.crop()
+    imp3 = imp1.crop()
     offset_x = 15
     offset_y = 15
     IJ.run(imp2,
@@ -308,34 +317,34 @@ if __name__ == '__main__':
            "Translate...",
            "x=%d y=%d interpolation=None" % (-offset_x, -offset_y)
           )
-    for mode in ('CC', 'SIFT'):
-        drift_vec = get_drift_vector([imp1, imp2, imp3], mode)
+    for detection_mode in ('CC', 'SIFT'):
+        drift_vec = get_drift_vector([imp1, imp2, imp3], detection_mode)
         print('Drift vector: ' + str(drift_vec))
         drift2 = drift_vec[1]
         drift3 = drift_vec[2]
-        assert(abs(drift2[0] - offset_x) < 1)
-        assert(abs(drift2[1] - offset_y) < 1)
-        assert(abs(drift3[0] + offset_x) < 1)
-        assert(abs(drift3[1] + offset_y) < 1)
+        assert abs(drift2[0] - offset_x) < 1
+        assert abs(drift2[1] - offset_y) < 1
+        assert abs(drift3[0] + offset_x) < 1
+        assert abs(drift3[1] + offset_y) < 1
 
     print('Testing the functions get_drift_matrix(), drift_vector_from_drift_matrix() ' + \
           'and shift_vector_from_drift_matrix() for CC and SIFT...'
          )
-    for mode in ('CC', 'SIFT'):
-        drift_matrix = get_drift_matrix([imp1, imp2, imp3], mode)
-        drift_vec = drift_vector_from_drift_matrix(drift_matrix)
-        shift_vec = shift_vector_from_drift_matrix(drift_matrix)
-        print('Drift matrix: ' + str(drift_matrix))
+    for detection_mode in ('CC', 'SIFT'):
+        detected_drift_matrix = get_drift_matrix([imp1, imp2, imp3], detection_mode)
+        drift_vec = drift_vector_from_drift_matrix(detected_drift_matrix)
+        shift_vec = shift_vector_from_drift_matrix(detected_drift_matrix)
+        print('Drift matrix: ' + str(detected_drift_matrix))
         print('Drift vector: ' + str(drift_vec))
         print('Shift vector: ' + str(shift_vec))
         _, drift2, drift3 = drift_vec
         _, shift2, shift3 = shift_vec
-        assert(abs(drift2[0] - offset_x) < 1)
-        assert(abs(drift2[1] - offset_y) < 1)
-        assert(abs(drift3[0] + offset_x) < 1)
-        assert(abs(drift3[1] + offset_y) < 1)
-        assert(abs(shift2[0] + offset_x) < 1)
-        assert(abs(shift2[1] + offset_y) < 1)
-        assert(abs(shift3[0] - offset_x) < 1)
-        assert(abs(shift3[1] - offset_y) < 1)
+        assert abs(drift2[0] - offset_x) < 1
+        assert abs(drift2[1] - offset_y) < 1
+        assert abs(drift3[0] + offset_x) < 1
+        assert abs(drift3[1] + offset_y) < 1
+        assert abs(shift2[0] + offset_x) < 1
+        assert abs(shift2[1] + offset_y) < 1
+        assert abs(shift3[0] - offset_x) < 1
+        assert abs(shift3[1] - offset_y) < 1
     print('Tests completed.')
