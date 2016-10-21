@@ -357,13 +357,15 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 	}
 
 	private void resultsToCsv(final File path) {
-		try {
-			final ArrayList<String> images = results.settings.images;
-			path.mkdirs();
-			for (int i = 0; i < images.size(); i++) {
-				final String imgName = images.get(i).split("\\.")[0];
-				final CSVWriter writer = new CSVWriter(new FileWriter(new File(path, imgName + ".csv")), ';',
-						Character.MIN_VALUE);
+		final ArrayList<String> images = results.settings.images;
+		path.mkdirs();
+		/*
+		 * For each image a csv file is created:
+		 */
+		for (int i = 0; i < images.size(); i++) {
+			final String imgName = images.get(i).split("\\.")[0];
+			try (CSVWriter writer = new CSVWriter(new FileWriter(new File(path, imgName + ".csv")), ';',
+					Character.MIN_VALUE);) {
 				final String[] header = { "y-position", "y-error", "x-position", "x-error", "left-position",
 						"left-error", "right-position", "right-error", "width", "width-error", "threshold",
 						"fitted-x-position", "fitted-left-position", "fitted-right-position" };
@@ -389,10 +391,9 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 					final String[] line = new String[csvLine.size()];
 					writer.writeNext(csvLine.toArray(line));
 				}
-				writer.close();
+			} catch (final IOException e) {
+				IJ.showMessage("Error when writing csv file.", e.getMessage());
 			}
-		} catch (final IOException e) {
-			IJ.showMessage("Error when writing csv file.", e.getMessage());
 		}
 	}
 
