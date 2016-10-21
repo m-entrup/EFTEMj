@@ -9,7 +9,7 @@
 	<parent>
 		<groupId>de.m-entrup</groupId>
 		<artifactId>pom-EFTEMj</artifactId>
-		<version>1.4.3-SNAPSHOT</version>
+		<version>1.4.3</version>
 		<relativePath>..</relativePath>
 	</parent>
 	<dependencies>
