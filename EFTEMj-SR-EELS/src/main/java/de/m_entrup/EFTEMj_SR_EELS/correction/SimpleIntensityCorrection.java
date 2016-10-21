@@ -35,9 +35,7 @@ import ij.process.FloatProcessor;
  */
 public class SimpleIntensityCorrection extends IntensityCorrector {
 
-	public SimpleIntensityCorrection(final FloatProcessor inputImage,
-		final CoordinateCorrector coordinateCorrector)
-	{
+	public SimpleIntensityCorrection(final FloatProcessor inputImage, final CoordinateCorrector coordinateCorrector) {
 		super(inputImage, coordinateCorrector);
 	}
 
@@ -48,8 +46,7 @@ public class SimpleIntensityCorrection extends IntensityCorrector {
 		try {
 			point_0 = coordinateCorrector.transformCoordinate(x1, x2);
 			point_1 = coordinateCorrector.transformCoordinate(x1 + 1, x2 + 1);
-		}
-		catch (final SR_EELS_Exception exc1) {
+		} catch (final SR_EELS_Exception exc1) {
 			return 0f;
 		}
 		final float y1_0 = point_0[0];
@@ -66,16 +63,19 @@ public class SimpleIntensityCorrection extends IntensityCorrector {
 				for (int i = start1; i <= stop1; i++) {
 					float dx = 1;
 					float dy = 1;
-					if (i == start1) dx -= y1_0 - start1;
-					if (i == stop1) dx -= (stop1 + 1) - y1_1;
-					if (j == start2) dy -= y2_0 - start2;
-					if (j == stop2) dy -= (stop2 + 1) - y2_1;
+					if (i == start1)
+						dx -= y1_0 - start1;
+					if (i == stop1)
+						dx -= (stop1 + 1) - y1_1;
+					if (j == start2)
+						dy -= y2_0 - start2;
+					if (j == stop2)
+						dy -= (stop2 + 1) - y2_1;
 					sum += dx * dy * input.getf(i, j);
 				}
 			}
 			return sum;
-		}
-		catch (final ArrayIndexOutOfBoundsException exc) {
+		} catch (final ArrayIndexOutOfBoundsException exc) {
 			return 0f;
 		}
 	}

@@ -119,8 +119,8 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 	 */
 	private ImagePlus outputImage;
 	/**
-	 * This field indicates the progress. A static method is used to increase the
-	 * value by 1. It is necessary to use volatile because different
+	 * This field indicates the progress. A static method is used to increase
+	 * the value by 1. It is necessary to use volatile because different
 	 * {@link Thread}s call the related method.
 	 */
 	private static volatile int progress;
@@ -158,12 +158,13 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 	public void run(final ImageProcessor ip) {
 		/*
 		 * Each correction contains of implementations of the abstract classes
-		 * CoordinateCorrector and a IntensityCorrector that can be can be combined
-		 * as you want.
+		 * CoordinateCorrector and a IntensityCorrector that can be can be
+		 * combined as you want.
 		 *
-		 * By using getFunctionWidth() and getFunctionBorders() the characterisation
-		 * results are loaded and an implementation of the Levenberg–Marquardt
-		 * algorithm (LMA) is used to fit functions to the discrete values.
+		 * By using getFunctionWidth() and getFunctionBorders() the
+		 * characterisation results are loaded and an implementation of the
+		 * Levenberg–Marquardt algorithm (LMA) is used to fit functions to the
+		 * discrete values.
 		 */
 		IJ.showStatus("Preparing correction...");
 		importer = new DataImporter(pathResults, false);
@@ -179,13 +180,12 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 		final Calibration cal = new Calibration(inputImp);
 		cal.pixelHeight = widthFunction.getPixelHeight();
 		outputImage.setCalibration(cal);
-		final CoordinateCorrector coordinateCorrection =
-			new FullCoordinateCorrection(inputProcessor, outputProcessor);
-		final IntensityCorrector intensityCorrection =
-			new SimpleIntensityCorrection(inputProcessor, coordinateCorrection);
+		final CoordinateCorrector coordinateCorrection = new FullCoordinateCorrection(inputProcessor, outputProcessor);
+		final IntensityCorrector intensityCorrection = new SimpleIntensityCorrection(inputProcessor,
+				coordinateCorrection);
 		/*
-		 * Each line of the image is a step that is visualise by the progress bar of
-		 * ImageJ.
+		 * Each line of the image is a step that is visualise by the progress
+		 * bar of ImageJ.
 		 */
 		setupProgress(outputProcessor.getHeight());
 		if (EFTEMj_Debug.getDebugLevel() == EFTEMj_Debug.DEBUG_FULL) {
@@ -196,14 +196,14 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 				}
 				updateProgress();
 			}
-		}
-		else {
+		} else {
 			/*
 			 * The ExecutorService is used to handle the multithreading. see
-			 * http://www.vogella.com/tutorials/JavaConcurrency/article.html#threadpools
+			 * http://www.vogella.com/tutorials/JavaConcurrency/article.html#
+			 * threadpools
 			 */
-			final ExecutorService executorService = Executors.newFixedThreadPool(
-				Runtime.getRuntime().availableProcessors());
+			final ExecutorService executorService = Executors
+					.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 			for (int x2 = 0; x2 < outputProcessor.getHeight(); x2++) {
 				final int x2Temp = x2;
 				executorService.execute(new Runnable() {
@@ -211,8 +211,7 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 					@Override
 					public void run() {
 						for (int x1 = 0; x1 < outputProcessor.getWidth(); x1++) {
-							final float intensity = intensityCorrection.getIntensity(x1,
-								x2Temp);
+							final float intensity = intensityCorrection.getIntensity(x1, x2Temp);
 							outputProcessor.setf(x1, x2Temp, intensity);
 						}
 						updateProgress();
@@ -222,8 +221,7 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 			executorService.shutdown();
 			try {
 				executorService.awaitTermination(30, TimeUnit.MINUTES);
-			}
-			catch (final InterruptedException e) {
+			} catch (final InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
@@ -233,19 +231,18 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 	 * Use this method for batch processing. Values that are set up by the GUI
 	 * have to be passed as parameters.
 	 *
-	 * @param input_image is the image to correct.
-	 * @param path2REsults is the text file that contains the characterisation
-	 *          results for the width.
+	 * @param input_image
+	 *            is the image to correct.
+	 * @param path2REsults
+	 *            is the text file that contains the characterisation results
+	 *            for the width.
 	 * @return the corrected image.
 	 */
-	public ImagePlus correctImage(final ImagePlus input_image,
-		final String path2REsults)
-	{
-		this.inputProcessor = new SR_EELS_FloatProcessor(
-			(FloatProcessor) input_image.getProcessor(), CameraSetup.getFullWidth() /
-				input_image.getWidth(), CameraSetup.getFullHeight() / input_image
-					.getHeight(), input_image.getWidth() / 2, input_image.getHeight() /
-						2);
+	public ImagePlus correctImage(final ImagePlus input_image, final String path2REsults) {
+		this.inputProcessor = new SR_EELS_FloatProcessor((FloatProcessor) input_image.getProcessor(),
+				CameraSetup.getFullWidth() / input_image.getWidth(),
+				CameraSetup.getFullHeight() / input_image.getHeight(), input_image.getWidth() / 2,
+				input_image.getHeight() / 2);
 		title = StringManipulator.removeExtensionFromTitle(input_image.getTitle());
 		this.pathResults = path2REsults;
 		run(null);
@@ -258,8 +255,8 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 	 * parsed.
 	 * </p>
 	 * <p>
-	 * This function extracts the values that describe the pathway of the borders
-	 * of a spectrum.
+	 * This function extracts the values that describe the pathway of the
+	 * borders of a spectrum.
 	 * </p>
 	 *
 	 * @return a polynomial that fits the given data points
@@ -269,7 +266,8 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 		int i = 0;
 		for (final float[] point : importer) {
 			for (int j = 0; j < 3; j++) {
-				// y coordinate of the fit function at the centre of the image/camera ->
+				// y coordinate of the fit function at the centre of the
+				// image/camera ->
 				// z value
 				vals[i + j][0] = point[2 + 2 * j] - CameraSetup.getFullWidth() / 2;
 				// Coordinate on the energy dispersive axis -> x value
@@ -277,8 +275,7 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 				vals[i + j][1] = point[0] - CameraSetup.getFullHeight() / 2;
 				// coordinate on the lateral axis -> y value
 				// The indices for centre, top and bottom are 2, 4 and 6.
-				vals[i + j][2] = importer.getYInterceptPoint(i / 3)[11 + j] -
-					CameraSetup.getFullHeight() / 2;
+				vals[i + j][2] = importer.getYInterceptPoint(i / 3)[11 + j] - CameraSetup.getFullHeight() / 2;
 			}
 			i += 3;
 		}
@@ -343,30 +340,24 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 	/*
 	 * (non-Javadoc)
 	 *
-	 * @see ij.plugin.filter.ExtendedPlugInFilter#showDialog(ij.ImagePlus, java.lang.String,
-	 * ij.plugin.filter.PlugInFilterRunner)
+	 * @see ij.plugin.filter.ExtendedPlugInFilter#showDialog(ij.ImagePlus,
+	 * java.lang.String, ij.plugin.filter.PlugInFilterRunner)
 	 */
 	@Override
-	public int showDialog(final ImagePlus imp, final String command,
-		final PlugInFilterRunner pfr)
-	{
+	public int showDialog(final ImagePlus imp, final String command, final PlugInFilterRunner pfr) {
 		final String searchPath = IJ.getDirectory("image");
-		final LinkedList<String> foundCharacterisationResults =
-			new LinkedList<String>();
+		final LinkedList<String> foundCharacterisationResults = new LinkedList<>();
 		findDatasets(searchPath, foundCharacterisationResults, imp.getShortTitle());
 		if (foundCharacterisationResults.size() > 1) {
 			/*
 			 * A dialog is presented to select one of the found files.
 			 */
-			final GenericDialog gd = new GenericDialog((command != "") ? command
-				: "Debugging" + " - Select data set", IJ.getInstance());
-			String[] arrayOfFoundResults = new String[foundCharacterisationResults
-				.size()];
-			arrayOfFoundResults = foundCharacterisationResults.toArray(
-				arrayOfFoundResults);
-			gd.addRadioButtonGroup(SR_EELS.FILENAME_RESULTS, arrayOfFoundResults,
-				foundCharacterisationResults.size(), 1, foundCharacterisationResults
-					.get(0));
+			final GenericDialog gd = new GenericDialog((command != "") ? command : "Debugging" + " - Select data set",
+					IJ.getInstance());
+			String[] arrayOfFoundResults = new String[foundCharacterisationResults.size()];
+			arrayOfFoundResults = foundCharacterisationResults.toArray(arrayOfFoundResults);
+			gd.addRadioButtonGroup(SR_EELS.FILENAME_RESULTS, arrayOfFoundResults, foundCharacterisationResults.size(),
+					1, foundCharacterisationResults.get(0));
 			gd.setResizable(false);
 			gd.showDialog();
 			if (gd.wasCanceled()) {
@@ -376,8 +367,7 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 			if (foundCharacterisationResults.size() > 1) {
 				pathResults = gd.getNextRadioButton();
 			}
-		}
-		else {
+		} else {
 			/*
 			 * If only no file has been found, the parameters dialog is shown.
 			 */
@@ -388,38 +378,35 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 						canceled();
 						return NO_CHANGES | DONE;
 					}
-				}
-				while (!pathResults.contains(SR_EELS.FILENAME_RESULTS));
-			}
-			else {
+				} while (!pathResults.contains(SR_EELS.FILENAME_RESULTS));
+			} else {
 				if (foundCharacterisationResults.size() == 1) {
 					pathResults = foundCharacterisationResults.getFirst();
-				}
-				else {
+				} else {
 					canceled();
 					return NO_CHANGES | DONE;
 				}
 			}
 		}
-		inputProcessor = new SR_EELS_FloatProcessor((FloatProcessor) imp
-			.getProcessor(), CameraSetup.getFullWidth() / imp.getWidth(), CameraSetup
-				.getFullHeight() / imp.getHeight(), imp.getWidth() / 2, imp
-					.getHeight() / 2);
+		inputProcessor = new SR_EELS_FloatProcessor((FloatProcessor) imp.getProcessor(),
+				CameraSetup.getFullWidth() / imp.getWidth(), CameraSetup.getFullHeight() / imp.getHeight(),
+				imp.getWidth() / 2, imp.getHeight() / 2);
 		title = StringManipulator.removeExtensionFromTitle(imp.getTitle());
 		return FLAGS;
 	}
 
 	/**
-	 * Searches the given folder for a data set file. Recursion is used to search
-	 * in sub-folders.
+	 * Searches the given folder for a data set file. Recursion is used to
+	 * search in sub-folders.
 	 *
-	 * @param searchPath the folder to search in.
-	 * @param found a {@link Vector} that stores all found file paths.
-	 * @param filename is the full name of the file we search for.
+	 * @param searchPath
+	 *            the folder to search in.
+	 * @param found
+	 *            a {@link Vector} that stores all found file paths.
+	 * @param filename
+	 *            is the full name of the file we search for.
 	 */
-	private void findDatasets(final String searchPath,
-		final LinkedList<String> found, final String filename)
-	{
+	private void findDatasets(final String searchPath, final LinkedList<String> found, final String filename) {
 		final Pattern patternDate = Pattern.compile("(\\d{8})");
 		final Matcher matcher = patternDate.matcher(filename);
 		matcher.find();
@@ -429,11 +416,8 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 			if (new File(searchPath + entrie).isDirectory() & entrie.contains(date)) {
 				final String[] subEntries = new File(searchPath + entrie).list();
 				for (final String subEntrie : subEntries) {
-					if (new File(searchPath + entrie + File.separator + subEntrie)
-						.isDirectory())
-					{
-						found.add(searchPath + entrie + File.separator + subEntrie +
-							File.separator + FILENAME_RESULTS);
+					if (new File(searchPath + entrie + File.separator + subEntrie).isDirectory()) {
+						found.add(searchPath + entrie + File.separator + subEntrie + File.separator + FILENAME_RESULTS);
 					}
 				}
 			}
@@ -445,8 +429,8 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 	 * @return The constant <code>OK</code> or <code>CANCEL</code>.
 	 */
 	private int showParameterDialog(final String dialogTitle) {
-		final GenericDialogPlus gd = new GenericDialogPlus((dialogTitle != "")
-			? dialogTitle : "Debugging" + " - set parameters", IJ.getInstance());
+		final GenericDialogPlus gd = new GenericDialogPlus(
+				(dialogTitle != "") ? dialogTitle : "Debugging" + " - set parameters", IJ.getInstance());
 		gd.addFileField(SR_EELS.FILENAME_RESULTS, pathResults);
 		// TODO Add drop down menu for correction method.
 		gd.setResizable(false);
@@ -487,8 +471,8 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 
 	/**
 	 * <p>
-	 * This main method is used for testing. It starts ImageJ, loads a test image
-	 * and starts the plugin.
+	 * This main method is used for testing. It starts ImageJ, loads a test
+	 * image and starts the plugin.
 	 * </p>
 	 * <p>
 	 * User interaction is necessary, as the plugin uses a GUI.
@@ -510,32 +494,27 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 
 		String baseFolder = "C:/Temp/";
 		final String os = System.getProperty("os.name").toLowerCase();
-		if (os.indexOf("nix") >= 0 || os.indexOf("nux") >= 0 || os.indexOf(
-			"aix") > 0)
-		{
+		if (os.indexOf("nix") >= 0 || os.indexOf("nux") >= 0 || os.indexOf("aix") > 0) {
 			final String userHome = System.getProperty("user.home");
 			baseFolder = userHome + "/Downloads/";
 		}
 
 		/*
-		 * Check if the test image is available. Otherwise prompt a message with the
-		 * download link.
+		 * Check if the test image is available. Otherwise prompt a message with
+		 * the download link.
 		 */
-		final File testImage = new File(baseFolder +
-			"20140106 SM125 -20%/20140106_SR-EELS_TestImage_small.tif");
+		final File testImage = new File(baseFolder + "20140106 SM125 -20%/20140106_SR-EELS_TestImage_small.tif");
 		if (!testImage.exists()) {
 			final String url = "http://eftemj.entrup.com.de/SR-EELS_TestImage.zip";
 			/*
-			 * IJ.showMessage("Test image not found", "<html>" + "Please download the file" + "<br />" + "<a href='" +
-			 * url + "'>SR-EELS_TestImage.zip</a> from" + "<br/>" + url + "<br />" + "and extract it to 'C:\\temp\\'." +
-			 * "</html>");
+			 * IJ.showMessage("Test image not found", "<html>" +
+			 * "Please download the file" + "<br />" + "<a href='" + url +
+			 * "'>SR-EELS_TestImage.zip</a> from" + "<br/>" + url + "<br />" +
+			 * "and extract it to 'C:\\temp\\'." + "</html>");
 			 */
 			final GenericDialog gd = new GenericDialog("Test image not found");
-			gd.addMessage(
-				"Please download the file 'SR-EELS_TestImage.zip' and extract it to '" +
-					baseFolder + "'.");
-			gd.addMessage(
-				"Copy the following link, or click Ok to open it with your default browser.");
+			gd.addMessage("Please download the file 'SR-EELS_TestImage.zip' and extract it to '" + baseFolder + "'.");
+			gd.addMessage("Copy the following link, or click Ok to open it with your default browser.");
 			gd.addStringField("", url, url.length());
 			gd.showDialog();
 			if (gd.wasOKed()) {
@@ -543,8 +522,7 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 					final URI link = new URI(url);
 					final Desktop desktop = Desktop.getDesktop();
 					desktop.browse(link);
-				}
-				catch (final Exception exc) {
+				} catch (final Exception exc) {
 					IJ.showMessage("An Exception occured", exc.getMessage());
 					return;
 				}
@@ -554,8 +532,7 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 		/*
 		 * open the test image
 		 */
-		final ImagePlus image = IJ.openImage(baseFolder +
-			"20140106 SM125 -20%/20140106_SR-EELS_TestImage_small.tif");
+		final ImagePlus image = IJ.openImage(baseFolder + "20140106 SM125 -20%/20140106_SR-EELS_TestImage_small.tif");
 		image.show();
 
 		/*
@@ -567,18 +544,18 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 
 	/**
 	 * <p>
-	 * This class is used to load a data file that contains a data set for the fit
-	 * of a 2D polynomial. For each y-value there is are pairs of x-values that is
-	 * stored at a 2D array.
+	 * This class is used to load a data file that contains a data set for the
+	 * fit of a 2D polynomial. For each y-value there is are pairs of x-values
+	 * that is stored at a 2D array.
 	 * </p>
 	 * <p>
 	 * The data file must contain one data point at each line. Each data point
-	 * contains of x1, x2 and y separated by whitespace. Lines that contain a '#'
-	 * are regarded as comments.
+	 * contains of x1, x2 and y separated by whitespace. Lines that contain a
+	 * '#' are regarded as comments.
 	 * </p>
 	 * <p>
-	 * The Plugin {@link SR_EELS_CharacterisationPlugin} creates files that can be
-	 * processed by this class.
+	 * The Plugin {@link SR_EELS_CharacterisationPlugin} creates files that can
+	 * be processed by this class.
 	 * </p>
 	 *
 	 * @author Michael Entrup b. Epping
@@ -588,9 +565,7 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 
 		private final int slices;
 
-		public DataImporter(final String resultsFilePath,
-			final boolean readWeights)
-		{
+		public DataImporter(final String resultsFilePath, final boolean readWeights) {
 			super();
 			final ImageStack file = IJ.openImage(resultsFilePath).getImageStack();
 			slices = file.getSize();

@@ -45,9 +45,7 @@ public class SR_EELS_FloatProcessor extends FloatProcessor {
 	private SR_EELS_Polynomial_2D widthFunction;
 	private SR_EELS_Polynomial_2D borderFunction;
 
-	public SR_EELS_FloatProcessor(final FloatProcessor fp, final int binning,
-		final int originX, final int originY)
-	{
+	public SR_EELS_FloatProcessor(final FloatProcessor fp, final int binning, final int originX, final int originY) {
 		super(fp.getWidth(), fp.getHeight(), (float[]) fp.getPixels());
 		this.binningX = binning;
 		this.binningY = binning;
@@ -55,9 +53,8 @@ public class SR_EELS_FloatProcessor extends FloatProcessor {
 		this.originY = originY;
 	}
 
-	public SR_EELS_FloatProcessor(final FloatProcessor fp, final int binningX,
-		final int binningY, final int originX, final int originY)
-	{
+	public SR_EELS_FloatProcessor(final FloatProcessor fp, final int binningX, final int binningY, final int originX,
+			final int originY) {
 		super(fp.getWidth(), fp.getHeight(), (float[]) fp.getPixels());
 		this.binningX = binningX;
 		this.binningY = binningY;
@@ -65,9 +62,8 @@ public class SR_EELS_FloatProcessor extends FloatProcessor {
 		this.originY = originY;
 	}
 
-	public SR_EELS_FloatProcessor(final int width, final int height,
-		final int binning, final int originX, final int originY)
-	{
+	public SR_EELS_FloatProcessor(final int width, final int height, final int binning, final int originX,
+			final int originY) {
 		super(width, height, new float[width * height]);
 		this.binningX = binning;
 		this.binningY = binning;
@@ -75,10 +71,8 @@ public class SR_EELS_FloatProcessor extends FloatProcessor {
 		this.originY = originY;
 	}
 
-	public SR_EELS_FloatProcessor(final int width, final int height,
-		final int binningX, final int binningY, final int originX,
-		final int originY)
-	{
+	public SR_EELS_FloatProcessor(final int width, final int height, final int binningX, final int binningY,
+			final int originX, final int originY) {
 		super(width, height, new float[width * height]);
 		this.binningX = binningX;
 		this.binningY = binningY;

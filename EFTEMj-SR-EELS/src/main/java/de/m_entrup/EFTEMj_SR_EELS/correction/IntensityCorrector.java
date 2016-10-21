@@ -38,9 +38,7 @@ public abstract class IntensityCorrector {
 	FloatProcessor input;
 	CoordinateCorrector coordinateCorrector;
 
-	public IntensityCorrector(final FloatProcessor inputImage,
-		final CoordinateCorrector coordinateCorrector)
-	{
+	public IntensityCorrector(final FloatProcessor inputImage, final CoordinateCorrector coordinateCorrector) {
 		this.input = inputImage;
 		this.coordinateCorrector = coordinateCorrector;
 	}
