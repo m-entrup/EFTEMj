@@ -1,12 +1,15 @@
 
 package de.m_entrup.EFTEMj_SR_EELS.characterisation;
 
+import com.opencsv.CSVWriter;
+
 import java.awt.Rectangle;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 
 import org.apache.commons.configuration.ConfigurationException;
 
@@ -35,40 +38,44 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 	private static String configKeyPrefix = "SR-EELS." + SR_EELS_ImportPlugin.class.getSimpleName() + ".";
 	public static String plotsAsStackKey = configKeyPrefix + "plotsAsStack";
 	private EFTEMj_Configuration config;
+	private SR_EELS_CharacterisationResults results;
+	private boolean doRotateLeft = false;
+	private boolean doRotateRight = false;
+
+	public SR_EELS_CharacterisationPlugin() {
+		try {
+			config = SR_EELS_ConfigurationManager.getConfiguration();
+		} catch (final ConfigurationException e) {
+			IJ.error("Failed to load config.", e.toString());
+			return;
+		}
+	}
 
 	@Override
 	public void run(final String arg) {
 		try {
-			config = SR_EELS_ConfigurationManager.getConfiguration();
-		} catch (ConfigurationException e) {
-			IJ.error("Failed to load config.", e.toString());
-			return;
-		}
-		try {
 			final SR_EELS_CharacterisationSettings settings = new SR_EELS_CharacterisationSettings();
-
 			/*
 			 * Use the same folder as SR-EELS_ImportCharacterisation.js. The
 			 * user has to select a data set (sub-folder), but it is still
 			 * possible to select any other folder.
 			 */
-			settings.path = config.getString(SR_EELS_ImportPlugin.databasePathKey);
+			settings.path = new File(config.getString(SR_EELS_ImportPlugin.databasePathKey));
 			if (settings.path == null) {
 				IJ.showMessage("Can't find database", "EFTMj can't find a database.");
 				return;
 			}
-			DirectoryChooser.setDefaultDirectory(settings.path);
+			DirectoryChooser.setDefaultDirectory(settings.path.getAbsolutePath());
 			final DirectoryChooser dc = new DirectoryChooser("Select folder for characterisation...");
-			settings.path = dc.getDirectory();
+			settings.path = new File(dc.getDirectory());
 			if (settings.path == null)
 				return;
 			settings.images = getImages(settings);
-			final SR_EELS_CharacterisationResults results = new SR_EELS_CharacterisationResults();
+			this.results = new SR_EELS_CharacterisationResults();
 			results.settings = settings;
 			results.timeStart = new Date().getTime();
-			runCharacterisation(results);
-			plotResults(results);
-			saveResults(results);
+			runCharacterisation();
+			saveResults();
 			results.timeStop = new Date().getTime();
 			IJ.showStatus("Finished in " + Math.round((results.timeStop - results.timeStart) / 1000) + " seconds!");
 		} catch (final InternalError e) {
@@ -76,22 +83,31 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 		}
 	}
 
-	private ArrayList<String> getImages(final SR_EELS_CharacterisationSettings settings) {
-		ArrayList<String> images = new ArrayList<String>();
-		final File folder = new File(settings.path);
-		final String[] fileList = folder.list();
+	public SR_EELS_CharacterisationResults performCharacterisation(final SR_EELS_CharacterisationSettings settings) {
+		if (settings.images == null) {
+			IJ.log("Can't run SR-EELS chracterisation without images.");
+			return null;
+		}
+		results = new SR_EELS_CharacterisationResults(settings);
+		runCharacterisation();
+		return results;
+	}
+
+	public ArrayList<String> getImages(final SR_EELS_CharacterisationSettings settings) {
+		ArrayList<String> images = new ArrayList<>();
+		final String[] fileList = settings.path.list();
 		images = getFilteredImages(settings, fileList);
 		return images;
 	}
 
 	private ArrayList<String> getFilteredImages(final SR_EELS_CharacterisationSettings settings,
 			final String[] fileList) {
-		final ArrayList<String> filteredList = new ArrayList<String>();
+		final ArrayList<String> filteredList = new ArrayList<>();
 		Arrays.sort(fileList);
 		final GenericDialog gd = new GenericDialog("Select files");
 		int counter = 0;
 		for (int i = 0; i < fileList.length; i++) {
-			if (new File(settings.path + fileList[i]).isFile()) {
+			if (new File(settings.path, fileList[i]).isFile()) {
 				counter++;
 				if (fileList[i].endsWith(".tif") & !fileList[i].contains("-exclude")) {
 					gd.addCheckbox(fileList[i], true);
@@ -115,7 +131,7 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 		return filteredList;
 	}
 
-	private void runCharacterisation(final SR_EELS_CharacterisationResults results) {
+	private void runCharacterisation() {
 		final SR_EELS_CharacterisationSettings settings = results.settings;
 		final ArrayList<String> images = settings.images;
 		for (int i = 0; i < images.size(); i++) {
@@ -157,6 +173,7 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 				yPos += settings.stepSize;
 			}
 		}
+		plotResults();
 	}
 
 	private SR_EELS_CharacterisationSubResults runCharacterisationSub(final SR_EELS_SubImageObject subImage,
@@ -231,7 +248,7 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 		return subResult;
 	}
 
-	private void plotResults(final SR_EELS_CharacterisationResults results) {
+	private void plotResults() {
 		final ArrayList<String> images = results.settings.images;
 		ImageStack stack = null;
 		for (int i = 0; i < images.size(); i++) {
@@ -262,7 +279,7 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 			if (stack == null) {
 				stack = new ImageStack(plot.getProcessor().getWidth(), plot.getProcessor().getHeight());
 			}
-			stack.addSlice(results.settings.images.get(i), plot.getProcessor(), i);
+			stack.addSlice(images.get(i), plot.getProcessor(), i);
 			result.leftFit = new CurveFitter(xValues, leftValues);
 			result.leftFit.doFit(CurveFitter.POLY3);
 			result.centreFit = new CurveFitter(xValues, yValues);
@@ -274,28 +291,40 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 		results.plots = imp;
 	}
 
-	private void saveResults(final SR_EELS_CharacterisationResults results) {
+	public void saveResults(final File path, final int type) {
+		if ((type & SR_EELS_CharacterisationResults.PLOTS) != 0) {
+			path.mkdirs();
+			if (config.getBoolean(plotsAsStackKey)) {
+				IJ.save(results.plots, new File(path, "plots").getAbsolutePath());
+			} else {
+				final ImageStack stack = results.plots.getStack();
+				for (int i = 1; i <= results.plots.getStackSize(); i++) {
+					final ImagePlus imp = new ImagePlus(stack.getSliceLabel(i).split("\\.")[0] + "_graph",
+							stack.getProcessor(i));
+					IJ.saveAs(imp, "PNG", new File(path, imp.getShortTitle()).getAbsolutePath());
+				}
+			}
+			IJ.run(results.plots, "8-bit Color", "number=16");
+			IJ.saveAs(results.plots, "Gif", new File(path, "plots").getAbsolutePath());
+		}
+		if ((type & SR_EELS_CharacterisationResults.TIFF) != 0) {
+			resultsToTiff(path);
+		}
+		if ((type & SR_EELS_CharacterisationResults.CSV) != 0) {
+			resultsToCsv(path);
+		}
+		if ((type & SR_EELS_CharacterisationResults.JPEG) != 0) {
+			resultsToJpeg(path);
+		}
+	}
+
+	private void resultsToTiff(final File path) {
 		final ArrayList<String> images = results.settings.images;
-		final String path = results.settings.path + results.settings.toString();
-		new File(path).mkdirs();
 		final int width = 14;
 		int height = 0;
-		final ArrayList<FloatProcessor> fps = new ArrayList<FloatProcessor>();
+		final ArrayList<FloatProcessor> fps = new ArrayList<>();
 		for (int i = 0; i < images.size(); i++) {
 			final SR_EELS_CharacterisationResult result = results.subResults.get(images.get(i));
-			final ImagePlus jpegImp = result.imp.get(images.get(i));
-			IJ.run(jpegImp, "Select None", "");
-			IJ.run(jpegImp, "Log", "");
-			IJ.run(jpegImp, "Enhance Contrast", "saturated=0.35");
-			IJ.run(jpegImp, "Flip Horizontally", "");
-			IJ.run(jpegImp, "Rotate 90 Degrees Left", "");
-			final ImagePlus jpeg = jpegImp.flatten();
-			IJ.run(jpeg, "Divide...", "value=1.3");
-			int binJPEG = 1;
-			while (Math.max(jpeg.getWidth(), jpeg.getHeight()) > 1024) {
-				IJ.run(jpeg, "Bin...", "x=2 y=2 bin=Average");
-				binJPEG *= 2;
-			}
 			if (height == 0)
 				height = result.size();
 			final FloatProcessor fp = new FloatProcessor(width, height);
@@ -317,6 +346,74 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 				fp.setf(13, j, (float) (result.binX * result.rightFit.f(y)));
 			}
 			fps.add(fp);
+		}
+		final ImageStack stack = new ImageStack(width, height);
+		for (int i = 0; i < fps.size(); i++) {
+			stack.addSlice(images.get(i), fps.get(i), i);
+		}
+		final ImagePlus imp = new ImagePlus("Characterisation results", stack);
+		path.mkdirs();
+		IJ.save(imp, new File(path, "results").getAbsolutePath());
+	}
+
+	private void resultsToCsv(final File path) {
+		try {
+			final ArrayList<String> images = results.settings.images;
+			path.mkdirs();
+			for (int i = 0; i < images.size(); i++) {
+				final String imgName = images.get(i).split("\\.")[0];
+				final CSVWriter writer = new CSVWriter(new FileWriter(new File(path, imgName + ".csv")), ';',
+						Character.MIN_VALUE);
+				final String[] header = { "y-position", "y-error", "x-position", "x-error", "left-position",
+						"left-error", "right-position", "right-error", "width", "width-error", "threshold",
+						"fitted-x-position", "fitted-left-position", "fitted-right-position" };
+				writer.writeNext(header);
+				final SR_EELS_CharacterisationResult result = results.subResults.get(images.get(i));
+				for (int j = 0; j < result.size(); j++) {
+					final double y = result.get(j).y;
+					final ArrayList<String> csvLine = new ArrayList<>();
+					csvLine.add(String.valueOf(result.binY * y));
+					csvLine.add(String.valueOf(result.binY * result.get(j).yError));
+					csvLine.add(String.valueOf(result.binX * result.get(j).x));
+					csvLine.add(String.valueOf(result.binX * result.get(j).xError));
+					csvLine.add(String.valueOf(result.binX * result.get(j).left));
+					csvLine.add(String.valueOf(result.binX * result.get(j).leftError));
+					csvLine.add(String.valueOf(result.binX * result.get(j).right));
+					csvLine.add(String.valueOf(result.binX * result.get(j).rightError));
+					csvLine.add(String.valueOf(result.binX * result.get(j).width));
+					csvLine.add(String.valueOf(result.binX * result.get(j).widthError));
+					csvLine.add(String.valueOf(result.get(j).limit));
+					csvLine.add(String.valueOf(result.binX * result.centreFit.f(y)));
+					csvLine.add(String.valueOf(result.binX * result.leftFit.f(y)));
+					csvLine.add(String.valueOf(result.binX * result.rightFit.f(y)));
+					final String[] line = new String[csvLine.size()];
+					writer.writeNext(csvLine.toArray(line));
+				}
+				writer.close();
+			}
+		} catch (final IOException e) {
+			IJ.showMessage("Error when writing csv file.", e.getMessage());
+		}
+	}
+
+	private void resultsToJpeg(final File path) {
+		final ArrayList<String> images = results.settings.images;
+		path.mkdirs();
+		for (int i = 0; i < images.size(); i++) {
+			final SR_EELS_CharacterisationResult result = results.subResults.get(images.get(i));
+			final ImagePlus jpegImp = result.imp.get(images.get(i));
+			IJ.run(jpegImp, "Select None", "");
+			IJ.run(jpegImp, "Log", "");
+			IJ.run(jpegImp, "Enhance Contrast", "saturated=0.35");
+			IJ.run(jpegImp, "Flip Horizontally", "");
+			IJ.run(jpegImp, "Rotate 90 Degrees Left", "");
+			final ImagePlus jpeg = jpegImp.flatten();
+			IJ.run(jpeg, "Divide...", "value=1.3");
+			int binJPEG = 1;
+			while (Math.max(jpeg.getWidth(), jpeg.getHeight()) > 1024) {
+				IJ.run(jpeg, "Bin...", "x=2 y=2 bin=Average");
+				binJPEG *= 2;
+			}
 			final ColorProcessor jP = (ColorProcessor) jpeg.getProcessor();
 			final int[] value = new int[3];
 			int y;
@@ -334,136 +431,21 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 				value[0] = 255;
 				jP.putPixel(x, y, value);
 			}
-			IJ.save(jpeg, path + images.get(i).split("\\.")[0] + ".jpg");
+			IJ.saveAs(jpeg, "Jpeg", new File(path, images.get(i).split("\\.")[0]).getAbsolutePath());
 		}
-		final ImageStack stack = new ImageStack(width, height);
-		for (int i = 0; i < fps.size(); i++) {
-			stack.addSlice(images.get(i), fps.get(i), i);
-		}
-		final ImagePlus imp = new ImagePlus("Characterisation results", stack);
-		IJ.save(imp, path + "results.tif");
-		IJ.run(results.plots, "8-bit Color", "number=16");
-		if (config.getBoolean(plotsAsStackKey)) {
-			IJ.save(results.plots, path + "plots.tif");
-		}
-		IJ.saveAs(results.plots, "Gif", path + "plots.gif");
+
+	}
+
+	private void saveResults() {
+		final File path = new File(results.settings.path, results.settings.toString());
+		final int types = SR_EELS_CharacterisationResults.TIFF + SR_EELS_CharacterisationResults.JPEG
+				+ SR_EELS_CharacterisationResults.CSV + SR_EELS_CharacterisationResults.PLOTS;
+		saveResults(path, types);
 	}
 
 	public static void main(final String[] args) {
 		System.out.println(SR_EELS_CharacterisationPlugin.plotsAsStackKey);
 		EFTEMj_Debug.debug(SR_EELS_CharacterisationPlugin.class);
-	}
-
-	protected class SR_EELS_CharacterisationSettings {
-
-		int stepSize = 64;
-		double filterRadius = Math.sqrt(stepSize);
-		int energyBorderLow = 2 * stepSize;
-		int energyBorderHigh = 2 * stepSize;
-		float energyPosition = 0.5f;
-		float sigmaWeight = 3f;
-		int polynomialOrder = 3;
-		boolean useThresholding = true;
-		String threshold = "Li";
-		String path = "";
-		ArrayList<String> images;
-
-		@Override
-		public String toString() {
-			final StringBuffer str = new StringBuffer();
-			if (useThresholding) {
-				str.append(threshold);
-			} else {
-				str.append("Limit");
-			}
-			str.append(",");
-			str.append(stepSize);
-			str.append(",");
-			str.append(energyBorderLow);
-			str.append(",");
-			str.append(energyBorderHigh);
-			str.append(",");
-			str.append("poly");
-			str.append(polynomialOrder);
-			str.append("/");
-			return str.toString();
-		}
-	}
-
-	private class SR_EELS_CharacterisationResults {
-
-		public ImagePlus plots;
-		SR_EELS_CharacterisationSettings settings;
-		long timeStart;
-		long timeStop;
-		HashMap<String, SR_EELS_CharacterisationResult> subResults;
-
-		public SR_EELS_CharacterisationResults() {
-			this.subResults = new HashMap<String, SR_EELS_CharacterisationResult>();
-		}
-	}
-
-	@SuppressWarnings("serial")
-	private class SR_EELS_CharacterisationResult extends ArrayList<SR_EELS_CharacterisationSubResults> {
-
-		public HashMap<String, ImagePlus> imp;
-		public CurveFitter leftFit;
-		public CurveFitter centreFit;
-		public CurveFitter rightFit;
-		public int width;
-		public int height;
-		public float binY;
-		public float binX;
-
-		public SR_EELS_CharacterisationResult() {
-			super();
-			imp = new HashMap<String, ImagePlus>();
-		}
-
-	}
-
-	private class SR_EELS_CharacterisationSubResults {
-
-		/**
-		 * This is the coordinate along the lateral axis.
-		 */
-		double x;
-		/**
-		 * This is the error of the coordinate along the lateral axis.
-		 */
-		double xError;
-		/**
-		 * This is the coordinate along the energy dispersive axis.
-		 */
-		double y;
-		/**
-		 * This is the error of the coordinate along the energy dispersive axis.
-		 */
-		double yError;
-		/**
-		 * This is the the left one of the detected borders (The top one of the
-		 * saved data sets).
-		 */
-		double left;
-		double leftError;
-		/**
-		 * This is the the right one of the detected borders (The lower one of
-		 * the saved data sets).
-		 */
-		double right;
-		double rightError;
-		/**
-		 * this is the width of the spectrum at the given energy loss (x
-		 * coordinate).
-		 */
-		double width;
-		double widthError;
-		/**
-		 * Only when not performing thresholding this value is used. The value
-		 * of a pixel is considered as signal and not noise, when the limit to
-		 * exceeded.
-		 */
-		double limit;
 	}
 
 	@SuppressWarnings("serial")
@@ -483,10 +465,24 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 
 		public SR_EELS_ImageObject(final String imageName, final SR_EELS_CharacterisationSettings settings) {
 			final double filterRadius = settings.filterRadius;
-			this.path = settings.path + imageName;
+			this.path = new File(settings.path, imageName).getAbsolutePath();
 			this.imp = IJ.openImage(this.path);
-			IJ.run(this.imp, "Rotate 90 Degrees Right", "");
-			IJ.run(this.imp, "Flip Horizontally", "");
+			/*
+			 * Imported images are rotated left to put the energy dispersive
+			 * axis on x. The doRotate... flags refer to the imported images.
+			 * For the characterization it's best to have the energy dispersive
+			 * axis on y. That is why we rotate these images 90° right. Flip
+			 * Horizontally is necessary to refer to the coordinates of the
+			 * unrotated image.
+			 */
+			if (doRotateLeft) {
+				IJ.run(this.imp, "Flip Horizontally", "");
+			} else if (doRotateRight) {
+				IJ.run(imp, "Flip Vertically", "");
+			} else {
+				IJ.run(this.imp, "Rotate 90 Degrees Right", "");
+				IJ.run(this.imp, "Flip Horizontally", "");
+			}
 			this.width = this.imp.getWidth();
 			this.height = this.imp.getHeight();
 			final double threshold = 2 * this.imp.getStatistics().stdDev;
@@ -508,6 +504,19 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 		public SR_EELS_SubImageObject(final ImagePlus imp) {
 			this.imp = imp;
 			this.imp.setRoi(new Rectangle(0, 0, this.imp.getWidth(), this.imp.getHeight()));
+		}
+	}
+
+	public void setRotation(final String mode) {
+		if (mode.toLowerCase().equals("left")) {
+			doRotateLeft = true;
+			doRotateRight = false;
+		} else if (mode.toLowerCase().equals("right")) {
+			doRotateLeft = false;
+			doRotateRight = true;
+		} else {
+			doRotateLeft = false;
+			doRotateRight = false;
 		}
 	}
 }
