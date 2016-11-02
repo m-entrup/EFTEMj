@@ -180,7 +180,7 @@ def batch_open_images(directory, file_type=None, name_filter=None, recursive=Fal
     :param name_filter: Only accept files that contain the given string (default: None).
     :param recursive: Process directories recursively (default: False).
     '''
-    if isinstance(path, File):
+    if isinstance(directory, File):
         directory = directory.getAbsolutePath()
 
     path_to_images = []
@@ -207,8 +207,7 @@ def batch_open_images(directory, file_type=None, name_filter=None, recursive=Fal
             image_list.append(imp)
     return image_list
 
-
-if __name__ == '__main__':
+def test_module():
     # pylint: disable-msg=C0103
     path = '~/Temp/BatchOpener-Test'
     images = batch_open_images(path, None, None, False)
@@ -227,3 +226,6 @@ if __name__ == '__main__':
     print('- - Result - -')
     for image in images:
         print(image)
+
+if __name__ == '__main__':
+    test_module()
