@@ -22,6 +22,7 @@
 		<module>EFTEMj-EELS</module>
 		<module>EFTEMj-pyLib</module>
 		<module>EFTEMj-pyScripts</module>
+		<module>EFTEMj-ij2-commands</module>
 	</modules>
 
 	<name>EFTEMj</name>
