@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>de.m-entrup</groupId>
 		<artifactId>pom-EFTEMj</artifactId>
-		<version>1.4.3</version>
+		<version>1.4.4-SNAPSHOT</version>
 	</parent>
 	<artifactId>EFTEMj-pyLib</artifactId>
 </project>
