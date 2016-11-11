@@ -20,3 +20,6 @@ bin/
 include/
 lib/
 pip-selfcheck.json
+
+# Backup files
+~pom.xml
