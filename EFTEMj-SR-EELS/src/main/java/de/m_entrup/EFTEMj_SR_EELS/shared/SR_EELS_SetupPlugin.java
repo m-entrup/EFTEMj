@@ -49,14 +49,14 @@ public class SR_EELS_SetupPlugin implements PlugIn {
 	private int largerFontSize;
 
 	@Override
-	public void run(String arg0) {
+	public void run(final String arg0) {
 		try {
 			config = SR_EELS_ConfigurationManager.getConfiguration();
-		} catch (ConfigurationException e) {
+		} catch (final ConfigurationException e) {
 			IJ.error("Failed to load config.", e.toString());
 			return;
 		}
-		GenericDialogPlus gd = new GenericDialogPlus("Setup EFTEMj SR-EELS", IJ.getInstance());
+		final GenericDialogPlus gd = new GenericDialogPlus("Setup EFTEMj SR-EELS", IJ.getInstance());
 		defaultFontName = gd.getFont().getName();
 		defaultFontSize = gd.getFont().getSize();
 		largerFontSize = (int) Math.round(1.2 * defaultFontSize);
@@ -70,12 +70,12 @@ public class SR_EELS_SetupPlugin implements PlugIn {
 		saveCharacterisationSection(gd);
 	}
 
-	private void addImportSection(GenericDialogPlus gd) {
+	private void addImportSection(final GenericDialogPlus gd) {
 		gd.addMessage("SR-EELS import:", new Font(defaultFontName, Font.BOLD, largerFontSize));
 
 		gd.addMessage("Database (Folder to store imported images)");
 		gd.addDirectoryField("", config.getString(SR_EELS_ImportPlugin.databasePathKey));
-		String[] fileTypeArray = config.getStringArray(SR_EELS_ImportPlugin.fileTypesKey);
+		final String[] fileTypeArray = config.getStringArray(SR_EELS_ImportPlugin.fileTypesKey);
 		String fileTypesToImport = Arrays.toString(fileTypeArray);
 		fileTypesToImport = fileTypesToImport.replaceAll("\\[", "");
 		fileTypesToImport = fileTypesToImport.replaceAll("\\]", "");
@@ -83,14 +83,14 @@ public class SR_EELS_SetupPlugin implements PlugIn {
 		gd.addMessage("File types to import (separate different file types by a ;)");
 		gd.addStringField("", fileTypesToImport, 25);
 		gd.addMessage("Rotate on import");
-		String[] rotationArray = { "no", "Left", "Right" };
+		final String[] rotationArray = { "no", "Left", "Right" };
 		gd.addChoice("", rotationArray, config.getString(SR_EELS_ImportPlugin.rotateOnImportKey));
 	}
 
-	private void saveImportSection(GenericDialogPlus gd) {
-		String databasePath = gd.getNextString();
-		String fileTypesToImport = gd.getNextString();
-		String rotateOnImport = gd.getNextChoice();
+	private void saveImportSection(final GenericDialogPlus gd) {
+		final String databasePath = gd.getNextString();
+		final String fileTypesToImport = gd.getNextString();
+		final String rotateOnImport = gd.getNextChoice();
 
 		config.setProperty(SR_EELS_ImportPlugin.databasePathKey, databasePath);
 		config.setProperty(SR_EELS_ImportPlugin.fileTypesKey, fileTypesToImport.split(";"));
@@ -98,20 +98,20 @@ public class SR_EELS_SetupPlugin implements PlugIn {
 		config.save();
 	}
 
-	private void addCharacterisationSection(GenericDialogPlus gd) {
+	private void addCharacterisationSection(final GenericDialogPlus gd) {
 		gd.addMessage("SR-EELS characterisation:", new Font(defaultFontName, Font.BOLD, largerFontSize));
 
 		gd.addCheckbox("Save plots as stack (.tif)", config.getBoolean(SR_EELS_CharacterisationPlugin.plotsAsStackKey));
 	}
 
-	private void saveCharacterisationSection(GenericDialogPlus gd) {
-		boolean plotsAsStack = gd.getNextBoolean();
+	private void saveCharacterisationSection(final GenericDialogPlus gd) {
+		final boolean plotsAsStack = gd.getNextBoolean();
 
 		config.setProperty(SR_EELS_CharacterisationPlugin.plotsAsStackKey, plotsAsStack);
 		config.save();
 	}
 
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		EFTEMj_Debug.debug(SR_EELS_SetupPlugin.class);
 	}
 

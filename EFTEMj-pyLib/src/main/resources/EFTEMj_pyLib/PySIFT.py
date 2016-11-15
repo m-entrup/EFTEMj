@@ -1,12 +1,13 @@
 '''
 file:       pySIFT.py
 author:     Michael Entrup b. Epping (michael.entrup@wwu.de)
-version:    20160929
+version:    20161017
 info:       This module calculates the drift using SIFT.
 '''
 
 from __future__ import with_statement, division
 
+# pylint: disable-msg=E0401
 from ij import IJ, ImagePlus
 
 from java.util import ArrayList, Vector
@@ -15,6 +16,7 @@ from java.lang import Float
 from mpicbg.imagefeatures import FloatArray2DSIFT
 from mpicbg.ij import SIFT
 from mpicbg.models import TranslationModel2D
+# pylint: enable-msg=E0401
 
 class Param:
     '''A dataset that holds parameters used by the SIFT algorithm.
@@ -34,7 +36,7 @@ class Param:
     interpolate = True
     showInfo = False
 
-class pySIFT:
+class PySIFT:
     '''An implementation of a drift correction using the SIFT algorithm.
     It is designed to measure the drift of all images with each other.
     '''
@@ -53,11 +55,16 @@ class pySIFT:
             return isinstance(img, ImagePlus)
         for img in img_list:
             if check(img):
-                img_dup = img.crop()
-                mean = img_dup.getProcessor().getStatistics().mean
-                IJ.run(img_dup, "Divide...", "value=%f" % (mean,))
-                IJ.run(img_dup, "Enhance Contrast", "saturated=0.1")
-                self.images.append(img_dup)
+                if img.getBitDepth() == 32:
+                    # For 32-bit the images are normalized
+                    # to bypass a limitation of the SIFT implementation.
+                    img_dup = img.crop()
+                    mean = img_dup.getProcessor().getStatistics().mean
+                    IJ.run(img_dup, "Divide...", "value=%f" % (mean,))
+                    IJ.run(img_dup, "Enhance Contrast", "saturated=0.1")
+                    self.images.append(img_dup)
+                else:
+                    self.images.append(img)
         if params and isinstance(params, Param):
             self.param = params
         else:
@@ -71,11 +78,11 @@ class pySIFT:
     def _extract_features_(self):
         '''This method is used by the constructor to identify the features of each image.
         '''
-        sift = FloatArray2DSIFT(self.param.sift)
-        ijSIFT = SIFT(sift)
+        sift_array = FloatArray2DSIFT(self.param.sift)
+        ij_sift = SIFT(sift_array)
         self.all_features = [ArrayList() for _ in self.images]
         for img, features in zip(self.images, self.all_features):
-            ijSIFT.extractFeatures(img.getProcessor(), features)
+            ij_sift.extractFeatures(img.getProcessor(), features)
 
     def get_drift(self, index1, index2):
         '''Returns th drift between the images at the given indices.
@@ -124,7 +131,9 @@ class pySIFT:
         for i in range(1, len(self.images)):
             IJ.showProgress(i / full_progress)
             self.drift_vector[i] = self.get_drift(i - 1, i)
-            self.drift_vector[i] = tuple([a + b for a,b in zip(self.drift_vector[i - 1], self.drift_vector[i])])
+            self.drift_vector[i] = tuple([a + b for a, b in zip(self.drift_vector[i - 1],
+                                                                self.drift_vector[i]
+                                                               )])
         IJ.showProgress(1.0)
         return self.drift_vector
 
@@ -132,9 +141,10 @@ class pySIFT:
 Testing section:
 '''
 if __name__ == '__main__':
-    imp1 = IJ.openImage("http://imagej.nih.gov/ij/images/TEM_filter_sample.jpg");
-    imp2 = imp1.crop();
-    imp3 = imp1.crop();
+    # pylint: disable-msg=C0103
+    imp1 = IJ.openImage("http://imagej.nih.gov/ij/images/TEM_filter_sample.jpg")
+    imp2 = imp1.crop()
+    imp3 = imp1.crop()
     offset_x = 15
     offset_y = 15
     IJ.run(imp2,
@@ -145,12 +155,37 @@ if __name__ == '__main__':
            "Translate...",
            "x=%d y=%d interpolation=None" % (-offset_x, -offset_y)
           )
-    sift = pySIFT([imp1, imp2, imp3])
+    sift = PySIFT([imp1, imp2, imp3])
     drift_vec = sift.get_drift_vector()
     drift2 = drift_vec[1]
     drift3 = drift_vec[2]
-    assert(abs(drift2[0] - offset_x) < 1)
-    assert(abs(drift2[1] - offset_y) < 1)
-    assert(abs(drift3[0] + offset_x) < 1)
-    assert(abs(drift3[1] + offset_y) < 1)
-    print('Test completed.')
+    assert abs(drift2[0] - offset_x) < 1
+    assert abs(drift2[1] - offset_y) < 1
+    assert abs(drift3[0] + offset_x) < 1
+    assert abs(drift3[1] + offset_y) < 1
+    print('Test 1 completed.')
+    imp1 = IJ.openImage("http://imagej.nih.gov/ij/images/TEM_filter_sample.jpg")
+    IJ.run(imp1, "32-bit", "")
+    imp2 = imp1.crop()
+    imp3 = imp1.crop()
+    offset_x = 15
+    offset_y = 15
+    IJ.run(imp2,
+           "Translate...",
+           "x=%d y=%d interpolation=None" % (offset_x, offset_y)
+          )
+    IJ.run(imp2, "Multiply...", "value=5")
+    IJ.run(imp3,
+           "Translate...",
+           "x=%d y=%d interpolation=None" % (-offset_x, -offset_y)
+          )
+    IJ.run(imp3, "Multiply...", "value=0.2")
+    sift = PySIFT([imp1, imp2, imp3])
+    drift_vec = sift.get_drift_vector()
+    drift2 = drift_vec[1]
+    drift3 = drift_vec[2]
+    assert abs(drift2[0] - offset_x) < 1
+    assert abs(drift2[1] - offset_y) < 1
+    assert abs(drift3[0] + offset_x) < 1
+    assert abs(drift3[1] + offset_y) < 1
+    print('Test 2 completed.')

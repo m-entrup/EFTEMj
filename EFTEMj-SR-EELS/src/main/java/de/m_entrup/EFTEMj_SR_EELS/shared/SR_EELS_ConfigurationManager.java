@@ -46,8 +46,8 @@ public class SR_EELS_ConfigurationManager {
 		if (config != null)
 			return config;
 		config = EFTEMj_ConfigurationManager.getConfiguration();
-		PropertiesConfiguration defaultConfig = new PropertiesConfiguration();
-		InputStream is = config.getClass().getResourceAsStream(defaultConfigName);
+		final PropertiesConfiguration defaultConfig = new PropertiesConfiguration();
+		final InputStream is = config.getClass().getResourceAsStream(defaultConfigName);
 		defaultConfig.load(is);
 		/*
 		 * Iterator<String> iter = defaultConfig.getKeys(); while

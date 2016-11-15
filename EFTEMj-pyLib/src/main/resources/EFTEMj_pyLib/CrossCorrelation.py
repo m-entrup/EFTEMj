@@ -1,7 +1,7 @@
 '''
 file:       CrossCorrelation.py
 author:     Michael Entrup b. Epping (michael.entrup@wwu.de)
-version:    20160929
+version:    20161017
 info:       This module calculates the normalised Cross-correlation of two images.
             There are aditional functions to style the result or find the position of the maximum.
 '''
@@ -10,12 +10,13 @@ from __future__ import with_statement, division
 
 import math
 
+# pylint: disable-msg=E0401
 from EFTEMj_pyLib import Tools as tools
 
 from ij import IJ, WindowManager, ImagePlus
 from ij.process import ImageStatistics as Stats, FHT
 from ij.gui import Line, PointRoi
-from ij.plugin import CanvasResizer
+# pylint: enable-msg=E0401
 
 def _calc_correlation(img1, img2):
     '''
@@ -24,6 +25,7 @@ def _calc_correlation(img1, img2):
     :param img1: The ImagePlus to be used as reference.
     :param img2: The ImagePlus its correlation to the first ImagePlus is calculated.
     '''
+    # pylint: disable-msg=C0103
     fht1 = img1.getProperty('FHT')
     if not fht1 is None:
         h1 = FHT(fht1)
@@ -46,6 +48,7 @@ def _calc_correlation(img1, img2):
     if fht2 is None:
         IJ.showStatus('Transform image2')
         h2.transform()
+    # pylint: enable-msg=C0103
     IJ.showStatus('Complex conjugate multiply')
     result = h2.conjugateMultiply(h1)
     IJ.showStatus('Inverse transform')
@@ -235,18 +238,19 @@ def scale_to_power_of_two(images):
 Testing section:
 '''
 if __name__ == '__main__':
+    # pylint: disable-msg=C0103
     print('Testing the function scale_to_power_of_two()...')
     imp1 = IJ.openImage("http://imagej.nih.gov/ij/images/TEM_filter_sample.jpg")
-    width = imp1.getWidth()
-    height = imp1.getHeight()
+    ref_width = imp1.getWidth()
+    ref_height = imp1.getHeight()
     imp2 = scale_to_power_of_two((imp1,))[0]
-    assert(imp2.getWidth() == 256 and imp2.getHeight() == 256)
-    assert(imp1.getWidth() == width and imp1.getHeight() == height)
+    assert imp2.getWidth() == 256 and imp2.getHeight() == 256
+    assert imp1.getWidth() == ref_width and imp1.getHeight() == ref_height
 
     print('Testing the functions perform_correlation() and get_drift()...')
     imp1 = IJ.openImage("http://imagej.nih.gov/ij/images/TEM_filter_sample.jpg")
-    width = imp1.getWidth()
-    height = imp1.getHeight()
+    ref_width = imp1.getWidth()
+    ref_height = imp1.getHeight()
     offset_x = 15
     offset_y = 15
     imp2 = imp1.crop()
@@ -254,8 +258,8 @@ if __name__ == '__main__':
            "Translate...",
            "x=%d y=%d interpolation=None" % (offset_x, offset_y)
           )
-    imp_cc =  perform_correlation(*scale_to_power_of_two([imp1, imp2]))
+    imp_cc = perform_correlation(*scale_to_power_of_two([imp1, imp2]))
     drift = get_drift(imp_cc)
-    assert(abs(drift[0] - offset_x) < 1 and abs(drift[1] - offset_y) < 1)
-    assert(imp1.getWidth() == width and imp1.getHeight() == height)
+    assert abs(drift[0] - offset_x) < 1 and abs(drift[1] - offset_y) < 1
+    assert imp1.getWidth() == ref_width and imp1.getHeight() == ref_height
     print('Tests completed.')

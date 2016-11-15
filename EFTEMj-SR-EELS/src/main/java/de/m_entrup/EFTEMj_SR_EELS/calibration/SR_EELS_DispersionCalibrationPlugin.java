@@ -56,16 +56,14 @@ import ij.process.ImageProcessor;
  *
  * @author Michael Entrup b. Epping
  */
-public class SR_EELS_DispersionCalibrationPlugin extends SR_EELS implements
-	ExtendedPlugInFilter
-{
+public class SR_EELS_DispersionCalibrationPlugin extends SR_EELS implements ExtendedPlugInFilter {
 
 	/**
 	 * Items of a {@link Choice} element.<br />
 	 * This items are hard coded.
 	 */
 	private static enum BINNING {
-			B1("1"), B2("2"), B4("4"), B8("8"), BINNING_OTHER("Other binning");
+		B1("1"), B2("2"), B4("4"), B8("8"), BINNING_OTHER("Other binning");
 
 		/**
 		 * The {@link String} that will be returned when using the method
@@ -74,8 +72,9 @@ public class SR_EELS_DispersionCalibrationPlugin extends SR_EELS implements
 		private final String string;
 
 		/**
-		 * @param string The {@link String} that will be returned when using the
-		 *          method <code>toString()</code>.
+		 * @param string
+		 *            The {@link String} that will be returned when using the
+		 *            method <code>toString()</code>.
 		 */
 		private BINNING(final String string) {
 			this.string = string;
@@ -92,8 +91,8 @@ public class SR_EELS_DispersionCalibrationPlugin extends SR_EELS implements
 		}
 
 		/**
-		 * @return A {@link String} array that can be used to create a choice at a
-		 *         {@link GenericDialog}.
+		 * @return A {@link String} array that can be used to create a choice at
+		 *         a {@link GenericDialog}.
 		 */
 		public static String[] toStringArray() {
 			final String[] array = new String[values().length];
@@ -116,8 +115,8 @@ public class SR_EELS_DispersionCalibrationPlugin extends SR_EELS implements
 	 * Items of a {@link Choice} element.<br />
 	 * This items are hard coded.
 	 */
-	private final String[] offsetMethods = { "absolute offset", "peak selection",
-		"center loss", "lowest loss", "highest loss" };
+	private final String[] offsetMethods = { "absolute offset", "peak selection", "center loss", "lowest loss",
+			"highest loss" };
 	/**
 	 * The image that was selected when starting the plugin.
 	 */
@@ -167,8 +166,8 @@ public class SR_EELS_DispersionCalibrationPlugin extends SR_EELS implements
 	 */
 	private int offsetAbsolute;
 	/**
-	 * This filed is only used when the peak selection offset method is selected.
-	 * <br />
+	 * This filed is only used when the peak selection offset method is
+	 * selected. <br />
 	 * The point selection is represented by a {@link Rectangle} with width =
 	 * height = 0.
 	 */
@@ -182,7 +181,8 @@ public class SR_EELS_DispersionCalibrationPlugin extends SR_EELS implements
 	@Override
 	public int setup(final String arg, final ImagePlus imp) {
 		if (arg == "final") {
-			// Update the ImagePlus to make the new calibration visible. RepaintWindow
+			// Update the ImagePlus to make the new calibration visible.
+			// RepaintWindow
 			// is necessary to update the
 			// information displayed above the image (dimension, type, size).
 			input.updateAndRepaintWindow();
@@ -198,21 +198,19 @@ public class SR_EELS_DispersionCalibrationPlugin extends SR_EELS implements
 	 */
 	private int init() {
 		/*
-		 * We use a local variable as dispersionStorage is only used to build a String array.
+		 * We use a local variable as dispersionStorage is only used to build a
+		 * String array.
 		 */
-		final Hashtable<Integer, Double> dispersionStorage =
-			SR_EELS_DispersionConfigurationPlugin.buildDispersionStorage();
+		final Hashtable<Integer, Double> dispersionStorage = SR_EELS_DispersionConfigurationPlugin
+				.buildDispersionStorage();
 		if (dispersionStorage.size() == 0) {
-			IJ.showMessage("No Spec. Mag values found",
-				"The IJ_Prefs.txt contains no Spec. Mag values." + "\n" +
-					"You can ente some values by using the dispersion configuration.");
+			IJ.showMessage("No Spec. Mag values found", "The IJ_Prefs.txt contains no Spec. Mag values." + "\n"
+					+ "You can ente some values by using the dispersion configuration.");
 			return DONE;
 		}
 		specMagValues = new String[dispersionStorage.size()];
 		int index = 0;
-		for (final Enumeration<Integer> e = dispersionStorage.keys(); e
-			.hasMoreElements();)
-		{
+		for (final Enumeration<Integer> e = dispersionStorage.keys(); e.hasMoreElements();) {
 			final int key = e.nextElement();
 			specMagValues[index] = "" + key;
 			index++;
@@ -221,15 +219,12 @@ public class SR_EELS_DispersionCalibrationPlugin extends SR_EELS implements
 		/*
 		 * Load the values that were saved at the last usage of this plugin.
 		 */
-		specMagIndex = (int) Prefs.get(SR_EELS_PrefsKeys.specMagIndex.getValue(),
-			0);
-		binningIndex = (int) Prefs.get(SR_EELS_PrefsKeys.binningIndex.getValue(),
-			0);
+		specMagIndex = (int) Prefs.get(SR_EELS_PrefsKeys.specMagIndex.getValue(), 0);
+		binningIndex = (int) Prefs.get(SR_EELS_PrefsKeys.binningIndex.getValue(), 0);
 		binningUser = (int) Prefs.get(SR_EELS_PrefsKeys.binningUser.getValue(), 1);
 		offsetIndex = (int) Prefs.get(SR_EELS_PrefsKeys.offsetIndex.getValue(), 0);
 		offsetLoss = Prefs.get(SR_EELS_PrefsKeys.offsetLoss.getValue(), 0);
-		offsetAbsolute = (int) Prefs.get(SR_EELS_PrefsKeys.offsetAbsolute
-			.getValue(), 0);
+		offsetAbsolute = (int) Prefs.get(SR_EELS_PrefsKeys.offsetAbsolute.getValue(), 0);
 		return FLAGS;
 	}
 
@@ -240,74 +235,63 @@ public class SR_EELS_DispersionCalibrationPlugin extends SR_EELS implements
 	 */
 	@Override
 	public void run(final ImageProcessor ip) {
-		final double dispersion = Prefs.get(SR_EELS_PrefsKeys.dispersionEloss
-			.getValue() + specMagValues[specMagIndex], 1);
+		final double dispersion = Prefs.get(SR_EELS_PrefsKeys.dispersionEloss.getValue() + specMagValues[specMagIndex],
+				1);
 		int offsetValue = 0;
 		int binning;
-		if (BINNING.toStringArray()[binningIndex].equals(BINNING.BINNING_OTHER
-			.toString()))
-		{
+		if (BINNING.toStringArray()[binningIndex].equals(BINNING.BINNING_OTHER.toString())) {
 			binning = binningUser;
-		}
-		else {
+		} else {
 			binning = new Integer(BINNING.toStringArray()[binningIndex]);
 		}
 		switch (offsetIndex) {
-			case 0:
-				/*
-				 * absolute value
-				 */
-				offsetValue = offsetAbsolute;
-				break;
-			case 1:
-				/*
-				 * peak selection
-				 */
-				if (orientation == 0) {
-					offsetValue = -((int) Math.round(offsetLoss / dispersion / binning -
-						point.x));
-				}
-				else {
-					offsetValue = -((int) Math.round(offsetLoss / dispersion / binning -
-						point.y));
-				}
-				input.setRoi(null, false);
-				break;
-			case 2:
-				/*
-				 * center loss
-				 */
-				double offsetCenter;
-				if (orientation == 0) {
-					offsetCenter = 1.0 * input.getWidth() / 2;
-				}
-				else {
-					offsetCenter = 1.0 * input.getHeight() / 2;
-				}
-				offsetValue = -((int) Math.round(offsetLoss / dispersion / binning -
-					offsetCenter));
-				break;
-			case 3:
-				/*
-				 * lowest loss
-				 */
-				offsetValue = -((int) Math.round(offsetLoss / dispersion / binning));
-				break;
-			case 4:
-				/*
-				 * highest loss
-				 */
-				if (orientation == 0) {
-					offsetValue = -((int) Math.round(offsetLoss / dispersion / binning -
-						input.getWidth()));
-				}
-				else {
-					offsetValue = -((int) Math.round(offsetLoss / dispersion / binning -
-						input.getHeight()));
-				}
-				break;
-			default:
-				break;
+		case 0:
+			/*
+			 * absolute value
+			 */
+			offsetValue = offsetAbsolute;
+			break;
+		case 1:
+			/*
+			 * peak selection
+			 */
+			if (orientation == 0) {
+				offsetValue = -((int) Math.round(offsetLoss / dispersion / binning - point.x));
+			} else {
+				offsetValue = -((int) Math.round(offsetLoss / dispersion / binning - point.y));
+			}
+			input.setRoi(null, false);
+			break;
+		case 2:
+			/*
+			 * center loss
+			 */
+			double offsetCenter;
+			if (orientation == 0) {
+				offsetCenter = 1.0 * input.getWidth() / 2;
+			} else {
+				offsetCenter = 1.0 * input.getHeight() / 2;
+			}
+			offsetValue = -((int) Math.round(offsetLoss / dispersion / binning - offsetCenter));
+			break;
+		case 3:
+			/*
+			 * lowest loss
+			 */
+			offsetValue = -((int) Math.round(offsetLoss / dispersion / binning));
+			break;
+		case 4:
+			/*
+			 * highest loss
+			 */
+			if (orientation == 0) {
+				offsetValue = -((int) Math.round(offsetLoss / dispersion / binning - input.getWidth()));
+			} else {
+				offsetValue = -((int) Math.round(offsetLoss / dispersion / binning - input.getHeight()));
+			}
+			break;
+		default:
+			break;
 		}
 		final Calibration cal = new Calibration(input);
 		if (orientation == 0) {
@@ -317,8 +301,7 @@ public class SR_EELS_DispersionCalibrationPlugin extends SR_EELS implements
 			 */
 			cal.setXUnit("eV");
 			cal.xOrigin = offsetValue;
-		}
-		else {
+		} else {
 			cal.pixelHeight = dispersion * binning;
 			cal.setYUnit("eV");
 			/*
@@ -333,31 +316,26 @@ public class SR_EELS_DispersionCalibrationPlugin extends SR_EELS implements
 	/*
 	 * (non-Javadoc)
 	 *
-	 * @see ij.plugin.filter.ExtendedPlugInFilter#showDialog(ij.ImagePlus, java.lang.String,
-	 * ij.plugin.filter.PlugInFilterRunner)
+	 * @see ij.plugin.filter.ExtendedPlugInFilter#showDialog(ij.ImagePlus,
+	 * java.lang.String, ij.plugin.filter.PlugInFilterRunner)
 	 */
 	@Override
-	public int showDialog(final ImagePlus imp, final String command,
-		final PlugInFilterRunner pfr)
-	{
+	public int showDialog(final ImagePlus imp, final String command, final PlugInFilterRunner pfr) {
 		input = imp;
 		final GenericDialog gd = new GenericDialog(command, IJ.getInstance());
 		final String[] items = { "x-axis", "y-axis" };
 		/*
 		 * Try to make a good default selection for the orientation.
 		 */
-		final String selectedItem = ((input.getWidth() >= input.getHeight())
-			? items[0] : items[1]);
+		final String selectedItem = ((input.getWidth() >= input.getHeight()) ? items[0] : items[1]);
 		gd.addChoice("Energy_axis:", items, selectedItem);
 		gd.addChoice("Spec_Mag:", specMagValues, specMagValues[specMagIndex]);
-		gd.addChoice("Binning:", BINNING.toStringArray(), BINNING
-			.toStringArray()[binningIndex]);
+		gd.addChoice("Binning:", BINNING.toStringArray(), BINNING.toStringArray()[binningIndex]);
 		gd.addNumericField("Other_binning:", binningUser, 1);
 		gd.addChoice("Offset_method:", offsetMethods, offsetMethods[offsetIndex]);
 		gd.addNumericField("Energy_loss:", offsetLoss, 0, 6, "eV");
 		gd.addNumericField("Absolute_offset:", offsetAbsolute, 0, 6, "px");
-		final String help = "<html><h3>Calibrate energy dispersion</h3>" +
-			"<p>description</p></html>";
+		final String help = "<html><h3>Calibrate energy dispersion</h3>" + "<p>description</p></html>";
 		/*
 		 * TODO: Add detailed description.
 		 */
@@ -382,8 +360,7 @@ public class SR_EELS_DispersionCalibrationPlugin extends SR_EELS implements
 				boolean ok;
 				do {
 					ok = showPointSelectionDialog();
-				}
-				while (ok & input.getRoi() == null);
+				} while (ok & input.getRoi() == null);
 				if (!ok) {
 					cancel();
 					return DONE | NO_CHANGES;
@@ -408,13 +385,14 @@ public class SR_EELS_DispersionCalibrationPlugin extends SR_EELS implements
 	private boolean showPointSelectionDialog() {
 		final String oldTool = IJ.getToolName();
 		IJ.setTool(Toolbar.POINT);
-		final ExtendedWaitForUserDialog dialog = new ExtendedWaitForUserDialog(
-			"Offset calibration", "Select the feature with an energy loss of " +
-				offsetLoss + "eV." + "\n" +
-				"Press Ok to use the selected point for the offset calibration.", null);
+		final ExtendedWaitForUserDialog dialog = new ExtendedWaitForUserDialog("Offset calibration",
+				"Select the feature with an energy loss of " + offsetLoss + "eV." + "\n"
+						+ "Press Ok to use the selected point for the offset calibration.",
+				null);
 		dialog.show();
 		IJ.setTool(oldTool);
-		if (dialog.escPressed()) return false;
+		if (dialog.escPressed())
+			return false;
 		return true;
 	}
 
@@ -438,11 +416,12 @@ public class SR_EELS_DispersionCalibrationPlugin extends SR_EELS implements
 	}
 
 	/**
-	 * Main method for debugging. For debugging, it is convenient to have a method
-	 * that starts ImageJ, loads an image and calls the plugin, e.g. after setting
-	 * breakpoints.
+	 * Main method for debugging. For debugging, it is convenient to have a
+	 * method that starts ImageJ, loads an image and calls the plugin, e.g.
+	 * after setting breakpoints.
 	 *
-	 * @param args unused
+	 * @param args
+	 *            unused
 	 */
 	public static void main(final String[] args) {
 		// start ImageJ

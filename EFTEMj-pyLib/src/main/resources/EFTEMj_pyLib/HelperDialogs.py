@@ -1,13 +1,16 @@
 """
 file:       HelperDialogs.py
 author:     Michael Entrup b. Epping (michael.entrup@wwu.de)
-version:    20160720
+version:    20161017
 info:       This module contains some some dialogs for repetitive tasks.
 """
 
 from __future__ import with_statement, division
+
+# pylint: disable-msg=E0401
 from ij import WindowManager
 from ij.gui import GenericDialog
+# pylint: enable-msg=E0401
 
 def get_image_titles():
     """
@@ -33,10 +36,10 @@ def create_selection_dialog(image_titles, defaults, title='Select images for pro
                      The length of this list defines the number of selectable images.
     :param title: the title of the dialog (default 'Select images for processing').
     """
-    gd = GenericDialog(title)
+    dialog = GenericDialog(title)
     for index, default in enumerate(defaults):
-        gd.addChoice('Image_'+ str(index + 1), image_titles, image_titles[default])
-    gd.showDialog()
-    if gd.wasCanceled():
+        dialog.addChoice('Image_'+ str(index + 1), image_titles, image_titles[default])
+    dialog.showDialog()
+    if dialog.wasCanceled():
         return None
-    return [gd.getNextChoiceIndex() for _ in defaults]
+    return [dialog.getNextChoiceIndex() for _ in defaults]

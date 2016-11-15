@@ -1,7 +1,7 @@
 '''
 file:       Elemental_mapping_(3-window).py
 author:     Michael Entrup b. Epping (michael.entrup@wwu.de)
-version:    20160725
+version:    20161017
 info:       A script that calculates the elemental map of three images.
             The code is based on an article of A. Berger and H. Kohl.
             Optik 92 (1993), p. 175 - 193
@@ -9,15 +9,14 @@ info:       A script that calculates the elemental map of three images.
 
 from __future__ import with_statement, division
 
-from sys import modules
-modules.clear()
-
+# pylint: disable-msg=E0401
 from EFTEMj_pyLib import CorrectDrift as drift
 from EFTEMj_pyLib import Tools as tools
 from EFTEMj_pyLib import ElementalMapping
 
 from ij import IJ, WindowManager
 from ij.gui import GenericDialog
+# pylint: enable-msg=E0401
 
 
 def get_setup():
@@ -26,25 +25,25 @@ def get_setup():
     '''
     options = drift.get_options()
     modes = drift.get_modes()
-    gd = GenericDialog('3-window-method setup')
-    gd.addMessage('Select the mode  for drift correction\n' +
-                  'and the images to process.')
-    gd.addChoice('Mode:', options, options[0])
+    dialog = GenericDialog('3-window-method setup')
+    dialog.addMessage('Select the mode  for drift correction\n' +
+                      'and the images to process.')
+    dialog.addChoice('Mode:', options, options[0])
     image_ids = WindowManager.getIDList()
     if not image_ids or len(image_ids) < 2:
         return [None]*4
     image_titles = [WindowManager.getImage(id).getTitle() for id in image_ids]
-    gd.addMessage('Post-edge is divided by the pre-edge.')
-    gd.addChoice('Pre-edge 1', image_titles, image_titles[0])
-    gd.addChoice('Pre-edge 2', image_titles, image_titles[1])
-    gd.addChoice('Post-edge', image_titles, image_titles[2])
-    gd.showDialog()
-    if gd.wasCanceled():
+    dialog.addMessage('Post-edge is divided by the pre-edge.')
+    dialog.addChoice('Pre-edge 1', image_titles, image_titles[0])
+    dialog.addChoice('Pre-edge 2', image_titles, image_titles[1])
+    dialog.addChoice('Post-edge', image_titles, image_titles[2])
+    dialog.showDialog()
+    if dialog.wasCanceled():
         return [None]*4
-    mode = modes[gd.getNextChoiceIndex()]
-    img1 = WindowManager.getImage(image_ids[gd.getNextChoiceIndex()])
-    img2 = WindowManager.getImage(image_ids[gd.getNextChoiceIndex()])
-    img3 = WindowManager.getImage(image_ids[gd.getNextChoiceIndex()])
+    mode = modes[dialog.getNextChoiceIndex()]
+    img1 = WindowManager.getImage(image_ids[dialog.getNextChoiceIndex()])
+    img2 = WindowManager.getImage(image_ids[dialog.getNextChoiceIndex()])
+    img3 = WindowManager.getImage(image_ids[dialog.getNextChoiceIndex()])
     return mode, img1, img2, img3
 
 
@@ -57,9 +56,9 @@ def run_script():
     pre1_imp, pre2_imp, post_imp = tools.stack_to_list_of_imp(corrected_stack)
 
     mapping = ElementalMapping.ThreeWindow(pre1_imp, pre2_imp, post_imp)
-    map_imp, snr_imp, r_imp, lnA_imp = mapping.get_result()
+    map_imp, snr_imp, r_imp, lna_imp = mapping.get_result()
 
-    for imp in (map_imp, snr_imp, r_imp, lnA_imp):
+    for imp in (map_imp, snr_imp, r_imp, lna_imp):
         imp.copyScale(post_in)
         show_imp(imp)
 

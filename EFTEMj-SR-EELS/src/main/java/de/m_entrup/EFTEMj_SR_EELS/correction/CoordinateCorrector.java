@@ -39,19 +39,15 @@ public abstract class CoordinateCorrector {
 	protected SR_EELS_Polynomial_2D functionBorder;
 
 	public CoordinateCorrector(final SR_EELS_FloatProcessor inputProcessor,
-		final SR_EELS_FloatProcessor outputProcessor)
-	{
+			final SR_EELS_FloatProcessor outputProcessor) {
 		this.inputProcessor = inputProcessor;
 		this.outputProcessor = outputProcessor;
 		this.functionWidth = inputProcessor.getWidthFunction();
 		this.functionBorder = inputProcessor.getBorderFunction();
 	}
 
-	public float[] transformCoordinate(final float x1, final float x2)
-		throws SR_EELS_Exception
-	{
-		final float[] pointIn = outputProcessor.convertToFunctionCoordinates(
-			new float[] { x1, x2 });
+	public float[] transformCoordinate(final float x1, final float x2) throws SR_EELS_Exception {
+		final float[] pointIn = outputProcessor.convertToFunctionCoordinates(new float[] { x1, x2 });
 		final float[] pointOut = new float[2];
 		final float y2n = calcY2n(pointIn[0], pointIn[1]);
 		final float y1 = calcY1(pointIn[0], y2n);

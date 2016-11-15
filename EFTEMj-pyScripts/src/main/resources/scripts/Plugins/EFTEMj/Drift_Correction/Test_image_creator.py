@@ -6,13 +6,15 @@
 '''
 file:       Test_image_creator.py
 author:     Michael Entrup b. Epping (michael.entrup@wwu.de)
-version:    20160930
+version:    20161017
 info:       A script that creates images to test the drift correction.
 '''
 
 from __future__ import with_statement, division
 
+# pylint: disable-msg=E0401
 from EFTEMj_pyLib.TestImages import DriftTestImageCreator as Creator
+# pylint: enable-msg=E0401
 
 
 def run_script():
