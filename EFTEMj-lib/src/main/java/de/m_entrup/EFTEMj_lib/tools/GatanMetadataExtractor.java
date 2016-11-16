@@ -29,6 +29,12 @@ public class GatanMetadataExtractor {
 	private String patternBrightnessScale = ".*Brightness.Scale$";
 	private String patternBrightnessUnit = ".*Brightness.Units$";
 	private String patternName = ".*ImageList\\.1\\.Name$";
+	private String patternXOrigin = ".*1\\.ImageData\\.Calibrations\\.Dimension\\.0\\.Origin$";
+	private String patternXScale = ".*1\\.ImageData\\.Calibrations\\.Dimension\\.0\\.Scale$";
+	private String patternXUnit = ".*1\\.ImageData\\.Calibrations\\.Dimension\\.0\\.Units$";
+	private String patternYOrigin = ".*1\\.ImageData\\.Calibrations\\.Dimension\\.1\\.Origin$";
+	private String patternYScale = ".*1\\.ImageData\\.Calibrations\\.Dimension\\.1\\.Scale$";
+	private String patternYUnit = ".*1\\.ImageData\\.Calibrations\\.Dimension\\.1\\.Units$";
 
 	/**
 	 * Create an instance of {@link GatanMetadataExtractor} that uses the
@@ -172,6 +178,66 @@ public class GatanMetadataExtractor {
 	public String getName() {
 		if (findPattern(patternName)) {
 			return metadataExtracted.get(patternName);
+		}
+		return "";
+	}
+
+	/**
+	 * @return the origin of the x axis in pixel.
+	 */
+	public double getXOrigin() {
+		if (findPattern(patternXOrigin)) {
+			return Double.parseDouble(metadataExtracted.get(patternXOrigin));
+		}
+		return Double.NaN;
+	}
+
+	/**
+	 * @return the scale of the x axis (width of each pixel).
+	 */
+	public double getXScale() {
+		if (findPattern(patternXScale)) {
+			return Double.parseDouble(metadataExtracted.get(patternXScale));
+		}
+		return Double.NaN;
+	}
+
+	/**
+	 * @return the unit of the x axis calibration.
+	 */
+	public String getXUnit() {
+		if (findPattern(patternXUnit)) {
+			return metadataExtracted.get(patternXUnit);
+		}
+		return "";
+	}
+
+	/**
+	 * @return the origin of the y axis in pixel.
+	 */
+	public double getYOrigin() {
+		if (findPattern(patternYOrigin)) {
+			return Double.parseDouble(metadataExtracted.get(patternYOrigin));
+		}
+		return Double.NaN;
+	}
+
+	/**
+	 * @return the scale of the y axis (height of each pixel).
+	 */
+	public double getYScale() {
+		if (findPattern(patternYScale)) {
+			return Double.parseDouble(metadataExtracted.get(patternYScale));
+		}
+		return Double.NaN;
+	}
+
+	/**
+	 * @return the unit of the y axis calibration.
+	 */
+	public String getYUnit() {
+		if (findPattern(patternYUnit)) {
+			return metadataExtracted.get(patternYUnit);
 		}
 		return "";
 	}
