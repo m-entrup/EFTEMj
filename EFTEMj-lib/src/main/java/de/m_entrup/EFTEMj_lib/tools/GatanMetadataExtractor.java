@@ -28,6 +28,7 @@ public class GatanMetadataExtractor {
 	private String patternTime = ".*DataBar\\.Acquisition Time$";
 	private String patternBrightnessScale = ".*Brightness.Scale$";
 	private String patternBrightnessUnit = ".*Brightness.Units$";
+	private String patternName = ".*ImageList\\.1\\.Name$";
 
 	/**
 	 * Create an instance of {@link GatanMetadataExtractor} that uses the
@@ -166,6 +167,16 @@ public class GatanMetadataExtractor {
 	}
 
 	/**
+	 * @return the name given to the DM3 file when saving for the first time.
+	 */
+	public String getName() {
+		if (findPattern(patternName)) {
+			return metadataExtracted.get(patternName);
+		}
+		return "";
+	}
+
+	/**
 	 * the main method is for testing purposes.
 	 */
 	public static void main(String[] args) {
@@ -185,6 +196,7 @@ public class GatanMetadataExtractor {
 		IJ.log("Date: " + extractor.getDateAndTime().toString());
 		IJ.log("Intensity scale: " + extractor.getIntensityScale());
 		IJ.log("Intensity unit: " + extractor.getIntensityUnit());
+		IJ.log("Original name: " + extractor.getName());
 	}
 
 }
