@@ -51,15 +51,22 @@ public class EFTEMj_ConfigurationManager {
 
 	public static void main(final String[] args) {
 		try {
-			final CompositeConfiguration config = getConfiguration();
-			System.out.println(config.getString("colors.background"));
-			final int test = config.getInt("EFTEMj.test");
+			final CompositeConfiguration testConfig = getConfiguration();
+			if (testConfig.getString("colors.background") == null) {
+				System.out.println(String.format("Creating entry for \"%s\".", "colors.background"));
+				testConfig.setProperty("colors.background", "blue");
+			}
+			if (testConfig.getString("EFTEMj.test") == null) {
+				System.out.println(String.format("Creating entry for \"%s\".", "EFTEMj.test"));
+				testConfig.setProperty("EFTEMj.test", 10);
+			}
+			System.out.println(testConfig.getString("colors.background"));
+			final int test = testConfig.getInt("EFTEMj.test");
 			System.out.println(test);
-			config.setProperty("EFTEMj.test", 3);
-			config.setProperty("Konstanten.PI", Math.PI);
+			testConfig.setProperty("EFTEMj.test", 3);
+			testConfig.setProperty("Konstanten.PI", Math.PI);
 			saveConfiguration();
 		} catch (final ConfigurationException e) {
-			// TODO Auto-generated catch block
 			System.out.println("Es ist ein Fehler aufgetreten:\n" + e.toString());
 		}
 	}
@@ -69,8 +76,8 @@ public class EFTEMj_ConfigurationManager {
 			return config;
 		config = new EFTEMj_Configuration();
 		config.addConfiguration(getUserConfiguration());
-		PropertiesConfiguration defaultConfig = new PropertiesConfiguration();
-		InputStream is = config.getClass().getResourceAsStream(defaultConfigName);
+		final PropertiesConfiguration defaultConfig = new PropertiesConfiguration();
+		final InputStream is = config.getClass().getResourceAsStream(defaultConfigName);
 		defaultConfig.load(is);
 		/*
 		 * Iterator<String> iter = defaultConfig.getKeys(); while
