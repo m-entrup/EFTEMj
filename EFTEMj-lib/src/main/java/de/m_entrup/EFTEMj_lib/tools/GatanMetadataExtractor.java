@@ -15,48 +15,51 @@ import ij.ImagePlus;
 
 public class GatanMetadataExtractor {
 
-	private HashMap<String, String> metadata = new HashMap<>();
-	private HashMap<String, String> metadataExtracted = new HashMap<>();
+	private final HashMap<String, String> metadata = new HashMap<>();
+	private final HashMap<String, String> metadataExtracted = new HashMap<>();
 
-	private String patternExposure = ".*Exposure Time \\(s\\)$";
-	private String patternExposure2 = ".*Level\\.Exposure \\(s\\)$";
-	private String patternMagnification = ".*Indicated Magnification$";
-	private String patternMagnificationActual = ".*Actual Magnification$";
-	private String patternEnergyloss = ".*Filter energy \\(eV\\)$";
-	private String patternDateAndTime = ".*Acquisition Start Time \\(epoch\\)$";
-	private String patternDate = ".*DataBar\\.Acquisition Date$";
-	private String patternTime = ".*DataBar\\.Acquisition Time$";
-	private String patternBrightnessScale = ".*Brightness.Scale$";
-	private String patternBrightnessUnit = ".*Brightness.Units$";
-	private String patternName = ".*ImageList\\.1\\.Name$";
-	private String patternXOrigin = ".*1\\.ImageData\\.Calibrations\\.Dimension\\.0\\.Origin$";
-	private String patternXScale = ".*1\\.ImageData\\.Calibrations\\.Dimension\\.0\\.Scale$";
-	private String patternXUnit = ".*1\\.ImageData\\.Calibrations\\.Dimension\\.0\\.Units$";
-	private String patternYOrigin = ".*1\\.ImageData\\.Calibrations\\.Dimension\\.1\\.Origin$";
-	private String patternYScale = ".*1\\.ImageData\\.Calibrations\\.Dimension\\.1\\.Scale$";
-	private String patternYUnit = ".*1\\.ImageData\\.Calibrations\\.Dimension\\.1\\.Units$";
+	private final String patternExposure = ".*Exposure Time \\(s\\)$";
+	private final String patternExposure2 = ".*Level\\.Exposure \\(s\\)$";
+	private final String patternMagnification = ".*Indicated Magnification$";
+	private final String patternMagnificationActual = ".*Actual Magnification$";
+	private final String patternEnergyloss = ".*Filter energy \\(eV\\)$";
+	private final String patternDateAndTime = ".*Acquisition Start Time \\(epoch\\)$";
+	private final String patternDate = ".*DataBar\\.Acquisition Date$";
+	private final String patternTime = ".*DataBar\\.Acquisition Time$";
+	private final String patternBrightnessScale = ".*Brightness.Scale$";
+	private final String patternBrightnessUnit = ".*Brightness.Units$";
+	private final String patternName = ".*ImageList\\.1\\.Name$";
+	private final String patternXOrigin = ".*1\\.ImageData\\.Calibrations\\.Dimension\\.0\\.Origin$";
+	private final String patternXScale = ".*1\\.ImageData\\.Calibrations\\.Dimension\\.0\\.Scale$";
+	private final String patternXUnit = ".*1\\.ImageData\\.Calibrations\\.Dimension\\.0\\.Units$";
+	private final String patternYOrigin = ".*1\\.ImageData\\.Calibrations\\.Dimension\\.1\\.Origin$";
+	private final String patternYScale = ".*1\\.ImageData\\.Calibrations\\.Dimension\\.1\\.Scale$";
+	private final String patternYUnit = ".*1\\.ImageData\\.Calibrations\\.Dimension\\.1\\.Units$";
 
 	/**
 	 * Create an instance of {@link GatanMetadataExtractor} that uses the
 	 * metadata of a given {@link ImagePlus} object.
-	 * 
+	 *
 	 * @param imp
 	 *            to extract the metadata from. this can be a DM3 file or a TIFF
 	 *            file that contains the metadate of the DM3 file it originates
 	 *            from.
 	 */
-	public GatanMetadataExtractor(ImagePlus imp) {
-		String fileInfo = (String) imp.getProperty("Info");
-		BufferedReader bufReader = new BufferedReader(new StringReader(fileInfo));
+	public GatanMetadataExtractor(final ImagePlus imp) {
+		final String fileInfo = (String) imp.getProperty("Info");
+		if (fileInfo == null) {
+			return;
+		}
+		final BufferedReader bufReader = new BufferedReader(new StringReader(fileInfo));
 		String line = null;
 		try {
 			while ((line = bufReader.readLine()) != null) {
-				String[] lineSplitted = line.split("\\s*=\\s*");
+				final String[] lineSplitted = line.split("\\s*=\\s*");
 				if (lineSplitted.length == 2) {
 					metadata.put(lineSplitted[0], lineSplitted[1]);
 				}
 			}
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 	}
@@ -64,14 +67,14 @@ public class GatanMetadataExtractor {
 	/**
 	 * Search the extracted metadata for the given key. Only the first match is
 	 * considered. Results are cached in a {@link HashMap} for faster access.
-	 * 
+	 *
 	 * @param pattern
 	 *            to search for.
 	 * @return <code>true</code> if the given pattern was found.
 	 */
-	private boolean findPattern(String pattern) {
+	private boolean findPattern(final String pattern) {
 		if (metadataExtracted.get(pattern) == null) {
-			for (String key : metadata.keySet()) {
+			for (final String key : metadata.keySet()) {
 				if (key.matches(pattern)) {
 					metadataExtracted.put(pattern, metadata.get(key));
 					return true;
@@ -140,10 +143,10 @@ public class GatanMetadataExtractor {
 			return new Date((long) Double.parseDouble(metadataExtracted.get(patternDateAndTime)));
 		}
 		if (findPattern(patternDate) & findPattern(patternTime)) {
-			DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+			final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 			try {
 				return dateFormat.parse(metadataExtracted.get(patternDate) + " " + metadataExtracted.get(patternTime));
-			} catch (ParseException e) {
+			} catch (final ParseException e) {
 				IJ.log(e.getMessage());
 				return null;
 			}
@@ -245,7 +248,7 @@ public class GatanMetadataExtractor {
 	/**
 	 * the main method is for testing purposes.
 	 */
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		// start ImageJ
 		new ImageJ();
 
@@ -253,7 +256,7 @@ public class GatanMetadataExtractor {
 		final ImagePlus image = IJ.openImage();
 		image.show();
 
-		GatanMetadataExtractor extractor = new GatanMetadataExtractor(image);
+		final GatanMetadataExtractor extractor = new GatanMetadataExtractor(image);
 		IJ.log("Count of keys: " + extractor.metadata.size());
 		IJ.log("Exposure time: " + extractor.getExposure());
 		IJ.log("Magnification: " + extractor.getMagnification());
