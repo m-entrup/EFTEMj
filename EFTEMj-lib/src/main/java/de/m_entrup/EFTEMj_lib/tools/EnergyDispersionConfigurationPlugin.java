@@ -124,7 +124,7 @@ public class EnergyDispersionConfigurationPlugin implements PlugIn {
 		final GenericDialog gd = new GenericDialog("Edit dispersion values", IJ.getInstance());
 		gd.addMessage("Set the dispersion to 0 to remove an entry.");
 		final String[] keys = dispersionStorage.keySet().toArray(new String[dispersionStorage.size()]);
-		Arrays.sort(keys);
+		Arrays.sort(keys, (a, b) -> new Double(a).compareTo(new Double(b)));
 		for (final String key : keys) {
 			final double val = dispersionStorage.get(key);
 			gd.addNumericField("Spec. Mag: " + key, val, 6, 10, "eV/px");

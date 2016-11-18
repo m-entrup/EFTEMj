@@ -232,7 +232,7 @@ public class EnergyDispersionCalibrationPlugin implements ExtendedPlugInFilter {
 			specMagValues[index] = "" + key;
 			index++;
 		}
-		Arrays.sort(specMagValues);
+		Arrays.sort(specMagValues, (a, b) -> new Double(a).compareTo(new Double(b)));
 		/*
 		 * Load the values that were saved at the last usage of this plugin.
 		 */
