@@ -5,7 +5,9 @@ import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.m_entrup.EFTEMj_lib.CameraSetup;
 import de.m_entrup.EFTEMj_lib.EFTEMj_Debug;
+import de.m_entrup.EFTEMj_lib.data.EnergyDispersion;
 import de.m_entrup.EFTEMj_lib.tools.GatanMetadataExtractor;
 import ij.IJ;
 import ij.ImagePlus;
@@ -16,6 +18,8 @@ import ij.plugin.Profiler;
 public class EELS_SpectrumFromImagePlugin extends Profiler {
 
 	private ImagePlus sourceImage;
+	private double scale = 1;
+	private int origin = 0;
 	private GatanMetadataExtractor extractor;
 
 	/*
@@ -34,7 +38,7 @@ public class EELS_SpectrumFromImagePlugin extends Profiler {
 		if (x_label == null)
 			x_label = "eV";
 		final String xLabel = "Energy loss (" + x_label + ")";
-		String y_label = null;
+		String y_label = extractor.getIntensityUnit();
 		if (y_label == null)
 			y_label = "a.u.";
 		final String yLabel = "Intensity (" + y_label + ")";
@@ -42,13 +46,13 @@ public class EELS_SpectrumFromImagePlugin extends Profiler {
 		return plot;
 	}
 
-	private float[] getEELSFromImage(boolean calcMean) {
-		float[] eels = new float[sourceImage.getWidth()];
+	private float[] getEELSFromImage(final boolean calcMean) {
+		final float[] eels = new float[sourceImage.getWidth()];
 		Arrays.fill(eels, 0);
 		int yMin = 0;
 		int yMax = sourceImage.getHeight();
 		if (sourceImage.getRoi() != null) {
-			Rectangle selection = sourceImage.getRoi().getBounds();
+			final Rectangle selection = sourceImage.getRoi().getBounds();
 			yMin = selection.y;
 			if (yMin < 0)
 				yMin = 0;
@@ -70,26 +74,62 @@ public class EELS_SpectrumFromImagePlugin extends Profiler {
 	}
 
 	private float[] getEnergyAxis() {
-		float[] energies = new float[sourceImage.getWidth()];
-		double origin = extractor.getXOrigin();
-		double scale = extractor.getXScale();
-		System.out.println(origin);
-		System.out.println(scale);
-		if (origin == 0 & scale == 1) {
-			Pattern patternEnergy = Pattern.compile("[^\\d]*(\\d+(?:[,\\.]\\d+)?)eV.*");
-			Matcher matchEnergy = patternEnergy.matcher(sourceImage.getTitle());
-			Pattern patternSpecMag = Pattern.compile(".*SM(\\d{2,3}).*");
-			Matcher matchSpecMag = patternSpecMag.matcher(sourceImage.getTitle());
-			if (matchEnergy.find()) {
-				float energy = Float.parseFloat(matchEnergy.group(1));
-				IJ.log("" + energy);
-			}
+		final float[] energies = new float[sourceImage.getWidth()];
+		if (sourceImage.getCalibration().getXUnit().toLowerCase().equals("ev")) {
+			scale = sourceImage.getCalibration().getX(1) - sourceImage.getCalibration().getX(0);
+			origin = (int) (-sourceImage.getCalibration().getX(0) / scale);
+		} else if (extractor.getXUnit().toLowerCase().equals("ev")) {
+			scale = extractor.getXScale();
+			origin = (int) extractor.getXOrigin();
+		}
+		EFTEMj_Debug.log("scale: " + scale);
+		EFTEMj_Debug.log("origin: " + origin);
+		if (scale == 1) {
+			final Pattern patternSpecMag = Pattern.compile(".*SM(\\d{2,3}).*");
+			final Matcher matchSpecMag = patternSpecMag.matcher(sourceImage.getTitle());
+			EFTEMj_Debug.log(sourceImage.getOriginalFileInfo().directory);
+			final Matcher matchSpecMagPath = patternSpecMag.matcher(sourceImage.getOriginalFileInfo().directory);
+			boolean foundSpecMag = false;
+			String specMag = "";
 			if (matchSpecMag.find()) {
-				float specMag = Float.parseFloat(matchSpecMag.group(1));
-				IJ.log("" + specMag);
+				specMag = matchSpecMag.group(1);
+				EFTEMj_Debug.log(specMag);
+				foundSpecMag = true;
+			} else if (matchSpecMagPath.find()) {
+				specMag = matchSpecMagPath.group(1);
+				EFTEMj_Debug.log(specMag);
+				foundSpecMag = true;
 			}
-			origin = 0;
-			scale = 1;
+			if (foundSpecMag) {
+				final EnergyDispersion dispersion = new EnergyDispersion();
+				final Double newScale = dispersion.dispersionStorage.get(specMag);
+				if (newScale != null) {
+					// EEL spectrum images are rotated by 90°.
+					final int binning = CameraSetup.getFullHeight() / sourceImage.getWidth();
+					scale = binning * newScale;
+				}
+			}
+		}
+		if (origin == 0) {
+			final Pattern patternEnergy = Pattern.compile("[^\\d]*(\\d+(?:[,\\.]\\d+)?)eV.*");
+			final Matcher matchEnergy = patternEnergy.matcher(sourceImage.getTitle());
+			final Matcher matchEnergyPath = patternEnergy.matcher(sourceImage.getFileInfo().directory);
+			boolean foundEnergy = false;
+			float energy = 0;
+			if (matchEnergy.find()) {
+				energy = Float.parseFloat(matchEnergy.group(1));
+				EFTEMj_Debug.log("" + energy);
+				foundEnergy = true;
+			} else if (matchEnergyPath.find()) {
+				energy = Float.parseFloat(matchEnergyPath.group(1));
+				EFTEMj_Debug.log("" + energy);
+				foundEnergy = true;
+			}
+			if (foundEnergy) {
+				final int offsetCenter = sourceImage.getWidth() / 2;
+				final double offsetValue = energy / scale - offsetCenter;
+				origin = (int) -offsetValue;
+			}
 		}
 		for (int i = 0; i < energies.length; i++) {
 			energies[i] = (float) (scale * (i - origin));
@@ -132,7 +172,7 @@ public class EELS_SpectrumFromImagePlugin extends Profiler {
 	 *            unused
 	 */
 	public static void main(final String[] args) {
-		ImagePlus imp = IJ.openImage();
+		final ImagePlus imp = IJ.openImage();
 		imp.show();
 		EFTEMj_Debug.debug(EELS_SpectrumFromImagePlugin.class);
 	}
