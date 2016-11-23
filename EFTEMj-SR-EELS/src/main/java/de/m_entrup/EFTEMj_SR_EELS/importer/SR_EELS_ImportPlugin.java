@@ -219,7 +219,7 @@ public class SR_EELS_ImportPlugin implements PlugIn {
 
 	private ParameterSet getParameters(final String path, final boolean importCalibration) {
 		final Pattern patternDate = Pattern.compile("(\\d{8})");
-		final Pattern patternSM = Pattern.compile("(?:SM|SpecMag)(\\d{2,3})");
+		final Pattern patternSM = Pattern.compile("(?:SM|SpecMag)(?:=)?(\\d{2,3})");
 		final Pattern patternQSinK7 = Pattern.compile("QSinK7\\s?[\\s|=]\\s?(-?\\+?\\d{1,3})%?");
 		final Pattern patternQSinK7Alternative = Pattern.compile("(-?\\+?\\d{1,3})%");
 		final ParameterSet parameters = new ParameterSet();
