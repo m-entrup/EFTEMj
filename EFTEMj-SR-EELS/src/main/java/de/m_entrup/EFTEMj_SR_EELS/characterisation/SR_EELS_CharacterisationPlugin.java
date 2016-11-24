@@ -29,6 +29,7 @@ import ij.measure.CurveFitter;
 import ij.measure.Measurements;
 import ij.plugin.Duplicator;
 import ij.plugin.PlugIn;
+import ij.plugin.filter.RankFilters;
 import ij.process.ColorProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageStatistics;
@@ -403,13 +404,14 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 		for (int i = 0; i < images.size(); i++) {
 			final SR_EELS_CharacterisationResult result = results.subResults.get(images.get(i));
 			final ImagePlus jpegImp = result.imp.get(images.get(i));
-			IJ.run(jpegImp, "Select None", "");
-			IJ.run(jpegImp, "Log", "");
+			jpegImp.killRoi();
+			jpegImp.getProcessor().log();
 			IJ.run(jpegImp, "Enhance Contrast", "saturated=0.35");
-			IJ.run(jpegImp, "Flip Horizontally", "");
-			IJ.run(jpegImp, "Rotate 90 Degrees Left", "");
+			jpegImp.getProcessor().flipHorizontal();
+			jpegImp.setProcessor(jpegImp.getProcessor().rotateLeft());
 			final ImagePlus jpeg = jpegImp.flatten();
-			IJ.run(jpeg, "Divide...", "value=1.3");
+			// Make image darker for better visibility of the overlay.
+			jpeg.getProcessor().multiply(1 / 1.3);
 			int binJPEG = 1;
 			while (Math.max(jpeg.getWidth(), jpeg.getHeight()) > 1024) {
 				IJ.run(jpeg, "Bin...", "x=2 y=2 bin=Average");
@@ -477,21 +479,22 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 			 * unrotated image.
 			 */
 			if (doRotateLeft) {
-				IJ.run(this.imp, "Flip Horizontally", "");
+				imp.getProcessor().flipHorizontal();
 			} else if (doRotateRight) {
-				IJ.run(imp, "Flip Vertically", "");
+				imp.getProcessor().flipVertical();
 			} else {
-				IJ.run(this.imp, "Rotate 90 Degrees Right", "");
-				IJ.run(this.imp, "Flip Horizontally", "");
+				imp.setProcessor(imp.getProcessor().rotateRight());
+				imp.getProcessor().flipHorizontal();
 			}
 			this.width = this.imp.getWidth();
 			this.height = this.imp.getHeight();
-			final double threshold = 2 * this.imp.getStatistics().stdDev;
-			IJ.run(this.imp, "Remove Outliers...",
-					"radius=" + filterRadius + " threshold=" + threshold + " which=Bright");
-			IJ.run(this.imp, "Remove Outliers...",
-					"radius=" + filterRadius + " threshold=" + threshold + " which=Dark");
-			IJ.run(this.imp, "Median...", "radius=" + filterRadius);
+			final float threshold = (float) (2 * this.imp.getStatistics().stdDev);
+			RankFilters rmOutliers = new RankFilters();
+			rmOutliers.rank(this.imp.getProcessor(), filterRadius, RankFilters.OUTLIERS, RankFilters.BRIGHT_OUTLIERS,
+					threshold);
+			rmOutliers.rank(this.imp.getProcessor(), filterRadius, RankFilters.OUTLIERS, RankFilters.DARK_OUTLIERS,
+					threshold);
+			rmOutliers.rank(this.imp.getProcessor(), filterRadius, RankFilters.MEDIAN);
 		}
 	}
 
