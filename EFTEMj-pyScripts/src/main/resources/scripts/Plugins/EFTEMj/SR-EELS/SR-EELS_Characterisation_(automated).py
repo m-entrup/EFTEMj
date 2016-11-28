@@ -30,14 +30,6 @@ types += SR_EELS_CharacterisationResults.JPEG
 types += SR_EELS_CharacterisationResults.CSV
 types += SR_EELS_CharacterisationResults.PLOTS
 
-def todo():
-    settings.path = File(self.config.path)
-    runCharacterisation()
-    settings.images = getImages(settings)
-    this.results = SR_EELS_CharacterisationResults()
-    results.settings = settings
-    saveResults()
-
 class AutomatedCharacterisation:
 
     def __init__(self):
@@ -65,10 +57,13 @@ def main():
     settings.useThresholding = useThresholding
     settings.threshold = threshold
     finished = skipped = failed = 0
-    IJ.log('Processing %d datasets.' % (len(automated_characterisation.datasets),))
+    dataset_count = len(automated_characterisation.datasets)
+    IJ.log('Processing %d datasets.' % (dataset_count,))
+    count = 0
     for dataset in automated_characterisation.datasets:
+    	count += 1
         if not os.path.exists(os.path.join(dataset, settings.toString())):
-            IJ.log('Starting to process "%s".' % (dataset,))
+            IJ.log('%d/%d Starting to process "%s".' % (count, dataset_count, dataset))
             images = ArrayList()
             for image in os.listdir(dataset):
                 if re.search('Cal_\d+\.tif', image):
@@ -82,10 +77,10 @@ def main():
                 characterisation.saveResults(results_path, types)
                 finished += 1
             except RuntimeException:
-                IJ.log('There was an error when processing "%s"!' % (dataset,))
+                IJ.log('%d/%d There was an error when processing "%s"!' % (count, dataset_count, dataset))
                 failed += 1
         else:
-            IJ.log('Skipping "%s" as results for "%s" exist.' % (dataset, settings.toString()))
+            IJ.log('%d/%d Skipping "%s" as results for "%s" exist.' % (count, dataset_count, dataset, settings.toString()))
             skipped += 1
     IJ.log('\nFinished automated SR-EELS characterisation:')
     IJ.log('Finished: %d\nSkipped: %d\nFailed: %d' % (finished, skipped, failed))
