@@ -146,12 +146,15 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 			result.height = imp.getHeight();
 			result.binX = CameraSetup.getFullHeight() / result.width;
 			result.binY = CameraSetup.getFullWidth() / result.height;
-			int yPos = settings.energyBorderLow;
+			int yPos = (int) (settings.energyBorderLow / result.binY);
+			if (settings.path.toString().contains("ZLP")) {
+				yPos += image.height / 2;
+			}
 			int xOffset = 0;
 			int roiWidth = image.width;
 			// mean = new Array();
-			while (yPos < image.height - settings.energyBorderHigh) {
-				imp.setRoi(new Rectangle(xOffset, yPos, roiWidth, settings.stepSize));
+			while (yPos < image.height - (settings.energyBorderHigh / result.binY)) {
+				imp.setRoi(new Rectangle(xOffset, yPos, roiWidth, (int) (settings.stepSize / result.binY)));
 				SR_EELS_SubImageObject subImage = new SR_EELS_SubImageObject(new Duplicator().run(imp));
 				final ProfilePlot profile = new ProfilePlot(subImage.imp);
 				final double[] xValues = new double[profile.getProfile().length];
@@ -165,7 +168,7 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 				final double gaussSigmaWeighted = settings.sigmaWeight * gaussSigma / Math.pow(fit.getRSquared(), 2);
 				xOffset = (int) Math.max(xOffset + Math.round(gaussCentre - gaussSigmaWeighted), 0);
 				roiWidth = (int) Math.round(2 * gaussSigmaWeighted);
-				imp.setRoi(new Rectangle(xOffset, yPos, roiWidth, settings.stepSize));
+				imp.setRoi(new Rectangle(xOffset, yPos, roiWidth, (int) (settings.stepSize / result.binY)));
 				subImage = new SR_EELS_SubImageObject(new Duplicator().run(imp));
 				subImage.xOffset = xOffset;
 				subImage.yOffset = yPos;
@@ -467,7 +470,6 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 		int height;
 
 		public SR_EELS_ImageObject(final String imageName, final SR_EELS_CharacterisationSettings settings) {
-			final double filterRadius = settings.filterRadius;
 			this.path = new File(settings.path, imageName).getAbsolutePath();
 			this.imp = IJ.openImage(this.path);
 			/*
@@ -488,8 +490,10 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 			}
 			this.width = this.imp.getWidth();
 			this.height = this.imp.getHeight();
+			final int bin = CameraSetup.getFullWidth() / width;
+			final double filterRadius = settings.filterRadius / bin;
 			final float threshold = (float) (2 * this.imp.getStatistics().stdDev);
-			RankFilters rmOutliers = new RankFilters();
+			final RankFilters rmOutliers = new RankFilters();
 			rmOutliers.rank(this.imp.getProcessor(), filterRadius, RankFilters.OUTLIERS, RankFilters.BRIGHT_OUTLIERS,
 					threshold);
 			rmOutliers.rank(this.imp.getProcessor(), filterRadius, RankFilters.OUTLIERS, RankFilters.DARK_OUTLIERS,
