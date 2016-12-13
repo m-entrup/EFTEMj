@@ -348,6 +348,8 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 		final String searchPath = IJ.getDirectory("image");
 		final LinkedList<String> foundCharacterisationResults = new LinkedList<>();
 		findDatasets(searchPath, foundCharacterisationResults, imp.getShortTitle());
+		final String otherResult = "other...";
+		foundCharacterisationResults.add(otherResult);
 		if (foundCharacterisationResults.size() > 1) {
 			/*
 			 * A dialog is presented to select one of the found files.
@@ -367,25 +369,24 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 			if (foundCharacterisationResults.size() > 1) {
 				pathResults = gd.getNextRadioButton();
 			}
-		} else {
-			/*
-			 * If only no file has been found, the parameters dialog is shown.
-			 */
-			if (foundCharacterisationResults.size() == 0) {
+		}
+		/*
+		 * If only no file has been found, the parameters dialog is shown.
+		 */
+		if (foundCharacterisationResults.size() == 0 | pathResults.equals(otherResult)) {
 
-				do {
-					if (showParameterDialog(command) == CANCEL) {
-						canceled();
-						return NO_CHANGES | DONE;
-					}
-				} while (!pathResults.contains(SR_EELS.FILENAME_RESULTS));
-			} else {
-				if (foundCharacterisationResults.size() == 1) {
-					pathResults = foundCharacterisationResults.getFirst();
-				} else {
+			do {
+				if (showParameterDialog(command) == CANCEL) {
 					canceled();
 					return NO_CHANGES | DONE;
 				}
+			} while (!pathResults.contains(SR_EELS.FILENAME_RESULTS));
+		} else {
+			if (foundCharacterisationResults.size() == 1) {
+				pathResults = foundCharacterisationResults.getFirst();
+			} else {
+				canceled();
+				return NO_CHANGES | DONE;
 			}
 		}
 		inputProcessor = new SR_EELS_FloatProcessor((FloatProcessor) imp.getProcessor(),
