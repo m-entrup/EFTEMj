@@ -27,6 +27,7 @@ import ij.gui.ProfilePlot;
 import ij.io.DirectoryChooser;
 import ij.measure.CurveFitter;
 import ij.measure.Measurements;
+import ij.plugin.Binner;
 import ij.plugin.Duplicator;
 import ij.plugin.PlugIn;
 import ij.plugin.filter.RankFilters;
@@ -219,8 +220,8 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 			final int stepSize = subImp.getHeight();
 			IJ.run(subImp, "Bin...", "x=1 y=" + subImp.getHeight() + " bin=Average");
 			final ImageStatistics statistic = ImageStatistics.getStatistics(subImp.getProcessor(),
-					Measurements.MEAN + Measurements.STD_DEV, null);
-			final double limit = statistic.mean; // statistic.stdDev
+					Measurements.MEDIAN + Measurements.MEAN, null);
+			final double limit = (statistic.median + statistic.mean) / 2; // statistic.stdDev
 			int left = 0;
 			int right = subImp.getWidth();
 			boolean searchLeft = true;
@@ -284,12 +285,44 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 				stack = new ImageStack(plot.getProcessor().getWidth(), plot.getProcessor().getHeight());
 			}
 			stack.addSlice(images.get(i), plot.getProcessor(), i);
+			int polyOrder;
+			switch (results.settings.polynomialOrder) {
+			case 1:
+				polyOrder = CurveFitter.STRAIGHT_LINE;
+				break;
+			case 2:
+				polyOrder = CurveFitter.POLY2;
+				break;
+			case 3:
+				polyOrder = CurveFitter.POLY3;
+				break;
+			case 4:
+				polyOrder = CurveFitter.POLY4;
+				break;
+			case 5:
+				polyOrder = CurveFitter.POLY5;
+				break;
+			case 6:
+				polyOrder = CurveFitter.POLY6;
+				break;
+			case 7:
+				polyOrder = CurveFitter.POLY7;
+				break;
+			case 8:
+				polyOrder = CurveFitter.POLY8;
+				break;
+
+			default:
+				polyOrder = CurveFitter.POLY3;
+				results.settings.polynomialOrder = 3;
+				break;
+			}
 			result.leftFit = new CurveFitter(xValues, leftValues);
-			result.leftFit.doFit(CurveFitter.POLY3);
+			result.leftFit.doFit(polyOrder);
 			result.centreFit = new CurveFitter(xValues, yValues);
-			result.centreFit.doFit(CurveFitter.POLY3);
+			result.centreFit.doFit(polyOrder);
 			result.rightFit = new CurveFitter(xValues, rightValues);
-			result.rightFit.doFit(CurveFitter.POLY3);
+			result.rightFit.doFit(polyOrder);
 		}
 		final ImagePlus imp = new ImagePlus("Characterisation plots", stack);
 		results.plots = imp;
@@ -404,6 +437,7 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 	private void resultsToJpeg(final File path) {
 		final ArrayList<String> images = results.settings.images;
 		path.mkdirs();
+		final Binner binner = new Binner();
 		for (int i = 0; i < images.size(); i++) {
 			final SR_EELS_CharacterisationResult result = results.subResults.get(images.get(i));
 			final ImagePlus jpegImp = result.imp.get(images.get(i));
@@ -412,12 +446,12 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 			IJ.run(jpegImp, "Enhance Contrast", "saturated=0.35");
 			jpegImp.getProcessor().flipHorizontal();
 			jpegImp.setProcessor(jpegImp.getProcessor().rotateLeft());
-			final ImagePlus jpeg = jpegImp.flatten();
+			ImagePlus jpeg = jpegImp.flatten();
 			// Make image darker for better visibility of the overlay.
 			jpeg.getProcessor().multiply(1 / 1.3);
 			int binJPEG = 1;
 			while (Math.max(jpeg.getWidth(), jpeg.getHeight()) > 1024) {
-				IJ.run(jpeg, "Bin...", "x=2 y=2 bin=Average");
+				jpeg = binner.shrink(jpeg, 2, 2, 1, Binner.AVERAGE);
 				binJPEG *= 2;
 			}
 			final ColorProcessor jP = (ColorProcessor) jpeg.getProcessor();
@@ -436,6 +470,9 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 				jP.getPixel(x, y, value);
 				value[0] = 255;
 				jP.putPixel(x, y, value);
+			}
+			if (results.settings.showJPEG) {
+				jpeg.show();
 			}
 			IJ.saveAs(jpeg, "Jpeg", new File(path, images.get(i).split("\\.")[0]).getAbsolutePath());
 		}

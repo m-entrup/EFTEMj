@@ -5,7 +5,7 @@
 @Float(label='Energy position', value='0.5') energyPosition
 @Integer(label='Polynominal order', value='3') polynomialOrder
 @Boolean(label='Use thresholding', value=True) useThresholding
-@String(label='Threshold method', choices={'Default','Huang','Li','Mean','Otsu','Yen'}) threshold
+@String(label='Threshold method', choices={'Li', 'Default', 'Huang', 'Intermodes', 'IsoData', 'Otsu'}) threshold
 '''
 
 import os

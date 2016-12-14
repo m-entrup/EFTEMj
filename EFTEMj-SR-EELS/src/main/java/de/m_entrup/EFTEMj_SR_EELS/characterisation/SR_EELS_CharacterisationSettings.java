@@ -15,6 +15,7 @@ public class SR_EELS_CharacterisationSettings {
 	public String threshold = "Li";
 	public File path = null;
 	public ArrayList<String> images;
+	public boolean showJPEG = false;
 
 	@Override
 	public String toString() {
