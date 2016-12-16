@@ -30,6 +30,7 @@ package de.m_entrup.EFTEMj_lib;
 
 import ij.IJ;
 import ij.ImageJ;
+import ij.ImagePlus;
 import ij.plugin.PlugIn;
 
 /**
@@ -77,11 +78,12 @@ public class EFTEMj_Debug {
 	}
 
 	/**
-	 * Use the constants defined in {@link EFTEMj_Debug} to set the correct level
-	 * of debugging.
+	 * Use the constants defined in {@link EFTEMj_Debug} to set the correct
+	 * level of debugging.
 	 *
-	 * @param debugLevel can be a value between 0 (no debugging) and 255 (full
-	 *          debugging).
+	 * @param debugLevel
+	 *            can be a value between 0 (no debugging) and 255 (full
+	 *            debugging).
 	 */
 	public static void setDebugLevel(final int debugLevel) {
 		EFTEMj_Debug.debugLevel = debugLevel;
@@ -90,7 +92,8 @@ public class EFTEMj_Debug {
 	/**
 	 * Start ImageJ.
 	 *
-	 * @param args Not used
+	 * @param args
+	 *            Not used
 	 */
 	public static void main(final String[] args) {
 		debug(null);
@@ -99,18 +102,23 @@ public class EFTEMj_Debug {
 	/**
 	 * Start {@link ImageJ} and run a {@link PlugIn}.
 	 *
-	 * @param caller is a class that contains a run method.
+	 * @param caller
+	 *            is a class that contains a run method.
 	 */
 	public static void debug(final Class<?> caller) {
+		EFTEMj_Debug.debugLevel = DEBUG_FULL;
 		EFTEMj_Debug.debug(caller, debugLevel);
 	}
 
 	/**
 	 * Start {@link ImageJ} and run a {@link PlugIn}.
 	 *
-	 * @param caller is a class that contains a run method.
-	 * @param debugLevel defines the used level of debugging.
+	 * @param caller
+	 *            is a class that contains a run method.
+	 * @param debugLevel
+	 *            defines the used level of debugging.
 	 */
+	@SuppressWarnings("hiding")
 	public static void debug(final Class<?> caller, final int debugLevel) {
 		EFTEMj_Debug.debugLevel = debugLevel;
 		// start ImageJ
@@ -120,6 +128,26 @@ public class EFTEMj_Debug {
 		if (caller != null) {
 			// run the plugin
 			IJ.runPlugIn(caller.getName(), "");
+		}
+	}
+
+	/**
+	 * @param text
+	 *            is printed according to the set log level.
+	 */
+	public static void log(final String text) {
+		if (EFTEMj_Debug.debugLevel >= DEBUG_IN_APP_LOGGING) {
+			IJ.log(text);
+		}
+	}
+
+	/**
+	 * @param imp
+	 *            is shown if the log level is high enough.s
+	 */
+	public static void show(final ImagePlus imp) {
+		if (EFTEMj_Debug.debugLevel >= DEBUG_SHOW_IMAGES) {
+			imp.show();
 		}
 	}
 }
