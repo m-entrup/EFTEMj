@@ -27,8 +27,10 @@ import ij.gui.ProfilePlot;
 import ij.io.DirectoryChooser;
 import ij.measure.CurveFitter;
 import ij.measure.Measurements;
+import ij.plugin.Binner;
 import ij.plugin.Duplicator;
 import ij.plugin.PlugIn;
+import ij.plugin.filter.RankFilters;
 import ij.process.ColorProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageStatistics;
@@ -145,12 +147,15 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 			result.height = imp.getHeight();
 			result.binX = CameraSetup.getFullHeight() / result.width;
 			result.binY = CameraSetup.getFullWidth() / result.height;
-			int yPos = settings.energyBorderLow;
+			int yPos = (int) (settings.energyBorderLow / result.binY);
+			if (settings.path.toString().contains("ZLP")) {
+				yPos += image.height / 2;
+			}
 			int xOffset = 0;
 			int roiWidth = image.width;
 			// mean = new Array();
-			while (yPos < image.height - settings.energyBorderHigh) {
-				imp.setRoi(new Rectangle(xOffset, yPos, roiWidth, settings.stepSize));
+			while (yPos < image.height - (settings.energyBorderHigh / result.binY)) {
+				imp.setRoi(new Rectangle(xOffset, yPos, roiWidth, (int) (settings.stepSize / result.binY)));
 				SR_EELS_SubImageObject subImage = new SR_EELS_SubImageObject(new Duplicator().run(imp));
 				final ProfilePlot profile = new ProfilePlot(subImage.imp);
 				final double[] xValues = new double[profile.getProfile().length];
@@ -164,7 +169,7 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 				final double gaussSigmaWeighted = settings.sigmaWeight * gaussSigma / Math.pow(fit.getRSquared(), 2);
 				xOffset = (int) Math.max(xOffset + Math.round(gaussCentre - gaussSigmaWeighted), 0);
 				roiWidth = (int) Math.round(2 * gaussSigmaWeighted);
-				imp.setRoi(new Rectangle(xOffset, yPos, roiWidth, settings.stepSize));
+				imp.setRoi(new Rectangle(xOffset, yPos, roiWidth, (int) (settings.stepSize / result.binY)));
 				subImage = new SR_EELS_SubImageObject(new Duplicator().run(imp));
 				subImage.xOffset = xOffset;
 				subImage.yOffset = yPos;
@@ -215,8 +220,8 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 			final int stepSize = subImp.getHeight();
 			IJ.run(subImp, "Bin...", "x=1 y=" + subImp.getHeight() + " bin=Average");
 			final ImageStatistics statistic = ImageStatistics.getStatistics(subImp.getProcessor(),
-					Measurements.MEAN + Measurements.STD_DEV, null);
-			final double limit = statistic.mean; // statistic.stdDev
+					Measurements.MEDIAN + Measurements.MEAN, null);
+			final double limit = (statistic.median + statistic.mean) / 2; // statistic.stdDev
 			int left = 0;
 			int right = subImp.getWidth();
 			boolean searchLeft = true;
@@ -280,12 +285,44 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 				stack = new ImageStack(plot.getProcessor().getWidth(), plot.getProcessor().getHeight());
 			}
 			stack.addSlice(images.get(i), plot.getProcessor(), i);
+			int polyOrder;
+			switch (results.settings.polynomialOrder) {
+			case 1:
+				polyOrder = CurveFitter.STRAIGHT_LINE;
+				break;
+			case 2:
+				polyOrder = CurveFitter.POLY2;
+				break;
+			case 3:
+				polyOrder = CurveFitter.POLY3;
+				break;
+			case 4:
+				polyOrder = CurveFitter.POLY4;
+				break;
+			case 5:
+				polyOrder = CurveFitter.POLY5;
+				break;
+			case 6:
+				polyOrder = CurveFitter.POLY6;
+				break;
+			case 7:
+				polyOrder = CurveFitter.POLY7;
+				break;
+			case 8:
+				polyOrder = CurveFitter.POLY8;
+				break;
+
+			default:
+				polyOrder = CurveFitter.POLY3;
+				results.settings.polynomialOrder = 3;
+				break;
+			}
 			result.leftFit = new CurveFitter(xValues, leftValues);
-			result.leftFit.doFit(CurveFitter.POLY3);
+			result.leftFit.doFit(polyOrder);
 			result.centreFit = new CurveFitter(xValues, yValues);
-			result.centreFit.doFit(CurveFitter.POLY3);
+			result.centreFit.doFit(polyOrder);
 			result.rightFit = new CurveFitter(xValues, rightValues);
-			result.rightFit.doFit(CurveFitter.POLY3);
+			result.rightFit.doFit(polyOrder);
 		}
 		final ImagePlus imp = new ImagePlus("Characterisation plots", stack);
 		results.plots = imp;
@@ -400,19 +437,21 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 	private void resultsToJpeg(final File path) {
 		final ArrayList<String> images = results.settings.images;
 		path.mkdirs();
+		final Binner binner = new Binner();
 		for (int i = 0; i < images.size(); i++) {
 			final SR_EELS_CharacterisationResult result = results.subResults.get(images.get(i));
 			final ImagePlus jpegImp = result.imp.get(images.get(i));
-			IJ.run(jpegImp, "Select None", "");
-			IJ.run(jpegImp, "Log", "");
+			jpegImp.killRoi();
+			jpegImp.getProcessor().log();
 			IJ.run(jpegImp, "Enhance Contrast", "saturated=0.35");
-			IJ.run(jpegImp, "Flip Horizontally", "");
-			IJ.run(jpegImp, "Rotate 90 Degrees Left", "");
-			final ImagePlus jpeg = jpegImp.flatten();
-			IJ.run(jpeg, "Divide...", "value=1.3");
+			jpegImp.getProcessor().flipHorizontal();
+			jpegImp.setProcessor(jpegImp.getProcessor().rotateLeft());
+			ImagePlus jpeg = jpegImp.flatten();
+			// Make image darker for better visibility of the overlay.
+			jpeg.getProcessor().multiply(1 / 1.3);
 			int binJPEG = 1;
 			while (Math.max(jpeg.getWidth(), jpeg.getHeight()) > 1024) {
-				IJ.run(jpeg, "Bin...", "x=2 y=2 bin=Average");
+				jpeg = binner.shrink(jpeg, 2, 2, 1, Binner.AVERAGE);
 				binJPEG *= 2;
 			}
 			final ColorProcessor jP = (ColorProcessor) jpeg.getProcessor();
@@ -431,6 +470,9 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 				jP.getPixel(x, y, value);
 				value[0] = 255;
 				jP.putPixel(x, y, value);
+			}
+			if (results.settings.showJPEG) {
+				jpeg.show();
 			}
 			IJ.saveAs(jpeg, "Jpeg", new File(path, images.get(i).split("\\.")[0]).getAbsolutePath());
 		}
@@ -465,7 +507,6 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 		int height;
 
 		public SR_EELS_ImageObject(final String imageName, final SR_EELS_CharacterisationSettings settings) {
-			final double filterRadius = settings.filterRadius;
 			this.path = new File(settings.path, imageName).getAbsolutePath();
 			this.imp = IJ.openImage(this.path);
 			/*
@@ -477,21 +518,24 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 			 * unrotated image.
 			 */
 			if (doRotateLeft) {
-				IJ.run(this.imp, "Flip Horizontally", "");
+				imp.getProcessor().flipHorizontal();
 			} else if (doRotateRight) {
-				IJ.run(imp, "Flip Vertically", "");
+				imp.getProcessor().flipVertical();
 			} else {
-				IJ.run(this.imp, "Rotate 90 Degrees Right", "");
-				IJ.run(this.imp, "Flip Horizontally", "");
+				imp.setProcessor(imp.getProcessor().rotateRight());
+				imp.getProcessor().flipHorizontal();
 			}
 			this.width = this.imp.getWidth();
 			this.height = this.imp.getHeight();
-			final double threshold = 2 * this.imp.getStatistics().stdDev;
-			IJ.run(this.imp, "Remove Outliers...",
-					"radius=" + filterRadius + " threshold=" + threshold + " which=Bright");
-			IJ.run(this.imp, "Remove Outliers...",
-					"radius=" + filterRadius + " threshold=" + threshold + " which=Dark");
-			IJ.run(this.imp, "Median...", "radius=" + filterRadius);
+			final int bin = CameraSetup.getFullWidth() / width;
+			final double filterRadius = settings.filterRadius / bin;
+			final float threshold = (float) (2 * this.imp.getStatistics().stdDev);
+			final RankFilters rmOutliers = new RankFilters();
+			rmOutliers.rank(this.imp.getProcessor(), filterRadius, RankFilters.OUTLIERS, RankFilters.BRIGHT_OUTLIERS,
+					threshold);
+			rmOutliers.rank(this.imp.getProcessor(), filterRadius, RankFilters.OUTLIERS, RankFilters.DARK_OUTLIERS,
+					threshold);
+			rmOutliers.rank(this.imp.getProcessor(), filterRadius, RankFilters.MEDIAN);
 		}
 	}
 
