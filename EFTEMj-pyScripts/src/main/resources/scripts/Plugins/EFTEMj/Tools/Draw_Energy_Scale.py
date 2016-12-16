@@ -3,6 +3,13 @@
 @Integer(label="Minimal width", value="1024") width_min
 @Integer(label="Font size", value="24") font_size
 @Integer(label="Tick count", value="5") tick_count
+
+file:       Draw_Energy_Scale.py
+author:     Michael Entrup b. Epping (michael.entrup@wwu.de)
+version:    20161216
+info:       A script to add an horizontal energy scale to a given image.
+            The image gets extended by the hight of the scale.
+            The scale is an overlay.
 '''
 
 from __future__ import division
@@ -16,8 +23,9 @@ from ij.gui import Overlay, Line, TextRoi
 from ij.measure import Calibration
 
 font = Font("SansSerif", Font.PLAIN, font_size)
-font_offset = round(font_size / 10)
-extend = 2 * font_size + 2 * font_offset
+font_offset = round(font_size / 5)
+extend_full = 3 * font_size + 3 * font_offset
+extend_label = 1 * font_size + 1 * font_offset
 dispersion = 1
 offset = 0
 
@@ -41,7 +49,7 @@ def extend_image(image):
     IJ.run(image, "Select All", "")
     IJ.run(image, "Copy", "")
     width = image.getWidth()
-    height = int(image.getHeight() + extend)
+    height = int(image.getHeight() + extend_full)
     image_new = IJ.createImage(imp.getTitle(), "32-bit black", width, height, 1)
     image_new.setRoi(0, 0, image.getWidth(), image.getHeight())
     IJ.run(image_new, "Paste", "")
@@ -58,19 +66,32 @@ def draw_scale(image, ticks):
     overlay = Overlay()
     image.setOverlay(overlay)
     TextRoi.setGlobalJustification(TextRoi.CENTER)
-    offset = image.getHeight() - extend
+    offset = image.getHeight() - extend_full
+    tick_offset = offset + font_size + font_offset
     for tick in ticks:
         tick_pos = cal.getRawX(tick)
         line = Line(tick_pos, offset, tick_pos, offset + font_size)
         line.setWidth(font_size // 8)
         line.setStrokeColor(Color(1.00, 1.00, 1.00))
         overlay.add(line)
-        text = TextRoi(tick_pos, offset + font_size, str(tick), font)
+        text = TextRoi(tick_pos, tick_offset, str(tick), font)
         text_width = text.getFloatWidth()
         text_y = text.getYBase()
         text.setLocation(tick_pos - text_width/2, text_y)
         text.setStrokeColor(Color(1.00, 1.00, 1.00))
         overlay.add(text)
+
+def draw_label(image):
+    overlay = image.getOverlay()
+    TextRoi.setGlobalJustification(TextRoi.CENTER)
+    offset = image.getHeight() - extend_label
+    label_pos = image.getWidth() / 2
+    text = TextRoi(label_pos, offset, 'Energy loss [eV]', font)
+    text_width = text.getFloatWidth()
+    text_y = text.getYBase()
+    text.setLocation(label_pos - text_width/2, text_y)
+    text.setStrokeColor(Color(1.00, 1.00, 1.00))
+    overlay.add(text)
 
 def create_ticks(image):
     cal = image.getCalibration()
@@ -115,6 +136,7 @@ def main():
     imp_extended = extend_image(imp_scaled)
     ticks = create_ticks(imp_extended)
     draw_scale(imp_extended, ticks)
+    draw_label(imp_extended)
     imp_extended.show()
 
 
