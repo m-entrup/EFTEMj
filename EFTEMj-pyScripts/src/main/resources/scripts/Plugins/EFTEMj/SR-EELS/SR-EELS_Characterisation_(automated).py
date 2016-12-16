@@ -1,11 +1,18 @@
 '''
-@Integer(label='Step size', value='64') stepSize
-@Integer(label='Lower energy border', value='128') energyBorderLow
-@Integer(label='Upper energy border', value='128') energyBorderHigh
+@Integer(label='Step size', value='32') stepSize
+@Integer(label='Lower energy border', value='64') energyBorderLow
+@Integer(label='Upper energy border', value='64') energyBorderHigh
 @Float(label='Energy position', value='0.5') energyPosition
 @Integer(label='Polynominal order', value='3') polynomialOrder
 @Boolean(label='Use thresholding', value=True) useThresholding
-@String(label='Threshold method', choices={'Li', 'Default', 'Huang', 'Intermodes', 'IsoData', 'Otsu'}) threshold
+@String(label='Threshold method', choices={'Li', 'Default', 'Huang', 'Intermodes', 'IsoData', 'Otsu'}, value='Li') threshold
+
+file:       SR-EELS_Characterisation_(automated).py
+author:     Michael Entrup b. Epping (michael.entrup@wwu.de)
+version:    20161216
+info:       A script that automaticaly runs a characterisation on SR-EELS images.
+            It detects all data set were no result for the selected settings are available
+            and runs the the characterisation to complete the set of results.
 '''
 
 import os
@@ -41,8 +48,8 @@ class AutomatedCharacterisation:
             #print root
             if re.search('SM\d+(\.\d+)?[/\\\\]-?\d+(\.\d+)?$', root):
                 for directory in dirs:
-                    self.datasets.append(os.path.join(root, directory))      
-    
+                    self.datasets.append(os.path.join(root, directory))
+
 
 def main():
     automated_characterisation = AutomatedCharacterisation()
@@ -61,7 +68,7 @@ def main():
     IJ.log('Processing %d datasets.' % (dataset_count,))
     count = 0
     for dataset in automated_characterisation.datasets:
-    	count += 1
+        count += 1
         if not os.path.exists(os.path.join(dataset, settings.toString())):
             IJ.log('%d/%d Starting to process "%s".' % (count, dataset_count, dataset))
             images = ArrayList()
@@ -73,7 +80,7 @@ def main():
             try:
                 characterisation = SR_EELS_CharacterisationPlugin()
                 characterisation.performCharacterisation(settings)
-                results_path = File(settings.path, settings.toString())                
+                results_path = File(settings.path, settings.toString())
                 characterisation.saveResults(results_path, types)
                 finished += 1
             except RuntimeException:

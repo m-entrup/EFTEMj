@@ -1,7 +1,7 @@
 '''
-@Integer(label='Step size', value='64') stepSize
-@Integer(label='Lower energy border', value='128') energyBorderLow
-@Integer(label='Upper energy border', value='128') energyBorderHigh
+@Integer(label='Step size', value='32') stepSize
+@Integer(label='Lower energy border', value='64') energyBorderLow
+@Integer(label='Upper energy border', value='64') energyBorderHigh
 @Float(label='Energy position', value='0.5') energyPosition
 @Integer(label='Polynominal order', value='3') polynomialOrder
 @Boolean(label='Use thresholding', value=True) useThresholding
@@ -10,10 +10,10 @@
 @Boolean(label='Use custom output directory', value='False') use_custom_output
 @File(label='Select output directory', style='directory', description='An directory to safe the results of the SR-EELS characterisation.') out_dir
 @String(label='Rotate images', choices = {'left', 'right', 'none'}, value='none', description='Rotation is needed if the energy dispersive axis is not the x axis.') do_rotate
-@Boolean(label='Create JPEG', description='The analysed images are saved as JPEGs with the detected borders marked.') create_jpeg
-@Boolean(label='Create plots', description='Plots are created that sumarize the characterisation results.') create_plots
-@Boolean(label='Create TIFF', description='Save the results as a tiff dataset. These files are used by the SR-EEL correction.') create_tiff
-@Boolean(label='Create csv', description='Save the results as a csv dataset.') create_csv
+@Boolean(label='Create JPEG', value=True, description='The analysed images are saved as JPEGs with the detected borders marked.') create_jpeg
+@Boolean(label='Create plots, value=True', description='Plots are created that sumarize the characterisation results.') create_plots
+@Boolean(label='Create TIFF', value=True, description='Save the results as a tiff dataset. These files are used by the SR-EEL correction.') create_tiff
+@Boolean(label='Create csv', value=True, description='Save the results as a csv dataset.') create_csv
 
 file:       SR-EELS_Characterisation_(advanced).py
 author:     Michael Entrup b. Epping (michael.entrup@wwu.de)

@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class SR_EELS_CharacterisationSettings {
-	public int stepSize = 64;
+	public int stepSize = 32;
 	public double filterRadius = Math.sqrt(stepSize);
 	public int energyBorderLow = 2 * stepSize;
 	public int energyBorderHigh = 2 * stepSize;
