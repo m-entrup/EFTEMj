@@ -1,15 +1,17 @@
-# @ImagePlus imp
-
 '''
 file:       Gatan_Renamer.py
 author:     Michael Entrup b. Epping (michael.entrup@wwu.de)
-version:    20161116
+version:    20161216
 info:       A script to rename dm3 files using metadata.
 '''
 
 from __future__ import division
+
 from java.lang import Double
+from java.lang import NullPointerException
 from java.text import SimpleDateFormat
+
+from ij import IJ
 from ij.gui import GenericDialog
 from de.m_entrup.EFTEMj_lib.tools import GatanMetadataExtractor
 
@@ -59,12 +61,12 @@ class ImageProperties:
             mag /= 1000
             self.prop_dict['mag'] = '%.3g%s' % (mag, self.mag_unit)
         else:
-        	self.prop_dict['mag'] = '%.0f%s' % (mag, self.mag_unit)
+            self.prop_dict['mag'] = '%.0f%s' % (mag, self.mag_unit)
         self.prop_dict['name'] = self.name
         return self.prop_dict
 
 
-def main():
+def main(imp):
     properties = ImageProperties(imp)
     # Create a GenericDialog to configure renaming:
     gd = GenericDialog('Gatan Reamer')
@@ -98,4 +100,5 @@ def main():
         imp.setTitle(format_str % properties.to_dict())
 
 if __name__ == "__main__":
-    main()
+    imp = IJ.getImage()
+    main(imp)

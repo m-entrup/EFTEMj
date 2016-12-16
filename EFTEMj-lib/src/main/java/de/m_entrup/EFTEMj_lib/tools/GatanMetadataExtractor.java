@@ -13,6 +13,10 @@ import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
 
+/**
+ * A class that is used to extract information from the metadata of Gatan image
+ * files.
+ */
 public class GatanMetadataExtractor {
 
 	private final HashMap<String, String> metadata = new HashMap<>();
