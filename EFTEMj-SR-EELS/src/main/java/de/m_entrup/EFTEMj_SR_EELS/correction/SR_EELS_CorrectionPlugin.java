@@ -371,9 +371,11 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 			}
 		}
 		/*
-		 * If only no file has been found, the parameters dialog is shown.
+		 * If no file has been found or "other..." was selected, the parameters
+		 * dialog is shown. We have to check for the size to be 1 as there is
+		 * the entry "other..." in the list.
 		 */
-		if (foundCharacterisationResults.size() == 0 | pathResults.equals(otherResult)) {
+		if (foundCharacterisationResults.size() <= 1 | pathResults.equals(otherResult)) {
 
 			do {
 				if (showParameterDialog(command) == CANCEL) {
@@ -410,7 +412,13 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 	private void findDatasets(final String searchPath, final LinkedList<String> found, final String filename) {
 		final Pattern patternDate = Pattern.compile("(\\d{8})");
 		final Matcher matcher = patternDate.matcher(filename);
-		matcher.find();
+		if (!matcher.find()) {
+			/*
+			 * Cancel if the file name contains no date to search for a related
+			 * data set.
+			 */
+			return;
+		}
 		final String date = matcher.group(1);
 		final String[] entries = new File(searchPath).list();
 		for (final String entrie : entries) {
@@ -504,7 +512,7 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 		 * Check if the test image is available. Otherwise prompt a message with
 		 * the download link.
 		 */
-		final File testImage = new File(baseFolder + "20140106 SM125 -20%/20140106_SR-EELS_TestImage_small.tif");
+		final File testImage = new File(baseFolder + "20140106 SM125-20%/20140106_SR-EELS_TestImage_small.tif");
 		if (!testImage.exists()) {
 			final String url = "http://eftemj.entrup.com.de/SR-EELS_TestImage.zip";
 			/*
@@ -533,7 +541,7 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 		/*
 		 * open the test image
 		 */
-		final ImagePlus image = IJ.openImage(baseFolder + "20140106 SM125 -20%/20140106_SR-EELS_TestImage_small.tif");
+		final ImagePlus image = IJ.openImage(baseFolder + "20140106 SM125-20%/20140106_SR-EELS_TestImage_small.tif");
 		image.show();
 
 		/*
@@ -566,6 +574,10 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 
 		private final int slices;
 
+		/**
+		 * @param readWeights
+		 *            is not yet used.
+		 */
 		public DataImporter(final String resultsFilePath, final boolean readWeights) {
 			super();
 			final ImageStack file = IJ.openImage(resultsFilePath).getImageStack();
