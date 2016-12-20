@@ -28,9 +28,9 @@ def select_images():
         if imp.getImageStackSize() == 2:
             dup = Duplicator()
             img1 = dup.run(imp, 1, 1)
-            img1.setTitle("Slice1")
+            img1.setTitle('Slice1')
             img2 = dup.run(imp, 2, 2)
-            img2.setTitle("Slice2")
+            img2.setTitle('Slice2')
         elif WindowManager.getImageCount() == 2:
             img1, img2 = [WindowManager.getImage(id) for id in WindowManager.getIDList()]
         elif WindowManager.getImageCount() > 2:
@@ -43,10 +43,10 @@ def select_images():
             img1 = WindowManager.getImage(image_ids[sel1])
             img2 = WindowManager.getImage(image_ids[sel2])
         else:
-            IJ.error("You need two images to run the script.")
+            IJ.error('You need two images to run the script.')
             return(None, None)
     else:
-        IJ.error("You need two images to run the script.")
+        IJ.error('You need two images to run the script.')
         return(None, None)
     return (img1, img2)
 
@@ -62,7 +62,7 @@ def correct_drift_gui():
 
 
 def run_script():
-    '''Function to be run when this file is used as a script'''
+    """Function to be run when this file is used as a script"""
     correct_drift_gui()
 
 

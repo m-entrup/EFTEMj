@@ -1,17 +1,17 @@
-'''
-@Integer(label='Step size', value='32') stepSize
-@Integer(label='Lower energy border', value='64') energyBorderLow
-@Integer(label='Upper energy border', value='64') energyBorderHigh
-@Float(label='Energy position', value='0.5') energyPosition
-@Integer(label='Polynominal order', value='3') polynomialOrder
+"""
+@Integer(label='Step size', value=32) stepSize
+@Integer(label='Lower energy border', value=64) energyBorderLow
+@Integer(label='Upper energy border', value=64) energyBorderHigh
+@Float(label='Energy position', value=0.5, min=0, max=1) energyPosition
+@Integer(label='Polynominal order', value=3, min=1, max=8, step=1, style='slider') polynomialOrder
 @Boolean(label='Use thresholding', value=True) useThresholding
 @String(label='Threshold method', choices={'Li', 'Default', 'Huang', 'Intermodes', 'IsoData', 'Otsu'}, value='Li') threshold
 @File(label='Select input directory', style='directory', description='An directory containing images for the SR-EELS characterisation.') in_dir
-@Boolean(label='Use custom output directory', value='False') use_custom_output
+@Boolean(label='Use custom output directory', value=False) use_custom_output
 @File(label='Select output directory', style='directory', description='An directory to safe the results of the SR-EELS characterisation.') out_dir
 @String(label='Rotate images', choices = {'left', 'right', 'none'}, value='none', description='Rotation is needed if the energy dispersive axis is not the x axis.') do_rotate
 @Boolean(label='Create JPEG', value=True, description='The analysed images are saved as JPEGs with the detected borders marked.') create_jpeg
-@Boolean(label='Create plots, value=True', description='Plots are created that sumarize the characterisation results.') create_plots
+@Boolean(label='Create plots', value=True, description='Plots are created that sumarize the characterisation results.') create_plots
 @Boolean(label='Create TIFF', value=True, description='Save the results as a tiff dataset. These files are used by the SR-EEL correction.') create_tiff
 @Boolean(label='Create csv', value=True, description='Save the results as a csv dataset.') create_csv
 
@@ -20,7 +20,7 @@ author:     Michael Entrup b. Epping (michael.entrup@wwu.de)
 version:    20161216
 info:       A script that runs a characterisation on SR-EELS images.
             It is designed to extend the functionality of the SR_EELS_CharacterisationPlugin.
-'''
+"""
 import math
 
 from java.io import File

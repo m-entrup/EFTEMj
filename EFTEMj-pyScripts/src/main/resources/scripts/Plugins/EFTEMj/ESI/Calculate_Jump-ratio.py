@@ -1,11 +1,11 @@
-'''
+"""
 file:       Calculate_Jump-ratio.py
 author:     Michael Entrup b. Epping (michael.entrup@wwu.de)
 version:    20161017
 info:       A script that calculates the Jump-Ratio of two images.
             The second image is devided by the first one.
             A drift correction is performed. The first image is shiftet towards to the second one.
-'''
+"""
 
 from __future__ import with_statement, division
 
@@ -21,7 +21,7 @@ from ij.process import ImageStatistics as Stats
 
 
 def get_setup():
-    ''' Returns the drift correction mode and two image.'''
+    """ Returns the drift correction mode and two image."""
     options = drift.get_options()
     modes = drift.get_modes()
     dialog = GenericDialog('Jump-ratio setup')
@@ -45,7 +45,7 @@ def get_setup():
 
 
 def run_script():
-    '''Function to be run when this file is used as a script'''
+    """Function to be run when this file is used as a script"""
     selected_mode, img1_in, img2_in = get_setup()
     if not selected_mode:
         return

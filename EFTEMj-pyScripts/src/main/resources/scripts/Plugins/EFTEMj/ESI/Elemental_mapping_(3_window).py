@@ -1,11 +1,11 @@
-'''
+"""
 file:       Elemental_mapping_(3-window).py
 author:     Michael Entrup b. Epping (michael.entrup@wwu.de)
 version:    20161017
 info:       A script that calculates the elemental map of three images.
             The code is based on an article of A. Berger and H. Kohl.
             Optik 92 (1993), p. 175 - 193
-'''
+"""
 
 from __future__ import with_statement, division
 
@@ -20,9 +20,9 @@ from ij.gui import GenericDialog
 
 
 def get_setup():
-    ''' Returns the drift correction mode and three image.
+    """ Returns the drift correction mode and three image.
     The order of return values is drift detection mode, pre-edge 1, pre-edge 2, post-edge.
-    '''
+    """
     options = drift.get_options()
     modes = drift.get_modes()
     dialog = GenericDialog('3-window-method setup')
@@ -48,7 +48,7 @@ def get_setup():
 
 
 def run_script():
-    '''Function to be run when this file is used as a script'''
+    """Function to be run when this file is used as a script"""
     selected_mode, pre1_in, pre2_in, post_in = get_setup()
     if not selected_mode:
         return
@@ -63,11 +63,11 @@ def run_script():
         show_imp(imp)
 
 def show_imp(imp):
-    '''Displays the given ImagePlus.
+    """Displays the given ImagePlus.
 
     The image is marked as modified.
     The contrast gets enhanced.
-    '''
+    """
     imp.changes = True
     IJ.run(imp, 'Enhance Contrast', 'saturated=0.35')
     imp.show()

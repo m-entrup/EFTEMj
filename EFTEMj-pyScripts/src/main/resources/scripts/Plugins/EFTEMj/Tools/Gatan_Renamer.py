@@ -1,9 +1,9 @@
-'''
+"""
 file:       Gatan_Renamer.py
 author:     Michael Entrup b. Epping (michael.entrup@wwu.de)
 version:    20161216
 info:       A script to rename dm3 files using metadata.
-'''
+"""
 
 from __future__ import division
 
@@ -23,13 +23,13 @@ field_width_long = 40
 
 
 class ImageProperties:
-    '''A class that uses de.m_entrup.EFTEMj_lib.tools.GatanMetadataExtractor.
+    """A class that uses de.m_entrup.EFTEMj_lib.tools.GatanMetadataExtractor.
     Metadata from a dm3 file is gathered to be used for renaming.
-    '''
+    """
 
     def __init__(self, imp):
-        '''Get the metadata from the given dm3 image.
-        '''
+        """Get the metadata from the given dm3 image.
+        """
         extractor = GatanMetadataExtractor(imp)
         self.exposure = extractor.getExposure()
         self.magnification = extractor.getMagnification()
@@ -46,13 +46,13 @@ class ImageProperties:
         self.prop_dict = {}
 
     def calc_mag(self, mag):
-        '''Use the magnification factor to calculate the actual magnification.
-        '''
+        """Use the magnification factor to calculate the actual magnification.
+        """
         self.magnification = self.mag_factor * mag
 
     def to_dict(self):
-        '''Create a dictionary from the metadata to be used for string formating.
-        '''
+        """Create a dictionary from the metadata to be used for string formating.
+        """
         self.prop_dict['exp'] = '%gs' % (self.exposure,)
         self.prop_dict['dE'] = '%geV' % (self.energyloss,)
         self.prop_dict['date'] = self.date_string
@@ -99,6 +99,6 @@ def main(imp):
         # Chenge the title:
         imp.setTitle(format_str % properties.to_dict())
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     imp = IJ.getImage()
     main(imp)

@@ -1,9 +1,9 @@
-'''
-@Integer(label='Step size', value='32') stepSize
-@Integer(label='Lower energy border', value='64') energyBorderLow
-@Integer(label='Upper energy border', value='64') energyBorderHigh
-@Float(label='Energy position', value='0.5') energyPosition
-@Integer(label='Polynominal order', value='3') polynomialOrder
+"""
+@Integer(label='Step size', value=32) stepSize
+@Integer(label='Lower energy border', value=64) energyBorderLow
+@Integer(label='Upper energy border', value=64) energyBorderHigh
+@Float(label='Energy position', value=0.5, min=0, max=1) energyPosition
+@Integer(label='Polynominal order', value=3, min=1, max=8, step=1, style='slider') polynomialOrder
 @Boolean(label='Use thresholding', value=True) useThresholding
 @String(label='Threshold method', choices={'Li', 'Default', 'Huang', 'Intermodes', 'IsoData', 'Otsu'}, value='Li') threshold
 
@@ -13,7 +13,7 @@ version:    20161216
 info:       A script that automaticaly runs a characterisation on SR-EELS images.
             It detects all data set were no result for the selected settings are available
             and runs the the characterisation to complete the set of results.
-'''
+"""
 
 import os
 import re

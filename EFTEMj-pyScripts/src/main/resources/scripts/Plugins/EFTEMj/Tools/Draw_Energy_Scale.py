@@ -1,8 +1,8 @@
-'''
+"""
 @ImagePlus imp
-@Integer(label="Minimal width", value="1024") width_min
-@Integer(label="Font size", value="24") font_size
-@Integer(label="Tick count", value="5") tick_count
+@Integer(label='Minimal width', value=1024) width_min
+@Integer(label='Font size', value=24) font_size
+@Integer(label='Tick count', value=5) tick_count
 
 file:       Draw_Energy_Scale.py
 author:     Michael Entrup b. Epping (michael.entrup@wwu.de)
@@ -10,7 +10,7 @@ version:    20161216
 info:       A script to add an horizontal energy scale to a given image.
             The image gets extended by the hight of the scale.
             The scale is an overlay.
-'''
+"""
 
 from __future__ import division
 
@@ -22,7 +22,7 @@ from ij import IJ
 from ij.gui import Overlay, Line, TextRoi
 from ij.measure import Calibration
 
-font = Font("SansSerif", Font.PLAIN, font_size)
+font = Font('SansSerif', Font.PLAIN, font_size)
 font_offset = round(font_size / 5)
 extend_full = 3 * font_size + 3 * font_offset
 extend_label = 1 * font_size + 1 * font_offset
@@ -38,23 +38,23 @@ def get_scaled_image():
         bin *= 2
     if bin > 1:
         bin /= 2
-    IJ.run(imp, "Select None", "")
+    IJ.run(imp, 'Select None', '')
     imp_new = imp.crop()
-    IJ.run(imp_new, "Bin...", "x=%d y=%d bin=Average" % (bin, bin))
+    IJ.run(imp_new, 'Bin...', 'x=%d y=%d bin=Average' % (bin, bin))
     dispersion *= bin
     offset /= bin
     return imp_new
 
 def extend_image(image):
-    IJ.run(image, "Select All", "")
-    IJ.run(image, "Copy", "")
+    IJ.run(image, 'Select All', '')
+    IJ.run(image, 'Copy', '')
     width = image.getWidth()
     height = int(image.getHeight() + extend_full)
-    image_new = IJ.createImage(imp.getTitle(), "32-bit black", width, height, 1)
+    image_new = IJ.createImage(imp.getTitle(), '32-bit black', width, height, 1)
     image_new.setRoi(0, 0, image.getWidth(), image.getHeight())
-    IJ.run(image_new, "Paste", "")
-    IJ.run(image_new, "Enhance Contrast", "saturated=0.35")
-    IJ.run(image_new, "Select None", "")
+    IJ.run(image_new, 'Paste', '')
+    IJ.run(image_new, 'Enhance Contrast', 'saturated=0.35')
+    IJ.run(image_new, 'Select None', '')
     cal = Calibration(image)
     cal.pixelWidth = dispersion
     cal.xOrigin = offset
@@ -140,5 +140,5 @@ def main():
     imp_extended.show()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
