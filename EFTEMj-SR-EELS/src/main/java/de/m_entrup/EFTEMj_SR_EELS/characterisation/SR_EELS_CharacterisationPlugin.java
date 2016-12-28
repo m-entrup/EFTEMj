@@ -33,6 +33,7 @@ import ij.plugin.PlugIn;
 import ij.plugin.filter.RankFilters;
 import ij.process.ColorProcessor;
 import ij.process.FloatProcessor;
+import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 
 public class SR_EELS_CharacterisationPlugin implements PlugIn {
@@ -195,6 +196,13 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 		plotResults();
 	}
 
+	private static double calcLimit(ImageProcessor ip) {
+		final ImageStatistics statistic = ImageStatistics.getStatistics(ip, Measurements.MEDIAN + Measurements.MEAN,
+				null);
+		final double limit = (statistic.median + statistic.mean) / 2;
+		return limit;
+	}
+
 	private SR_EELS_CharacterisationSubResults runCharacterisationSub(final SR_EELS_SubImageObject subImage,
 			final boolean useThresholding) {
 		final ImagePlus subImp = subImage.imp;
@@ -233,9 +241,7 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 		} else {
 			final int stepSize = subImp.getHeight();
 			IJ.run(subImp, "Bin...", "x=1 y=" + subImp.getHeight() + " bin=Average");
-			final ImageStatistics statistic = ImageStatistics.getStatistics(subImp.getProcessor(),
-					Measurements.MEDIAN + Measurements.MEAN, null);
-			final double limit = (statistic.median + statistic.mean) / 2; // statistic.stdDev
+			final double limit = calcLimit(subImp.getProcessor()); // statistic.stdDev
 			int left = 0;
 			int right = subImp.getWidth();
 			boolean searchLeft = true;
@@ -541,9 +547,17 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 			}
 			this.width = this.imp.getWidth();
 			this.height = this.imp.getHeight();
-			final int bin = CameraSetup.getFullWidth() / width;
+			int bin = CameraSetup.getFullWidth() / width;
+			/*
+			 * This is necessary if you want to run the characterization on
+			 * corrected images. The width can than by larger then the reference
+			 * width. This results in a bin of 0.
+			 */
+			if (bin == 0) {
+				bin = 1;
+			}
 			final double filterRadius = settings.filterRadius / bin;
-			final float threshold = (float) (2 * this.imp.getStatistics().stdDev);
+			final float threshold = (float) calcLimit(this.imp.getProcessor());
 			final RankFilters rmOutliers = new RankFilters();
 			rmOutliers.rank(this.imp.getProcessor(), filterRadius, RankFilters.OUTLIERS, RankFilters.BRIGHT_OUTLIERS,
 					threshold);
