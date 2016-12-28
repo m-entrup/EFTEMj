@@ -161,7 +161,18 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 			result.width = imp.getWidth();
 			result.height = imp.getHeight();
 			result.binX = CameraSetup.getFullHeight() / result.width;
+			/*
+			 * This is necessary if you want to run the characterization on
+			 * corrected images. The width can than be larger then the reference
+			 * width. This results in a bin of 0.
+			 */
+			if (result.binX == 0) {
+				result.binX = 1;
+			}
 			result.binY = CameraSetup.getFullWidth() / result.height;
+			if (result.binY == 0) {
+				result.binY = 1;
+			}
 			int yPos = (int) (settings.energyBorderLow / result.binY);
 			if (settings.path.toString().contains("ZLP")) {
 				yPos += image.height / 2;
@@ -609,7 +620,7 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 			int bin = CameraSetup.getFullWidth() / width;
 			/*
 			 * This is necessary if you want to run the characterization on
-			 * corrected images. The width can than by larger then the reference
+			 * corrected images. The width can than be larger then the reference
 			 * width. This results in a bin of 0.
 			 */
 			if (bin == 0) {
