@@ -23,7 +23,6 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.gui.GenericDialog;
 import ij.gui.Plot;
-import ij.gui.PointRoi;
 import ij.gui.ProfilePlot;
 import ij.io.DirectoryChooser;
 import ij.measure.CurveFitter;
@@ -197,7 +196,7 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 		plotResults();
 	}
 
-	private static double calcLimit(ImageProcessor ip) {
+	private static double calcLimit(final ImageProcessor ip) {
 		final ImageStatistics statistic = ImageStatistics.getStatistics(ip, Measurements.MEDIAN + Measurements.MEAN,
 				null);
 		final double limit = (statistic.median + statistic.mean) / 2;
@@ -458,7 +457,7 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 	/**
 	 * Draw a small cross on a {@link ColorProcessor}. The cross consists of 5
 	 * pixels.
-	 * 
+	 *
 	 * @param cp
 	 *            is the {@link ColorProcessor} to draw on.
 	 * @param x
@@ -466,7 +465,7 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 	 * @param y
 	 *            is the y position of the center.
 	 */
-	private void drawCrossOnColorProcessor(ColorProcessor cp, int x, int y) {
+	private void drawCrossOnColorProcessor(final ColorProcessor cp, final int x, final int y) {
 		final int[] value = new int[3];
 		// center
 		cp.getPixel(x, y, value);
@@ -494,7 +493,7 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 	 * For each image that has been characterized, a JPEG version will be
 	 * created. The JPEG uses log-scaling of the intensity. The data points and
 	 * the resulting fit functions are shown.
-	 * 
+	 *
 	 * @param path
 	 *            The folder that will contain the JPEG images.
 	 */
@@ -526,10 +525,10 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 			 * borders.
 			 */
 			for (int j = 0; j < result.size(); j++) {
-				int x = (int) Math.round(result.get(j).y / binJPEG);
-				int left = (int) Math.round(result.get(j).left / binJPEG);
-				int center = (int) Math.round(result.get(j).x / binJPEG);
-				int right = (int) Math.round(result.get(j).right / binJPEG);
+				final int x = (int) Math.round(result.get(j).y / binJPEG);
+				final int left = (int) Math.round(result.get(j).left / binJPEG);
+				final int center = (int) Math.round(result.get(j).x / binJPEG);
+				final int right = (int) Math.round(result.get(j).right / binJPEG);
 				drawCrossOnColorProcessor(jP, x, left);
 				drawCrossOnColorProcessor(jP, x, center);
 				drawCrossOnColorProcessor(jP, x, right);
