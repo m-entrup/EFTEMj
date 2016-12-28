@@ -148,6 +148,32 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 		return filteredList;
 	}
 
+	private class RoiSettings {
+
+		private RoiSettings(final int pos, final int width) {
+			this.pos = pos;
+			this.width = width;
+		}
+
+		private int pos;
+		private int width;
+	}
+
+	private void updateRoi(final ImagePlus imp, final RoiSettings roi) {
+		final ProfilePlot profile = new ProfilePlot(imp);
+		final double[] xValues = new double[profile.getProfile().length];
+		for (int p = 0; p < profile.getProfile().length; p++) {
+			xValues[p] = p;
+		}
+		final CurveFitter fit = new CurveFitter(xValues, profile.getProfile());
+		fit.doFit(CurveFitter.GAUSSIAN);
+		final double gaussCentre = fit.getParams()[2];
+		final double gaussSigma = fit.getParams()[3];
+		final double gaussSigmaWeighted = results.settings.sigmaWeight * gaussSigma / Math.pow(fit.getRSquared(), 2);
+		roi.pos = (int) Math.max(roi.pos + Math.round(gaussCentre - gaussSigmaWeighted), 0);
+		roi.width = (int) Math.round(2 * gaussSigmaWeighted);
+	}
+
 	private void runCharacterisation() {
 		final SR_EELS_CharacterisationSettings settings = results.settings;
 		final ArrayList<String> images = settings.images;
@@ -177,27 +203,21 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 			if (settings.path.toString().contains("ZLP")) {
 				yPos += image.height / 2;
 			}
-			int xOffset = 0;
-			int roiWidth = image.width;
-			// mean = new Array();
+			final RoiSettings roiSetting = new RoiSettings(0, image.width);
+			/*
+			 * Creating initial values for the Roi:
+			 */
+			imp.setRoi(new Rectangle(roiSetting.pos, yPos, roiSetting.width, (int) (settings.stepSize / result.binY)));
+			updateRoi(imp, roiSetting);
 			while (yPos < image.height - (settings.energyBorderHigh / result.binY)) {
-				imp.setRoi(new Rectangle(xOffset, yPos, roiWidth, (int) (settings.stepSize / result.binY)));
+				imp.setRoi(
+						new Rectangle(roiSetting.pos, yPos, roiSetting.width, (int) (settings.stepSize / result.binY)));
 				SR_EELS_SubImageObject subImage = new SR_EELS_SubImageObject(new Duplicator().run(imp));
-				final ProfilePlot profile = new ProfilePlot(subImage.imp);
-				final double[] xValues = new double[profile.getProfile().length];
-				for (int p = 0; p < profile.getProfile().length; p++) {
-					xValues[p] = p;
-				}
-				final CurveFitter fit = new CurveFitter(xValues, profile.getProfile());
-				fit.doFit(CurveFitter.GAUSSIAN);
-				final double gaussCentre = fit.getParams()[2];
-				final double gaussSigma = fit.getParams()[3];
-				final double gaussSigmaWeighted = settings.sigmaWeight * gaussSigma / Math.pow(fit.getRSquared(), 2);
-				xOffset = (int) Math.max(xOffset + Math.round(gaussCentre - gaussSigmaWeighted), 0);
-				roiWidth = (int) Math.round(2 * gaussSigmaWeighted);
-				imp.setRoi(new Rectangle(xOffset, yPos, roiWidth, (int) (settings.stepSize / result.binY)));
+				updateRoi(subImage.imp, roiSetting);
+				imp.setRoi(
+						new Rectangle(roiSetting.pos, yPos, roiSetting.width, (int) (settings.stepSize / result.binY)));
 				subImage = new SR_EELS_SubImageObject(new Duplicator().run(imp));
-				subImage.xOffset = xOffset;
+				subImage.xOffset = roiSetting.pos;
 				subImage.yOffset = yPos;
 				subImage.threshold = settings.threshold;
 				result.add(runCharacterisationSub(subImage, settings.useThresholding));
