@@ -102,14 +102,28 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 		return images;
 	}
 
+	/**
+	 * Filter an array of file and folder names. Folders are excluded
+	 * automatically. The user is presented a {@link GenericDialog} to select
+	 * the files to process.
+	 *
+	 * @param settings
+	 *            of the current characterization run that is used to get the
+	 *            full file path.
+	 * @param fileList
+	 *            containing files and folders of the directory to process.
+	 * @return a filtered list of files, selected by the user.
+	 */
 	private ArrayList<String> getFilteredImages(final SR_EELS_CharacterisationSettings settings,
 			final String[] fileList) {
+		final ArrayList<String> filesForSelection = new ArrayList<>();
 		final ArrayList<String> filteredList = new ArrayList<>();
 		Arrays.sort(fileList);
 		final GenericDialog gd = new GenericDialog("Select files");
 		int counter = 0;
 		for (int i = 0; i < fileList.length; i++) {
 			if (new File(settings.path, fileList[i]).isFile()) {
+				filesForSelection.add(fileList[i]);
 				counter++;
 				if (fileList[i].endsWith(".tif") & !fileList[i].contains("-exclude")) {
 					gd.addCheckbox(fileList[i], true);
@@ -127,7 +141,7 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 		}
 		for (int i = 0; i < counter; i++) {
 			if (gd.getNextBoolean()) {
-				filteredList.add(fileList[i]);
+				filteredList.add(filesForSelection.get(i));
 			}
 		}
 		return filteredList;
