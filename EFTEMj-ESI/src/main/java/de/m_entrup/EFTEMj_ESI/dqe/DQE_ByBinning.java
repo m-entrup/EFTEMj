@@ -51,15 +51,14 @@ public class DQE_ByBinning {
 	private int running;
 	private final String summary;
 
-	public DQE_ByBinning(final int maxBinning, final float sensitivity,
-		final FloatProcessor fp, final String imageTitle, final String summary)
-	{
+	public DQE_ByBinning(final int maxBinning, final float sensitivity, final FloatProcessor fp,
+			final String imageTitle, final String summary) {
 		super();
 		this.imageTitle = imageTitle;
 		this.summary = summary;
 		progress = 0;
-		input = new Stack<DatasetDQE>();
-		output = new Stack<DatasetDQE>();
+		input = new Stack<>();
+		output = new Stack<>();
 		// Index 0 is not used.
 		outputSorted = new DatasetDQE[maxBinning + 1];
 		DatasetDQE.fp = fp;
@@ -71,7 +70,8 @@ public class DQE_ByBinning {
 	}
 
 	public synchronized DatasetDQE getInput() {
-		if (input.isEmpty()) return null;
+		if (input.isEmpty())
+			return null;
 		return input.pop();
 	}
 
@@ -85,8 +85,7 @@ public class DQE_ByBinning {
 			while (output.isEmpty()) {
 				try {
 					wait();
-				}
-				catch (final InterruptedException e) {
+				} catch (final InterruptedException e) {
 					IJ.showMessage("Error", "<html><p>" + e.toString() + "</p></html>");
 					e.printStackTrace();
 				}
@@ -95,46 +94,35 @@ public class DQE_ByBinning {
 			outputSorted[dataset.binning] = dataset;
 		}
 		for (int i = 1; i < outputSorted.length; i++) {
-			System.out.println(String.format("DQE of binning %d: %.6f",
-				outputSorted[i].binning, outputSorted[i].dqe));
+			System.out.println(String.format("DQE of binning %d: %.6f", outputSorted[i].binning, outputSorted[i].dqe));
 		}
 		// i have to shift the index by 1 because outputSorted is only filled
 		// starting at index 1.
 		final float xValues[] = new float[outputSorted.length - 1];
 		final float yValues[] = new float[outputSorted.length - 1];
 		resultAsText = summary;
-		resultAsText += "binning ; mean ; stdv ; var ; dqe" +
-			PluginConstants.LINE_SEPARATOR;
+		resultAsText += "binning ; mean ; stdv ; var ; dqe" + PluginConstants.LINE_SEPARATOR;
 		resultAsTextDe = resultAsText;
 		for (int i = 1; i < outputSorted.length; i++) {
 			xValues[i - 1] = outputSorted[i].binning;
 			yValues[i - 1] = (float) outputSorted[i].dqe;
-			resultAsText += String.format(Locale.ENGLISH, "%d;",
-				outputSorted[i].binning);
-			resultAsText += String.format(Locale.ENGLISH, "%e;",
-				outputSorted[i].mean);
-			resultAsText += String.format(Locale.ENGLISH, "%e;", Math.sqrt(
-				outputSorted[i].var));
+			resultAsText += String.format(Locale.ENGLISH, "%d;", outputSorted[i].binning);
+			resultAsText += String.format(Locale.ENGLISH, "%e;", outputSorted[i].mean);
+			resultAsText += String.format(Locale.ENGLISH, "%e;", Math.sqrt(outputSorted[i].var));
 			resultAsText += String.format(Locale.ENGLISH, "%e;", outputSorted[i].var);
 			resultAsText += String.format(Locale.ENGLISH, "%e;", outputSorted[i].dqe);
 			resultAsText += PluginConstants.LINE_SEPARATOR;
 			// ',' instead of '.' to allow an easier evaluation by German users.
-			resultAsTextDe += String.format(Locale.GERMAN, "%d;",
-				outputSorted[i].binning);
-			resultAsTextDe += String.format(Locale.GERMAN, "%e;",
-				outputSorted[i].mean);
-			resultAsTextDe += String.format(Locale.GERMAN, "%e;", Math.sqrt(
-				outputSorted[i].var));
-			resultAsTextDe += String.format(Locale.GERMAN, "%e;",
-				outputSorted[i].var);
-			resultAsTextDe += String.format(Locale.GERMAN, "%e;",
-				outputSorted[i].dqe);
+			resultAsTextDe += String.format(Locale.GERMAN, "%d;", outputSorted[i].binning);
+			resultAsTextDe += String.format(Locale.GERMAN, "%e;", outputSorted[i].mean);
+			resultAsTextDe += String.format(Locale.GERMAN, "%e;", Math.sqrt(outputSorted[i].var));
+			resultAsTextDe += String.format(Locale.GERMAN, "%e;", outputSorted[i].var);
+			resultAsTextDe += String.format(Locale.GERMAN, "%e;", outputSorted[i].dqe);
 			resultAsTextDe += PluginConstants.LINE_SEPARATOR;
 		}
 		plot = new Plot("DQE", "binning", "DQE", xValues, yValues);
-		plot.setFrameSize((int) (0.75 * Toolkit.getDefaultToolkit()
-			.getScreenSize().width), (int) (0.75 * Toolkit.getDefaultToolkit()
-				.getScreenSize().height));
+		plot.setFrameSize((int) (0.75 * Toolkit.getDefaultToolkit().getScreenSize().width),
+				(int) (0.75 * Toolkit.getDefaultToolkit().getScreenSize().height));
 	}
 
 	public synchronized void removeThread() {
@@ -148,19 +136,17 @@ public class DQE_ByBinning {
 	}
 
 	public void saveResultAndShowPlot() {
-		final FileDialog fDialog = new FileDialog(WindowManager.getFrontWindow(),
-			"Save DQE results...", FileDialog.SAVE);
+		final FileDialog fDialog = new FileDialog(WindowManager.getFrontWindow(), "Save DQE results...",
+				FileDialog.SAVE);
 		/*
-		 * MultiMode is not available in Java 6
-		 * fDialog.setMultipleMode(false);
+		 * MultiMode is not available in Java 6 fDialog.setMultipleMode(false);
 		 */
 		fDialog.setDirectory(IJ.getDirectory("image"));
 		final String fileName = "DQE_" + imageTitle;
 		fDialog.setFile(fileName + ".txt");
 		fDialog.setVisible(true);
 		if (fDialog.getFile() != null) {
-			final String path = fDialog.getDirectory() + System.getProperty(
-				"file.separator") + fDialog.getFile();
+			final String path = fDialog.getDirectory() + System.getProperty("file.separator") + fDialog.getFile();
 			IJ.saveString(resultAsText, path);
 			final String pathDe = path.substring(0, path.length() - 4) + "_de.txt";
 			IJ.saveString(resultAsTextDe, pathDe);
@@ -176,8 +162,7 @@ public class DQE_ByBinning {
 			running++;
 			new DQE_Calc().start();
 		}
-		System.out.println(String.format("%s starts to wait for the results.", this
-			.toString()));
+		System.out.println(String.format("%s starts to wait for the results.", this.toString()));
 		DQE_ByBinning.this.processOutput();
 		System.out.println("End of DQE calculation.");
 	}

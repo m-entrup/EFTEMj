@@ -60,8 +60,8 @@ public class ElementalMapping {
 	 */
 	public static enum AVAILABLE_METHODS {
 		LSE("Least squares estimation"), MLE("Maximum-likelihood estimation"), WLSE(
-				"Weighted least squares estimation"), LMA("Levenberg-Marquardt algorithm"), LMA_L(
-						"Levenberg-Marquardt algorithm (linear)");
+				"Weighted least squares estimation"), LMA(
+						"Levenberg-Marquardt algorithm"), LMA_L("Levenberg-Marquardt algorithm (linear)");
 
 		/**
 		 * Full name of the method. Display this {@link String} at the GUI.
@@ -393,10 +393,10 @@ public class ElementalMapping {
 	 *            losses.
 	 */
 	private void splitEnergyLosses(final float[] allEnergyLosses, final float edgeEnergyLoss) {
-		final Vector<Float> preEdgeVector = new Vector<Float>();
-		final Vector<Float> postEdgeVector = new Vector<Float>();
-		final Vector<Integer> preEdgeIndexVector = new Vector<Integer>();
-		final Vector<Integer> postEdgeIndexVector = new Vector<Integer>();
+		final Vector<Float> preEdgeVector = new Vector<>();
+		final Vector<Float> postEdgeVector = new Vector<>();
+		final Vector<Integer> preEdgeIndexVector = new Vector<>();
+		final Vector<Integer> postEdgeIndexVector = new Vector<>();
 		for (int i = 0; i < allEnergyLosses.length; i++) {
 			if (allEnergyLosses[i] < edgeEnergyLoss) {
 				preEdgeVector.add(allEnergyLosses[i]);

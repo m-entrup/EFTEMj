@@ -54,24 +54,24 @@ public class EnergyLossData extends ArrayList<Point2D> {
 	/**
 	 * A method to convert all x- or y-values of the point-list to an array.
 	 *
-	 * @param start is used to set a lower limit for the energy loss (including
-	 *          equality).
-	 * @param stop is used to set a upper limit for the energy loss (including
-	 *          equality).
-	 * @param getYValue is set to <code>true</code> to get y-values instead of
-	 *          x-values.
+	 * @param start
+	 *            is used to set a lower limit for the energy loss (including
+	 *            equality).
+	 * @param stop
+	 *            is used to set a upper limit for the energy loss (including
+	 *            equality).
+	 * @param getYValue
+	 *            is set to <code>true</code> to get y-values instead of
+	 *            x-values.
 	 * @return an array of energy loss values (x-values) or counts (y-values).
 	 */
-	private float[] getArray(final float start, final float stop,
-		final boolean getYValue)
-	{
-		final ArrayList<Float> out = new ArrayList<Float>();
+	private float[] getArray(final float start, final float stop, final boolean getYValue) {
+		final ArrayList<Float> out = new ArrayList<>();
 		for (final Point2D point : this) {
 			if (point.getX() >= start & point.getX() <= stop) {
 				if (getYValue) {
 					out.add((float) point.getY());
-				}
-				else {
+				} else {
 					out.add((float) point.getX());
 				}
 			}
@@ -84,12 +84,14 @@ public class EnergyLossData extends ArrayList<Point2D> {
 	}
 
 	/**
-	 * @param start is used to set a lower limit for the energy loss (including
-	 *          equality).
-	 * @param stop is used to set a upper limit for the energy loss (including
-	 *          equality).
-	 * @return an array of energy loss values limited to the given interval (start
-	 *         and stop are included).
+	 * @param start
+	 *            is used to set a lower limit for the energy loss (including
+	 *            equality).
+	 * @param stop
+	 *            is used to set a upper limit for the energy loss (including
+	 *            equality).
+	 * @return an array of energy loss values limited to the given interval
+	 *         (start and stop are included).
 	 */
 	public float[] getEnergyArray(final float start, final float stop) {
 		return getArray(start, stop, false);
@@ -103,12 +105,14 @@ public class EnergyLossData extends ArrayList<Point2D> {
 	}
 
 	/**
-	 * @param start is used to set a lower limit for the energy loss (including
-	 *          equality).
-	 * @param stop is used to set a upper limit for the energy loss (including
-	 *          equality).
-	 * @return an array of counts limited to the given energy loss interval (start
-	 *         and stop are included).
+	 * @param start
+	 *            is used to set a lower limit for the energy loss (including
+	 *            equality).
+	 * @param stop
+	 *            is used to set a upper limit for the energy loss (including
+	 *            equality).
+	 * @return an array of counts limited to the given energy loss interval
+	 *         (start and stop are included).
 	 */
 	public float[] getCountArray(final float start, final float stop) {
 		return getArray(start, stop, true);
@@ -121,7 +125,9 @@ public class EnergyLossData extends ArrayList<Point2D> {
 		return getCountArray(Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.util.AbstractCollection#toString()
 	 */
 	@Override
@@ -134,8 +140,9 @@ public class EnergyLossData extends ArrayList<Point2D> {
 	}
 
 	/**
-	 * @param value is the {@link String} that represents the unit of the
-	 *          x-values.
+	 * @param value
+	 *            is the {@link String} that represents the unit of the
+	 *            x-values.
 	 */
 	public void setXUnit(final String value) {
 		xUnit = value;
@@ -150,8 +157,9 @@ public class EnergyLossData extends ArrayList<Point2D> {
 	}
 
 	/**
-	 * @param value value is the {@link String} that represents the unit of the
-	 *          y-values.
+	 * @param value
+	 *            value is the {@link String} that represents the unit of the
+	 *            y-values.
 	 */
 	public void setYUnit(final String value) {
 		yUnit = value;

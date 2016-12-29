@@ -44,30 +44,27 @@ import ij.ImageStack;
  */
 public class ELossTool {
 
-	private static String configKeyPrefix = "ESI." + ELossTool.class
-		.getSimpleName() + ".";
-	public static String databaseTitlePatternKey = configKeyPrefix +
-		"titlePattern";
+	private static String configKeyPrefix = "ESI." + ELossTool.class.getSimpleName() + ".";
+	public static String databaseTitlePatternKey = configKeyPrefix + "titlePattern";
 
 	/**
 	 * By the use of regular expressions the energy loss is extracted from the
 	 * label of a slice.
 	 *
-	 * @param imp The {@link ImagePlus} contains the images.
-	 * @param index The index of the image where you want to extract the energy
-	 *          loss. <code>index</code> starts at 0.
+	 * @param imp
+	 *            The {@link ImagePlus} contains the images.
+	 * @param index
+	 *            The index of the image where you want to extract the energy
+	 *            loss. <code>index</code> starts at 0.
 	 * @return The energy loss in eV that has been found. If the label does not
 	 *         contain an readable energy loss 0 is returned.
 	 */
-	public static float eLossFromSliceLabel(final ImagePlus imp,
-		final int index)
-	{
+	public static float eLossFromSliceLabel(final ImagePlus imp, final int index) {
 		final ImageStack stack = imp.getStack();
 		String label;
 		if (index == 0 & stack.getSize() == 1) {
 			label = imp.getShortTitle();
-		}
-		else {
+		} else {
 			label = stack.getShortSliceLabel(index + 1);
 		}
 		return findELoss(label);
@@ -77,16 +74,16 @@ public class ELossTool {
 	 * By the use of regular expressions the energy loss is extracted from the
 	 * label of a slice.
 	 *
-	 * @param imageStack The {@link ImageStack} that contains the image at
-	 *          <code>(index+1)</code>.
-	 * @param index The index of the image where you want to extract the energy
-	 *          loss. <code>index</code> starts at 0.
+	 * @param imageStack
+	 *            The {@link ImageStack} that contains the image at
+	 *            <code>(index+1)</code>.
+	 * @param index
+	 *            The index of the image where you want to extract the energy
+	 *            loss. <code>index</code> starts at 0.
 	 * @return The energy loss in eV that has been found. If the label does not
 	 *         contain an readable energy loss 0 is returned.
 	 */
-	public static float eLossFromSliceLabel(final ImageStack imageStack,
-		final int index)
-	{
+	public static float eLossFromSliceLabel(final ImageStack imageStack, final int index) {
 		final String label = imageStack.getShortSliceLabel(index + 1);
 		return findELoss(label);
 	}
@@ -95,9 +92,11 @@ public class ELossTool {
 	 * By the use of regular expressions the energy loss is extracted from the
 	 * title of an image.
 	 *
-	 * @param imp The {@link ImagePlus} contains the images.
-	 * @param index The index of the image where you want to extract the energy
-	 *          loss. <code>index</code> starts at 0.
+	 * @param imp
+	 *            The {@link ImagePlus} contains the images.
+	 * @param index
+	 *            The index of the image where you want to extract the energy
+	 *            loss. <code>index</code> starts at 0.
 	 * @return The energy loss in eV that has been found. If the label does not
 	 *         contain an readable energy loss 0 is returned.
 	 */
@@ -109,20 +108,18 @@ public class ELossTool {
 	/**
 	 * Tries to find the eLoss at the given String.
 	 *
-	 * @param label A String that may contain an eLoss.
+	 * @param label
+	 *            A String that may contain an eLoss.
 	 * @return The eLoss fount at the String, 0 if no eLoss was found.
 	 */
 	private static float findELoss(final String label) {
-		final Matcher matcher1 = Pattern.compile(PluginConstants.PATTERN_ELOSS_LONG)
-			.matcher(label);
+		final Matcher matcher1 = Pattern.compile(PluginConstants.PATTERN_ELOSS_LONG).matcher(label);
 		if (matcher1.find()) {
-			String eLossStr = label.substring(matcher1.start() + 1, matcher1.end() -
-				3);
+			String eLossStr = label.substring(matcher1.start() + 1, matcher1.end() - 3);
 			eLossStr = eLossStr.replace(",", ".");
 			return stringToFloat(eLossStr);
 		}
-		final Matcher matcher2 = Pattern.compile(
-			PluginConstants.PATTERN_ELOSS_SHORT).matcher(label);
+		final Matcher matcher2 = Pattern.compile(PluginConstants.PATTERN_ELOSS_SHORT).matcher(label);
 		if (matcher2.find()) {
 			String eLossStr = label.substring(matcher2.start(), matcher2.end() - 2);
 			eLossStr = eLossStr.replace(",", ".");
@@ -133,19 +130,20 @@ public class ELossTool {
 
 	/**
 	 * Tries to find a pattern that describes the energy losses of a spectrum
-	 * imaging stack. The default pattern is defined in EFTEMj-ESI.properties. The
-	 * pattern must contain at least 2 groups: start value and increment. The
-	 * default pattern contains 3 groups: start, stop and increment.
+	 * imaging stack. The default pattern is defined in EFTEMj-ESI.properties.
+	 * The pattern must contain at least 2 groups: start value and increment.
+	 * The default pattern contains 3 groups: start, stop and increment.
 	 *
-	 * @param title A String that may contain an eLoss.
-	 * @param index The index of the image where you want to extract the energy
-	 *          loss. <code>index</code> starts at 0.
+	 * @param title
+	 *            A String that may contain an eLoss.
+	 * @param index
+	 *            The index of the image where you want to extract the energy
+	 *            loss. <code>index</code> starts at 0.
 	 * @return The eLoss fount at the String, 0 if no eLoss was found.
 	 */
 	private static float findELoss(final String title, final int index) {
 		try {
-			final CompositeConfiguration config = ESI_ConfigurationManager
-				.getConfiguration();
+			final CompositeConfiguration config = ESI_ConfigurationManager.getConfiguration();
 			final String pattern = config.getString(databaseTitlePatternKey);
 			final Matcher matcher = Pattern.compile(pattern).matcher(title);
 			if (matcher.find()) {
@@ -153,42 +151,37 @@ public class ELossTool {
 					final float start = stringToFloat(matcher.group(1));
 					final float inc = stringToFloat(matcher.group(2));
 					return start - index * inc;
-				}
-				else if (matcher.groupCount() == 3) {
+				} else if (matcher.groupCount() == 3) {
 					final float start = stringToFloat(matcher.group(1));
 					final float stop = stringToFloat(matcher.group(2));
 					final float inc = stringToFloat(matcher.group(3));
 					if (start > stop) {
 						return start - index * inc;
 					}
-					else {
-						return start + index * inc;
-					}
-				}
-				else {
+					return start + index * inc;
+				} else {
 					return 0;
 				}
 			}
-		}
-		catch (final ConfigurationException e) {
+		} catch (final ConfigurationException e) {
 			return 0;
 		}
 		return 0;
 	}
 
 	/**
-	 * This method is used to convert the energy loss string to a float value. If
-	 * there is a ',' it is replaced by a '.'.
+	 * This method is used to convert the energy loss string to a float value.
+	 * If there is a ',' it is replaced by a '.'.
 	 *
-	 * @param eLossStr A {@link String} that contains only the energy loss.
+	 * @param eLossStr
+	 *            A {@link String} that contains only the energy loss.
 	 * @return A float value, 0 if converting fails.
 	 */
 	private static float stringToFloat(final String eLossStr) {
 		eLossStr.replace(',', '.');
 		try {
 			return new Float(eLossStr);
-		}
-		catch (final Exception e) {
+		} catch (final Exception e) {
 			return 0;
 		}
 	}

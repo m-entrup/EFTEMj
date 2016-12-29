@@ -95,7 +95,7 @@ public class MainMenu extends Frame {
 			super();
 			gLayout = new GridBagLayout();
 			this.setLayout(gLayout);
-			disabledButtons = new Vector<Button>();
+			disabledButtons = new Vector<>();
 			this.fillPane();
 		}
 

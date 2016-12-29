@@ -111,8 +111,7 @@ public class MeasureCompositeImage implements PlugInFilter {
 				offsetY = (int) roi.getY();
 				deltaX = (int) roi.getWidth();
 				deltaY = (int) roi.getHeight();
-			}
-			else {
+			} else {
 				offsetX = 0;
 				offsetY = 0;
 				deltaX = w;
@@ -132,8 +131,7 @@ public class MeasureCompositeImage implements PlugInFilter {
 						extremes[0] = value;
 						extremes[1] = x;
 						extremes[2] = y;
-					}
-					else {
+					} else {
 						if (value > extremes[3]) {
 							extremes[3] = value;
 							extremes[4] = x;
@@ -164,15 +162,10 @@ public class MeasureCompositeImage implements PlugInFilter {
 							j++;
 						}
 					}
-				}
-				else {
+				} else {
 					int noErrorCount = 0;
-					for (int y = (int) roi.getY(); y < roi.getY() + roi
-						.getHeight(); y++)
-					{
-						for (int x = (int) roi.getX(); x < roi.getX() + roi
-							.getWidth(); x++)
-						{
+					for (int y = (int) roi.getY(); y < roi.getY() + roi.getHeight(); y++) {
+						for (int x = (int) roi.getX(); x < roi.getX() + roi.getWidth(); x++) {
 							if (errorProc.getf(x, y) == 0) {
 								noErrorCount++;
 							}
@@ -180,12 +173,8 @@ public class MeasureCompositeImage implements PlugInFilter {
 					}
 					dataFiltered = new float[noErrorCount];
 					int j = 0;
-					for (int y = (int) roi.getY(); y < roi.getY() + roi
-						.getHeight(); y++)
-					{
-						for (int x = (int) roi.getX(); x < roi.getX() + roi
-							.getWidth(); x++)
-						{
+					for (int y = (int) roi.getY(); y < roi.getY() + roi.getHeight(); y++) {
+						for (int x = (int) roi.getX(); x < roi.getX() + roi.getWidth(); x++) {
 							if (errorProc.getf(x, y) == 0) {
 								dataFiltered[j] = dataProc.getf(x, y);
 								j++;
@@ -214,10 +203,8 @@ public class MeasureCompositeImage implements PlugInFilter {
 			double median = 0;
 			Arrays.sort(dataFiltered);
 			if (dataFiltered.length % 2 == 0) {
-				median = 0.5 * (dataFiltered[dataFiltered.length / 2] +
-					dataFiltered[(dataFiltered.length / 2) - 1]);
-			}
-			else {
+				median = 0.5 * (dataFiltered[dataFiltered.length / 2] + dataFiltered[(dataFiltered.length / 2) - 1]);
+			} else {
 				median = dataFiltered[(int) Math.floor(dataFiltered.length / 2)];
 			}
 			return median;
@@ -250,21 +237,17 @@ public class MeasureCompositeImage implements PlugInFilter {
 
 		private void measure() {
 			final String title = impToMeasure.getTitle();
-			System.out.println(String.format(Locale.ENGLISH, "Measurements on \"%s\"",
-				title));
+			System.out.println(String.format(Locale.ENGLISH, "Measurements on \"%s\"", title));
 			if (roi != null) {
-				System.out.println(String.format(
-					"A ROI is set:%n x = %.0f%n y = %.0f%n w = %.0f%n h = %.0f", roi
-						.getX(), roi.getY(), roi.getWidth(), roi.getHeight()));
-				System.out.println(String.format(Locale.ENGLISH, " %.0f of %.0f pixels",
-					pixelsRoi, pixels));
+				System.out.println(String.format("A ROI is set:%n x = %.0f%n y = %.0f%n w = %.0f%n h = %.0f",
+						roi.getX(), roi.getY(), roi.getWidth(), roi.getHeight()));
+				System.out.println(String.format(Locale.ENGLISH, " %.0f of %.0f pixels", pixelsRoi, pixels));
 			}
 			final int pixelsUsed = getPixelsUsed();
 			double pixelsUsedPercent;
 			if (roi == null) {
 				pixelsUsedPercent = 1.0 * pixelsUsed / pixels;
-			}
-			else {
+			} else {
 				pixelsUsedPercent = 1.0 * pixelsUsed / pixelsRoi;
 			}
 			final double sumOfCounts = getSumOfCounts();
@@ -272,31 +255,26 @@ public class MeasureCompositeImage implements PlugInFilter {
 			final double meanValue = getMean();
 			final double stdv = getSTDV();
 			final float[] extremes = getExtremes();
-			result = new Vector<String>();
+			result = new Vector<>();
 			if (roi != null) {
-				result.add(String.format("ROI: x=%d,  y=%d, w=%d, h=%d, px=%d (%s)",
-					roi.x, roi.y, roi.width, roi.height, roi.width * roi.height,
-					NumberFormat.getPercentInstance().format(1.0 * roi.width *
-						roi.height / w / h)));
+				result.add(String.format("ROI: x=%d,  y=%d, w=%d, h=%d, px=%d (%s)", roi.x, roi.y, roi.width,
+						roi.height, roi.width * roi.height,
+						NumberFormat.getPercentInstance().format(1.0 * roi.width * roi.height / w / h)));
 			}
-			result.add(String.format(Locale.ENGLISH,
-				"Pixels used for measurement: %d (%s)", pixelsUsed, NumberFormat
-					.getPercentInstance().format(pixelsUsedPercent)));
-			result.add(String.format(Locale.ENGLISH, "Sum of counts: %.3f",
-				sumOfCounts));
+			result.add(String.format(Locale.ENGLISH, "Pixels used for measurement: %d (%s)", pixelsUsed,
+					NumberFormat.getPercentInstance().format(pixelsUsedPercent)));
+			result.add(String.format(Locale.ENGLISH, "Sum of counts: %.3f", sumOfCounts));
 			result.add(String.format(Locale.ENGLISH, "Median: %.3f", median));
 			result.add(String.format(Locale.ENGLISH, "Mean: %.3f", meanValue));
 			result.add(String.format(Locale.ENGLISH, "Standarddev.: %.3f", stdv));
-			result.add(String.format(Locale.ENGLISH,
-				"Minimum: %.3f at %.0f/%.0f%nMaximum: %.3f at %.0f/%.0f", extremes[0],
-				extremes[1], extremes[2], extremes[3], extremes[4], extremes[5]));
+			result.add(String.format(Locale.ENGLISH, "Minimum: %.3f at %.0f/%.0f%nMaximum: %.3f at %.0f/%.0f",
+					extremes[0], extremes[1], extremes[2], extremes[3], extremes[4], extremes[5]));
 			final MyRunnable runnable = new MyRunnable(this);
 			new Thread(runnable).start();
 		}
 
 		private void showResult() {
-			final GenericDialog gd = new GenericDialog(PluginMessages.getString(
-				"Titel.MeasureComposite"));
+			final GenericDialog gd = new GenericDialog(PluginMessages.getString("Titel.MeasureComposite"));
 			String text = impToMeasure.getTitle() + PluginConstants.LINE_SEPARATOR;
 			int maxLength = 0;
 			for (int i = 0; i < result.size(); i++) {
@@ -312,8 +290,8 @@ public class MeasureCompositeImage implements PlugInFilter {
 			if (gd.wasCanceled()) {
 				return;
 			}
-			final FileDialog fDialog = new FileDialog(gd, PluginMessages.getString(
-				"Titel.SaveMeasurement"), FileDialog.SAVE);
+			final FileDialog fDialog = new FileDialog(gd, PluginMessages.getString("Titel.SaveMeasurement"),
+					FileDialog.SAVE);
 			/*
 			 * MultiMode is not available in Java 6
 			 * fDialog.setMultipleMode(false);
@@ -322,8 +300,7 @@ public class MeasureCompositeImage implements PlugInFilter {
 			fDialog.setFile("Measurement_" + imp.getTitle() + ".txt");
 			fDialog.setVisible(true);
 			if (fDialog.getFile() != null) {
-				final String path = fDialog.getDirectory() + System.getProperty(
-					"file.separator") + fDialog.getFile();
+				final String path = fDialog.getDirectory() + System.getProperty("file.separator") + fDialog.getFile();
 				IJ.saveString(text, path);
 			}
 		}
@@ -336,8 +313,7 @@ public class MeasureCompositeImage implements PlugInFilter {
 		if (imp.getStackSize() == 2 & imp.isComposite()) {
 			final Measurement measurment = new Measurement(imp);
 			measurment.measure();
-		}
-		else {
+		} else {
 			IJ.showMessage(PluginMessages.getString("Error.NoComposite"));
 		}
 	}

@@ -37,71 +37,71 @@ import org.apache.commons.math3.fitting.WeightedObservedPoint;
  */
 public class PowerLawFit_linearLMA extends PowerLawFit {
 
-    private static LMACurveFitter fitter = new LMACurveFitter(new LinearFunction());
-    private ArrayList<WeightedObservedPoint> points;
+	private static LMACurveFitter fitter = new LMACurveFitter(new LinearFunction());
+	private final ArrayList<WeightedObservedPoint> points;
 
-    public PowerLawFit_linearLMA(final double[] xValues, final double[] yValues, final double epsilon) {
-	super(xValues, yValues, epsilon);
-	if (fitter.getLimit() != epsilon) {
-	    fitter.setLimit(epsilon);
-	}
-	points = new ArrayList<WeightedObservedPoint>();
-	this.xValues = new double[xValues.length];
-	this.yValues = new double[yValues.length];
-	for (int i = 0; i < xValues.length; i++) {
-	    this.xValues[i] = Math.log(xValues[i]);
-	    this.yValues[i] = Math.log(yValues[i]);
-	    points.add(new WeightedObservedPoint(Math.sqrt(yValues[i]), this.xValues[i], this.yValues[i]));
-	}
-    }
-
-    @Override
-    public void doFit() {
-	if (checkPoints(points)) {
-	    final double[] coeffs = fitter.fit(points);
-	    errorCode = ERROR_NONE;
-	    if (Double.isNaN(coeffs[0]))
-		errorCode = ERROR_A_NAN;
-	    if (Double.isInfinite(coeffs[0]))
-		errorCode = ERROR_A_INFINITE;
-	    if (Double.isNaN(coeffs[1]))
-		errorCode = ERROR_R_NAN;
-	    if (Double.isInfinite(coeffs[1]))
-		errorCode = ERROR_R_INFINITE;
-	    if (errorCode == ERROR_NONE) {
-		a = Math.exp(coeffs[0]);
-		r = -coeffs[1];
-	    } else {
-		a = Double.NaN;
-		r = Double.NaN;
-	    }
-	} else {
-	    errorCode = ERROR_CONVERGE;
-	    a = Double.NaN;
-	    r = Double.NaN;
-	}
-	done = true;
-    }
-
-    private boolean checkPoints(ArrayList<WeightedObservedPoint> points2Check) {
-	for (WeightedObservedPoint point : points2Check) {
-	    if (Double.isInfinite(point.getY()) | Double.isNaN(point.getY()))
-		return false;
-	}
-	return true;
-    }
-
-    private static class LinearFunction implements ParametricUnivariateFunction {
-
-	@Override
-	public double value(double t, double... parameters) {
-	    return parameters[0] + t * parameters[1];
+	public PowerLawFit_linearLMA(final double[] xValues, final double[] yValues, final double epsilon) {
+		super(xValues, yValues, epsilon);
+		if (fitter.getLimit() != epsilon) {
+			fitter.setLimit(epsilon);
+		}
+		points = new ArrayList<>();
+		this.xValues = new double[xValues.length];
+		this.yValues = new double[yValues.length];
+		for (int i = 0; i < xValues.length; i++) {
+			this.xValues[i] = Math.log(xValues[i]);
+			this.yValues[i] = Math.log(yValues[i]);
+			points.add(new WeightedObservedPoint(Math.sqrt(yValues[i]), this.xValues[i], this.yValues[i]));
+		}
 	}
 
 	@Override
-	public double[] gradient(double t, double... parameters) {
-	    return new double[] { 1, t };
+	public void doFit() {
+		if (checkPoints(points)) {
+			final double[] coeffs = fitter.fit(points);
+			errorCode = ERROR_NONE;
+			if (Double.isNaN(coeffs[0]))
+				errorCode = ERROR_A_NAN;
+			if (Double.isInfinite(coeffs[0]))
+				errorCode = ERROR_A_INFINITE;
+			if (Double.isNaN(coeffs[1]))
+				errorCode = ERROR_R_NAN;
+			if (Double.isInfinite(coeffs[1]))
+				errorCode = ERROR_R_INFINITE;
+			if (errorCode == ERROR_NONE) {
+				a = Math.exp(coeffs[0]);
+				r = -coeffs[1];
+			} else {
+				a = Double.NaN;
+				r = Double.NaN;
+			}
+		} else {
+			errorCode = ERROR_CONVERGE;
+			a = Double.NaN;
+			r = Double.NaN;
+		}
+		done = true;
 	}
-    }
+
+	private boolean checkPoints(final ArrayList<WeightedObservedPoint> points2Check) {
+		for (final WeightedObservedPoint point : points2Check) {
+			if (Double.isInfinite(point.getY()) | Double.isNaN(point.getY()))
+				return false;
+		}
+		return true;
+	}
+
+	private static class LinearFunction implements ParametricUnivariateFunction {
+
+		@Override
+		public double value(final double t, final double... parameters) {
+			return parameters[0] + t * parameters[1];
+		}
+
+		@Override
+		public double[] gradient(final double t, final double... parameters) {
+			return new double[] { 1, t };
+		}
+	}
 
 }

@@ -40,24 +40,26 @@ import org.reflections.scanners.SubTypesScanner;
  */
 public class FunctionList {
 
-	private HashMap<String, EELS_BackgroundFunction> functions;
+	private final HashMap<String, EELS_BackgroundFunction> functions;
 
 	public FunctionList() {
-		functions = new HashMap<String, EELS_BackgroundFunction>();
-		final Reflections reflections = new Reflections(
-			"de.m_entrup.EFTEMj_lib.lma", new SubTypesScanner(false));
+		functions = new HashMap<>();
+		final Reflections reflections = new Reflections("de.m_entrup.EFTEMj_lib.lma", new SubTypesScanner(false));
 		final Set<Class<? extends EELS_BackgroundFunction>> allClasses = reflections
-			.getSubTypesOf(EELS_BackgroundFunction.class);
-		final Iterator<Class<? extends EELS_BackgroundFunction>> iter = allClasses
-			.iterator();
+				.getSubTypesOf(EELS_BackgroundFunction.class);
+		final Iterator<Class<? extends EELS_BackgroundFunction>> iter = allClasses.iterator();
 		while (iter.hasNext()) {
 			final Class<? extends EELS_BackgroundFunction> function = iter.next();
 			try {
-				EELS_BackgroundFunction functionInstance = function.newInstance();
+				final EELS_BackgroundFunction functionInstance = function.newInstance();
 				functions.put(functionInstance.getFunctionName(), functionInstance);
+			} catch (final InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (final IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			catch (final InstantiationException e) {}
-			catch (final IllegalAccessException e) {}
 		}
 	}
 
@@ -66,9 +68,9 @@ public class FunctionList {
 	}
 
 	public String[] getKeys() {
-		Set<String> set = functions.keySet();
-		String[] keys = new String[functions.size()];
-		Iterator<String> iter = set.iterator();
+		final Set<String> set = functions.keySet();
+		final String[] keys = new String[functions.size()];
+		final Iterator<String> iter = set.iterator();
 		int index = 0;
 		while (iter.hasNext()) {
 			keys[index] = iter.next();

@@ -66,8 +66,7 @@ public class MapResultPanel extends Panel {
 
 		@Override
 		public void actionPerformed(final ActionEvent e) {
-			final DisplayToolMapResult displayToolMapResult =
-				new DisplayToolMapResult();
+			final DisplayToolMapResult displayToolMapResult = new DisplayToolMapResult();
 			final ExportToolMapResult exportToolMapResult = new ExportToolMapResult();
 			if (e.getSource().equals(buttonTable.get("key_showMap"))) {
 				displayToolMapResult.showMap();
@@ -80,8 +79,7 @@ public class MapResultPanel extends Panel {
 			if (e.getSource().equals(buttonTable.get("key_showSNR"))) {
 				final float dqe = Float.valueOf(dqeField.getText());
 				if (dqe < 0 | dqe > 1) {
-					LogWriter.showWarningAndWriteLog(PluginMessages.getString(
-						"Error.WrongDQE"));
+					LogWriter.showWarningAndWriteLog(PluginMessages.getString("Error.WrongDQE"));
 					return;
 				}
 				displayToolMapResult.showSNR(dqe);
@@ -90,8 +88,7 @@ public class MapResultPanel extends Panel {
 			if (e.getSource().equals(buttonTable.get("key_exportSNR"))) {
 				final float dqe = Float.valueOf(dqeField.getText());
 				if (dqe < 0 | dqe > 1) {
-					LogWriter.showWarningAndWriteLog(PluginMessages.getString(
-						"Error.WrongDQE"));
+					LogWriter.showWarningAndWriteLog(PluginMessages.getString("Error.WrongDQE"));
 					return;
 				}
 				exportToolMapResult.exportSNR(dqe);
@@ -161,9 +158,7 @@ public class MapResultPanel extends Panel {
 				exportToolMapResult.exportErrorMap();
 				return;
 			}
-			if (e.getActionCommand() == PluginMessages.getString(
-				"Button.CloseMapResult"))
-			{
+			if (e.getActionCommand() == PluginMessages.getString("Button.CloseMapResult")) {
 				PluginAPI.getInstance().getMainMenu().closeMapResultPanel();
 				return;
 			}
@@ -202,23 +197,23 @@ public class MapResultPanel extends Panel {
 	/**
 	 * The {@link Button} is placed at the second or third row of each column.
 	 *
-	 * @param key The {@link Button} is linked at the {@link Hashtable}
-	 *          buttonTable with the given key.
-	 * @param pos The index of the used column.
-	 * @param exportButton <code>true</code> if it is an export-{@link Button}
-	 *          that is placed at the third row.<br>
-	 *          Otherwise it is a show-{@link Button} that is placed at the second
-	 *          row.
+	 * @param key
+	 *            The {@link Button} is linked at the {@link Hashtable}
+	 *            buttonTable with the given key.
+	 * @param pos
+	 *            The index of the used column.
+	 * @param exportButton
+	 *            <code>true</code> if it is an export-{@link Button} that is
+	 *            placed at the third row.<br>
+	 *            Otherwise it is a show-{@link Button} that is placed at the
+	 *            second row.
 	 */
-	private void addButton(final String key, final int pos,
-		final boolean exportButton)
-	{
+	private void addButton(final String key, final int pos, final boolean exportButton) {
 		Button jButton;
 		if (exportButton) {
 			jButton = new Button(PluginMessages.getString("Button.Export"));
 			addToMapResultPanel(jButton, 2, pos, 1, 1);
-		}
-		else {
+		} else {
 			jButton = new Button(PluginMessages.getString("Button.Show"));
 			addToMapResultPanel(jButton, 1, pos, 1, 1);
 		}
@@ -229,17 +224,16 @@ public class MapResultPanel extends Panel {
 
 	/**
 	 * The {@link MapResultPanel} is filled with a column for each result of the
-	 * elemental-map calculation. A column consists of 3 rows: a {@link Label} and
-	 * 2 {@link Button}. The first {@link Button} displays an image, the second
-	 * will export the image.
+	 * elemental-map calculation. A column consists of 3 rows: a {@link Label}
+	 * and 2 {@link Button}. The first {@link Button} displays an image, the
+	 * second will export the image.
 	 */
 	private void addComponents() {
-		buttonTable = new Hashtable<String, Button>();
+		buttonTable = new Hashtable<>();
 		int pos = 0;
 		// Title of the image that is used
-		addToMapResultPanel(new Label(PluginMessages.getString(
-			"Label.SelectedStack") + PluginAPI.getInstance().getDatasetAPI()
-				.getImagePlus().getTitle()), 0, pos, 3, 1);
+		addToMapResultPanel(new Label(PluginMessages.getString("Label.SelectedStack")
+				+ PluginAPI.getInstance().getDatasetAPI().getImagePlus().getTitle()), 0, pos, 3, 1);
 		pos++;
 		addLabel(PluginMessages.getString("Label.ShowMap"), pos, 1);
 		addButton("key_showMap", pos, false);
@@ -289,8 +283,7 @@ public class MapResultPanel extends Panel {
 		// spacer.setBackground(Color.LIGHT_GRAY);
 		// addToMapResultPanel(spacer, 0, pos, 3, 1);
 		// pos++;
-		final Button closeButton = new Button(PluginMessages.getString(
-			"Button.CloseMapResult"));
+		final Button closeButton = new Button(PluginMessages.getString("Button.CloseMapResult"));
 		buttonTable.put("key_closeMapResult", closeButton);
 		closeButton.setEnabled(false);
 		closeButton.addActionListener(mapResultListener);
@@ -303,11 +296,11 @@ public class MapResultPanel extends Panel {
 	 * This method adds a {@link JFormattedTextField} to set the DQE to the
 	 * {@link MapResultPanel}. It is placed at the third column.
 	 *
-	 * @param pos The row where it is placed.
+	 * @param pos
+	 *            The row where it is placed.
 	 */
 	private void addDQEFiled(final int pos) {
-		final DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(
-			Locale.ENGLISH);
+		final DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(Locale.ENGLISH);
 		df.applyPattern("0.0###");
 		dqeField = new JFormattedTextField(df);
 		dqeField.setValue(1);
@@ -318,9 +311,12 @@ public class MapResultPanel extends Panel {
 	/**
 	 * The {@link Label} is placed at the first row of each column.
 	 *
-	 * @param label The {@link Label} text.
-	 * @param pos The index of the used column.
-	 * @param width The width of the label in columns.
+	 * @param label
+	 *            The {@link Label} text.
+	 * @param pos
+	 *            The index of the used column.
+	 * @param width
+	 *            The width of the label in columns.
 	 */
 	private void addLabel(final String label, final int pos, final int width) {
 		final Label jLabel = new Label(label);
@@ -328,18 +324,22 @@ public class MapResultPanel extends Panel {
 	}
 
 	/**
-	 * This method collects all setting for adding a new {@link Component} to the
-	 * {@link MapResultPanel}.
+	 * This method collects all setting for adding a new {@link Component} to
+	 * the {@link MapResultPanel}.
 	 *
-	 * @param comp The {@link Component} you want to add.
-	 * @param x Column, starts at 0
-	 * @param y Row, starts at 0
-	 * @param width Width in rows
-	 * @param height Height in columns
+	 * @param comp
+	 *            The {@link Component} you want to add.
+	 * @param x
+	 *            Column, starts at 0
+	 * @param y
+	 *            Row, starts at 0
+	 * @param width
+	 *            Width in rows
+	 * @param height
+	 *            Height in columns
 	 */
-	private void addToMapResultPanel(final Component comp, final int x,
-		final int y, final int width, final int height)
-	{
+	private void addToMapResultPanel(final Component comp, final int x, final int y, final int width,
+			final int height) {
 		final GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = x;
 		gbc.gridy = y;
@@ -353,10 +353,11 @@ public class MapResultPanel extends Panel {
 	}
 
 	/**
-	 * A single {@link Button} that is linked at the {@link Hashtable} buttonTable
-	 * can be enabled.
+	 * A single {@link Button} that is linked at the {@link Hashtable}
+	 * buttonTable can be enabled.
 	 *
-	 * @param key The key to access the button.
+	 * @param key
+	 *            The key to access the button.
 	 */
 	public void enableButton(final String key) {
 		final Button button = buttonTable.get(key);

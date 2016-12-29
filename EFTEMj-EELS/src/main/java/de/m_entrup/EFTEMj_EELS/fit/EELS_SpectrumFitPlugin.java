@@ -54,8 +54,7 @@ public class EELS_SpectrumFitPlugin implements ExtendedPlugInFilter {
 			if (win instanceof PlotWindow && win.isVisible()) {
 				final PlotWindow plotWin = (PlotWindow) win;
 				oldPlot = plotWin.getPlot();
-				pl = new PointList(oldPlot.getXValues(), oldPlot.getYValues(), oldPlot
-					.getLimits());
+				pl = new PointList(oldPlot.getXValues(), oldPlot.getYValues(), oldPlot.getLimits());
 				final FunctionList funcList = new FunctionList();
 				functions = funcList.getFunctions();
 				functionsNames = funcList.getKeys();
@@ -71,12 +70,11 @@ public class EELS_SpectrumFitPlugin implements ExtendedPlugInFilter {
 		final double lowerLimit = gd.getNextNumber();
 		final double upperLimit = gd.getNextNumber();
 		final boolean showNevativeSignal = gd.getNextBoolean();
-		if (!fitFunctionName.equals(prvFitFunctionName) |
-			lowerLimit != prvLowerLimit | upperLimit != prvUpperLimit)
-		{
+		if (!fitFunctionName.equals(prvFitFunctionName) | lowerLimit != prvLowerLimit | upperLimit != prvUpperLimit) {
 			startX = (int) ((lowerLimit >= pl.getMin()) ? lowerLimit : pl.getMin());
 			stopX = (int) ((upperLimit <= pl.getMax()) ? upperLimit : pl.getMax());
-			if (startX >= stopX) return;
+			if (startX >= stopX)
+				return;
 			pl.filterXValues();
 			pl.filterYValues();
 			newPlotCopy();
@@ -86,8 +84,7 @@ public class EELS_SpectrumFitPlugin implements ExtendedPlugInFilter {
 			newPlot.setColor("green");
 			newPlot.addPoints(pl.getSignalX(), pl.getSignalY(), Plot.LINE);
 			newPlot.setColor("blue");
-			newPlot.addPoints(pl.getFilteredXValues(), pl.getFilteredYValues(),
-				Plot.BOX);
+			newPlot.addPoints(pl.getFilteredXValues(), pl.getFilteredYValues(), Plot.BOX);
 			newPlot.setColor("black"); // to get a black line for the main curve
 			prvFitFunctionName = fitFunctionName;
 			prvLowerLimit = lowerLimit;
@@ -96,8 +93,7 @@ public class EELS_SpectrumFitPlugin implements ExtendedPlugInFilter {
 				final double[] limits = oldPlot.getLimits();
 				newPlot.setLimits(pl.getMin(), pl.getMax(), 0, limits[3]);
 				newPlotWin.drawPlot(newPlot);
-			}
-			else {
+			} else {
 				newPlotWin = newPlot.show();
 			}
 		}
@@ -115,8 +111,7 @@ public class EELS_SpectrumFitPlugin implements ExtendedPlugInFilter {
 			else {
 				newPlot.setLimitsToFit(false);
 			}
-		}
-		catch (NullPointerException e) {
+		} catch (final NullPointerException e) {
 			return;
 		}
 		newPlot.updateImage();
@@ -129,9 +124,7 @@ public class EELS_SpectrumFitPlugin implements ExtendedPlugInFilter {
 	}
 
 	@Override
-	public int showDialog(final ImagePlus arg0, final String arg1,
-		final PlugInFilterRunner arg2)
-	{
+	public int showDialog(final ImagePlus arg0, final String arg1, final PlugInFilterRunner arg2) {
 		gd = new GenericDialog("EELS background fit");
 		gd.addChoice("Fit method", functionsNames, functionsNames[0]);
 		gd.addMessage("Background fit intervall");
@@ -151,16 +144,14 @@ public class EELS_SpectrumFitPlugin implements ExtendedPlugInFilter {
 
 	public static void main(final String[] args) throws URISyntaxException {
 		new ImageJ();
-		final URI uri = EELS_SpectrumFitPlugin.class.getResource(
-			"/examples/EELS_C_K-edge.msa").toURI();
+		final URI uri = EELS_SpectrumFitPlugin.class.getResource("/examples/EELS_C_K-edge.msa").toURI();
 		final Plot plot = new EELS_SpectrumFromMsaPlugin().getPlot(new File(uri));
 		plot.show();
 		IJ.runPlugIn(EELS_SpectrumFitPlugin.class.getName(), "");
 	}
 
 	private void newPlotCopy() {
-		newPlot = new Plot("Fit of " + oldPlot.getTitle(), "", "", pl.getXArray(),
-			pl.getYArray());
+		newPlot = new Plot("Fit of " + oldPlot.getTitle(), "", "", pl.getXArray(), pl.getYArray());
 		newPlot.useTemplate(oldPlot, Plot.COPY_LABELS);
 	}
 
@@ -176,16 +167,14 @@ public class EELS_SpectrumFitPlugin implements ExtendedPlugInFilter {
 		private final Double min;
 		private final Double max;
 
-		public PointList(final float[] xVals, final float[] yVals,
-			final double[] limits)
-		{
-			valuesX = new ArrayList<Double>();
-			valuesY = new ArrayList<Double>();
-			filteredX = new ArrayList<Double>();
-			filteredY = new ArrayList<Double>();
-			fittedY = new ArrayList<Double>();
-			signalX = new ArrayList<Double>();
-			signalY = new ArrayList<Double>();
+		public PointList(final float[] xVals, final float[] yVals, final double[] limits) {
+			valuesX = new ArrayList<>();
+			valuesY = new ArrayList<>();
+			filteredX = new ArrayList<>();
+			filteredY = new ArrayList<>();
+			fittedY = new ArrayList<>();
+			signalX = new ArrayList<>();
+			signalY = new ArrayList<>();
 			for (int i = 0; i < xVals.length; i++) {
 				if (xVals[i] > limits[0] & xVals[i] < limits[1]) {
 					valuesX.add((double) xVals[i]);
@@ -222,13 +211,11 @@ public class EELS_SpectrumFitPlugin implements ExtendedPlugInFilter {
 		}
 
 		public double[] getXArray() {
-			return ArrayUtils.toPrimitive(valuesX.toArray(new Double[valuesX
-				.size()]));
+			return ArrayUtils.toPrimitive(valuesX.toArray(new Double[valuesX.size()]));
 		}
 
 		public double[] getYArray() {
-			return ArrayUtils.toPrimitive(valuesY.toArray(new Double[valuesY
-				.size()]));
+			return ArrayUtils.toPrimitive(valuesY.toArray(new Double[valuesY.size()]));
 		}
 
 		public ArrayList<Double> getFilteredXValues() {
@@ -236,7 +223,7 @@ public class EELS_SpectrumFitPlugin implements ExtendedPlugInFilter {
 		}
 
 		public void filterXValues() {
-			filteredX = new ArrayList<Double>();
+			filteredX = new ArrayList<>();
 			final Iterator<Double> it = valuesX.iterator();
 			while (it.hasNext()) {
 				final double val = it.next();
@@ -251,7 +238,7 @@ public class EELS_SpectrumFitPlugin implements ExtendedPlugInFilter {
 		}
 
 		public void filterYValues() {
-			filteredY = new ArrayList<Double>();
+			filteredY = new ArrayList<>();
 			for (int i = 0; i < valuesY.size(); i++) {
 				final double val = valuesX.get(i);
 				if (val >= startX & val <= stopX) {
@@ -262,26 +249,24 @@ public class EELS_SpectrumFitPlugin implements ExtendedPlugInFilter {
 		}
 
 		public void performFit(final EELS_BackgroundFunction function) {
-			final ArrayList<WeightedObservedPoint> points =
-				new ArrayList<WeightedObservedPoint>();
+			final ArrayList<WeightedObservedPoint> points = new ArrayList<>();
 			for (int i = 0; i < filteredX.size(); i++) {
-				points.add(new WeightedObservedPoint(Math.sqrt(filteredY.get(i)),
-					filteredX.get(i), filteredY.get(i)));
+				points.add(new WeightedObservedPoint(Math.sqrt(filteredY.get(i)), filteredX.get(i), filteredY.get(i)));
 			}
-			if (points.size() < function.getInitialParameters().length) return;
+			if (points.size() < function.getInitialParameters().length)
+				return;
 			final SpectrumFitter fitter = new SpectrumFitter(function);
 			try {
 				final double[] coeffs = fitter.fit(points);
-				fittedY = new ArrayList<Double>();
-				signalX = new ArrayList<Double>();
-				signalY = new ArrayList<Double>();
+				fittedY = new ArrayList<>();
+				signalX = new ArrayList<>();
+				signalY = new ArrayList<>();
 				for (int i = 0; i < valuesX.size(); i++) {
 					fittedY.add(function.value(valuesX.get(i), coeffs));
 					signalX.add(valuesX.get(i));
 					signalY.add(valuesY.get(i) - fittedY.get(i));
 				}
-			}
-			catch (final ConvergenceException e) {
+			} catch (final ConvergenceException e) {
 				IJ.log(e.getLocalizedMessage());
 				return;
 			}
@@ -302,9 +287,7 @@ public class EELS_SpectrumFitPlugin implements ExtendedPlugInFilter {
 			}
 
 			@Override
-			protected LeastSquaresProblem getProblem(
-				final Collection<WeightedObservedPoint> points)
-			{
+			protected LeastSquaresProblem getProblem(final Collection<WeightedObservedPoint> points) {
 				final int len = points.size();
 				final double[] target = new double[len];
 				final double[] weights = new double[len];
@@ -316,13 +299,12 @@ public class EELS_SpectrumFitPlugin implements ExtendedPlugInFilter {
 					weights[i] = point.getWeight();
 					i += 1;
 				}
-				final AbstractCurveFitter.TheoreticalValuesFunction model =
-					new AbstractCurveFitter.TheoreticalValuesFunction(function, points);
+				final AbstractCurveFitter.TheoreticalValuesFunction model = new AbstractCurveFitter.TheoreticalValuesFunction(
+						function, points);
 
-				return new LeastSquaresBuilder().maxEvaluations(Integer.MAX_VALUE)
-					.maxIterations(Integer.MAX_VALUE).start(initialGuess).target(target)
-					.weight(new DiagonalMatrix(weights)).model(model.getModelFunction(),
-						model.getModelFunctionJacobian()).build();
+				return new LeastSquaresBuilder().maxEvaluations(Integer.MAX_VALUE).maxIterations(Integer.MAX_VALUE)
+						.start(initialGuess).target(target).weight(new DiagonalMatrix(weights))
+						.model(model.getModelFunction(), model.getModelFunctionJacobian()).build();
 			}
 		}
 	}

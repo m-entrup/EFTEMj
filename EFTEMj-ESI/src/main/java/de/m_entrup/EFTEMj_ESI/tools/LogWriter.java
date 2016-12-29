@@ -56,24 +56,24 @@ public class LogWriter {
 	 * This {@link Vector} is used to store all logs that are made during a
 	 * process. If a new process starts this {@link Vector} is cleared.
 	 */
-	private static Vector<String> processLog = new Vector<String>();
-	private static Vector<String> statistics = new Vector<String>();
+	private static Vector<String> processLog = new Vector<>();
+	private static Vector<String> statistics = new Vector<>();
 
 	/**
 	 * This method creates a new processLog {@link Vector}. Only logs at the GUI
 	 * are cleared. This does not influence the logfile.
 	 */
 	public static void clearProcessLog() {
-		processLog = new Vector<String>();
+		processLog = new Vector<>();
 	}
 
 	public static void clearStatistics() {
-		statistics = new Vector<String>();
+		statistics = new Vector<>();
 	}
 
 	/**
-	 * @return the {@link Vector} that contains all process-logs that were stored
-	 *         after the last call of <code>clearProcessLog()</code>.
+	 * @return the {@link Vector} that contains all process-logs that were
+	 *         stored after the last call of <code>clearProcessLog()</code>.
 	 */
 	public static Vector<String> getProcessLog() {
 		return processLog;
@@ -92,8 +92,9 @@ public class LogWriter {
 	 * This method writes a {@link String} to the logfile of the plugin.
 	 * Additionally the {@link String} is displayed as a MessageDialog.
 	 *
-	 * @param text A text that is written to the logfile and displayed as a
-	 *          MessageDialog.
+	 * @param text
+	 *            A text that is written to the logfile and displayed as a
+	 *            MessageDialog.
 	 */
 	public static void showWarningAndWriteLog(final String text) {
 		IJ.showMessage(PluginMessages.getString("Titel.Warning"), text);
@@ -103,7 +104,8 @@ public class LogWriter {
 	/**
 	 * This method writes a {@link String} to the logfile of the plugin.
 	 *
-	 * @param text A text that is written to the logfile.
+	 * @param text
+	 *            A text that is written to the logfile.
 	 */
 	public static void writeLog(final String text) {
 		if (newSession) {
@@ -111,8 +113,7 @@ public class LogWriter {
 			newSession = false;
 		}
 		DateFormat df;
-		df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM,
-			Locale.ENGLISH);
+		df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.ENGLISH);
 		final String dateAndTime = df.format(new Date());
 		new LogFileHandler(dateAndTime + ": " + text).writeToLogFile();
 
@@ -123,21 +124,23 @@ public class LogWriter {
 	 * Additionally the {@link String} is added to the processLog {@link Vector}
 	 * to display the logs at the GUI.
 	 *
-	 * @param text A text that is written to the logfile and added to the
-	 *          processLog {@link Vector}.
-	 * @param process The type of process (e.g. {@link LogWriter}.DRIFT)
+	 * @param text
+	 *            A text that is written to the logfile and added to the
+	 *            processLog {@link Vector}.
+	 * @param process
+	 *            The type of process (e.g. {@link LogWriter}.DRIFT)
 	 */
 	public static void writeProcessLog(final String text, final int process) {
 		processLog.add(text);
 		switch (process) {
-			case DRIFT:
-				writeLog("Drift correction: " + text);
-				break;
-			case MAP:
-				writeLog("Elemental mapping: " + text);
-				break;
-			default:
-				break;
+		case DRIFT:
+			writeLog("Drift correction: " + text);
+			break;
+		case MAP:
+			writeLog("Elemental mapping: " + text);
+			break;
+		default:
+			break;
 		}
 
 	}
@@ -147,8 +150,9 @@ public class LogWriter {
 	 * Additionally the {@link String} is added to the statistics {@link Vector}
 	 * to display the statistics at the GUI.
 	 *
-	 * @param text A text that is written to the logfile and added to the
-	 *          statistics {@link Vector}.
+	 * @param text
+	 *            A text that is written to the logfile and added to the
+	 *            statistics {@link Vector}.
 	 */
 	public static void writeStatistics(final String text) {
 		statistics.add(text);

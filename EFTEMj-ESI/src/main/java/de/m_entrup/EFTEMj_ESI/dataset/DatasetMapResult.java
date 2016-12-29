@@ -102,17 +102,13 @@ public class DatasetMapResult {
 		rMap = new float[datasetAPI.getWidth() * datasetAPI.getHeight()];
 		aMap = new float[datasetAPI.getWidth() * datasetAPI.getHeight()];
 		errorMap = new float[datasetAPI.getWidth() * datasetAPI.getHeight()];
-		vec_LoopCount = new Vector<Integer>();
+		vec_LoopCount = new Vector<>();
 		array_BackgroundImage = new EFTEMImage[datasetAPI.getStackSize()];
 		array_RelativeBackgroundImage = new EFTEMImage[datasetAPI.getStackSize()];
-		array_Map = new EFTEMImage[datasetAPI.getStackSize() - datasetAPI
-			.getEdgeIndex()];
-		array_Sigma2 = new EFTEMImage[datasetAPI.getStackSize() - datasetAPI
-			.getEdgeIndex()];
-		array_SNR = new EFTEMImage[datasetAPI.getStackSize() - datasetAPI
-			.getEdgeIndex()];
-		coefficientOfDeterminationMap = new float[datasetAPI.getWidth() * datasetAPI
-			.getHeight()];
+		array_Map = new EFTEMImage[datasetAPI.getStackSize() - datasetAPI.getEdgeIndex()];
+		array_Sigma2 = new EFTEMImage[datasetAPI.getStackSize() - datasetAPI.getEdgeIndex()];
+		array_SNR = new EFTEMImage[datasetAPI.getStackSize() - datasetAPI.getEdgeIndex()];
+		coefficientOfDeterminationMap = new float[datasetAPI.getWidth() * datasetAPI.getHeight()];
 		chi2Map = new float[datasetAPI.getWidth() * datasetAPI.getHeight()];
 	}
 }

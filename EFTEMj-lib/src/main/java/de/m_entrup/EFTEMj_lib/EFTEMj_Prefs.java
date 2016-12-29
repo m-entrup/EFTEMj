@@ -60,7 +60,7 @@ public class EFTEMj_Prefs {
 		final Properties props = Prefs.getControlPanelProperties();
 		final Set<Object> set = props.keySet();
 		final String searchWord = "dispersion";
-		final ArrayList<String> found = new ArrayList<String>();
+		final ArrayList<String> found = new ArrayList<>();
 		for (final Object i : set) {
 			final String str = (String) i;
 			if (str.contains("EFTEMj")) {
@@ -69,16 +69,15 @@ public class EFTEMj_Prefs {
 				}
 			}
 		}
-		IJ.showMessage("EFTEMj keys in IJ_Prefs.txt", "directory: " + Prefs
-			.getPrefsDir() + "\nSize: " + set.size() + "\nEFTEMj keys: " + found
-				.size());
+		IJ.showMessage("EFTEMj keys in IJ_Prefs.txt",
+				"directory: " + Prefs.getPrefsDir() + "\nSize: " + set.size() + "\nEFTEMj keys: " + found.size());
 		for (final String i : found) {
 			IJ.log(i + " = " + props.getProperty(i));
 		}
 	}
 
 	public static ArrayList<String> getAllKeys() {
-		final ArrayList<String> keys = new ArrayList<String>();
+		final ArrayList<String> keys = new ArrayList<>();
 		final Properties props = Prefs.getControlPanelProperties();
 		final Set<Object> set = props.keySet();
 		for (final Object obj : set) {
@@ -91,7 +90,7 @@ public class EFTEMj_Prefs {
 
 	public static ArrayList<String> getAllKeys(final String searchWord) {
 		final ArrayList<String> keys = getAllKeys();
-		final ArrayList<String> found = new ArrayList<String>();
+		final ArrayList<String> found = new ArrayList<>();
 		for (final String key : keys) {
 			if (key.contains(searchWord)) {
 				found.add(key);

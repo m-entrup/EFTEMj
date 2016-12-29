@@ -60,7 +60,7 @@ public class IonisationEdges {
 	 * A private constructor that creates the {@link LinkedHashMap} edges.
 	 */
 	private IonisationEdges() {
-		edges = new LinkedHashMap<Integer, String>();
+		edges = new LinkedHashMap<>();
 		edges.put(51, "Magnesium L<sub>2,3</sub>-edge");
 		edges.put(55, "Lithium K-edge");
 		edges.put(73, "Aluminium L<sub>2,3</sub>-edge");
@@ -121,7 +121,7 @@ public class IonisationEdges {
 		edges.put(3728, "Uranium M<sub>4</sub>-edge");
 
 		try {
-			EFTEMj_Configuration config = ESI_ConfigurationManager.getConfiguration();
+			final EFTEMj_Configuration config = ESI_ConfigurationManager.getConfiguration();
 			/*
 			 * getKeys() returns two keys for an entry like
 			 * "<ESI><IonisationEdges><Hydrogen label="Hydrogen K-edge"
@@ -132,15 +132,15 @@ public class IonisationEdges {
 			 * it both suffixes manually to get energy and label at the same
 			 * iteration of the while loop.
 			 */
-			Iterator<String> iter = config.getKeys(CONFIG_PREFIX);
+			final Iterator<String> iter = config.getKeys(CONFIG_PREFIX);
 			while (iter.hasNext()) {
 				String key = iter.next();
 				key = key.replaceAll("\\[.*\\]", "");
-				int energy = config.getInt(key + "[@energy]");
-				String label = config.getString(key + "[@label]");
+				final int energy = config.getInt(key + "[@energy]");
+				final String label = config.getString(key + "[@label]");
 				edges.put(energy, label);
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			IJ.log(e.toString());
 		}
 	}

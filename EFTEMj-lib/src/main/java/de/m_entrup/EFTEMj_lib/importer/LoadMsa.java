@@ -61,40 +61,40 @@ public class LoadMsa {
 	 * Get a {@link BufferedReader} and load the energy loss data line by line.
 	 * The data is stored in an {@link EnergyLossData} object.
 	 *
+	 * @param path
+	 *            is the full path to the msa file to load.
 	 * @throws IOException
-	 * @param path is the full path to the msa file to load.
 	 */
 	public LoadMsa(final String path) throws IOException {
-		final BufferedReader br = new BufferedReader(new FileReader(new File(
-			path)));
-		String s = null;
-		eels = new EnergyLossData();
-		while ((s = br.readLine()) != null) {
-			if (!s.startsWith("#")) {
-				final String[] items = s.split(",");
-				eels.add(new EnergyLossPoint(Double.parseDouble(items[0]), Double
-					.parseDouble(items[1])));
-			}
-			else {
-				String extract = extractMatch("#XUNITS\\s*:\\s*(\\S+)", s);
-				if (extract != null) {
-					eels.setXUnit(extract);
-					continue;
-				}
-				extract = extractMatch("#YUNITS\\s*:\\s*(\\S+)", s);
-				if (extract != null) {
-					eels.setYUnit(extract);
-					continue;
+		try (final BufferedReader br = new BufferedReader(new FileReader(new File(path)))) {
+			String s = null;
+			eels = new EnergyLossData();
+			while ((s = br.readLine()) != null) {
+				if (!s.startsWith("#")) {
+					final String[] items = s.split(",");
+					eels.add(new EnergyLossPoint(Double.parseDouble(items[0]), Double.parseDouble(items[1])));
+				} else {
+					String extract = extractMatch("#XUNITS\\s*:\\s*(\\S+)", s);
+					if (extract != null) {
+						eels.setXUnit(extract);
+						continue;
+					}
+					extract = extractMatch("#YUNITS\\s*:\\s*(\\S+)", s);
+					if (extract != null) {
+						eels.setYUnit(extract);
+						continue;
+					}
 				}
 			}
+			br.close();
 		}
-		br.close();
 	}
 
 	private String extractMatch(final String pattern, final String input) {
 		final Pattern pat = Pattern.compile(pattern);
 		final Matcher match = pat.matcher(input);
-		if (!match.find()) return null;
+		if (!match.find())
+			return null;
 		final String s = match.group(1);
 		return s;
 	}

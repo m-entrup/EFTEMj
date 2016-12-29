@@ -45,7 +45,6 @@ public class CameraSetup {
 
 	/**
 	 * @return the height of the camera stored at the ImageJ preferences.
-	 * @throws ConfigurationException
 	 */
 	public static int getFullHeight() {
 		EFTEMj_Configuration config;
@@ -60,7 +59,8 @@ public class CameraSetup {
 				config.save();
 			}
 			return height;
-		} catch (ConfigurationException e) {
+		} catch (final ConfigurationException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return 1;
@@ -68,7 +68,6 @@ public class CameraSetup {
 
 	/**
 	 * @return the width of the camera stored at the ImageJ preferences.
-	 * @throws ConfigurationException
 	 */
 	public static int getFullWidth() {
 		EFTEMj_Configuration config;
@@ -82,7 +81,7 @@ public class CameraSetup {
 				config.save();
 			}
 			return width;
-		} catch (ConfigurationException e) {
+		} catch (final ConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

@@ -79,21 +79,18 @@ public class DriftSetupDialog extends EFTEMFrame implements ChangeListener {
 			// int index = new Integer(templateField.getText());
 			final int index = templateMenu.getSelectedIndex() + 1;
 			if (index < 1 | index > datasetAPI.getStackSize()) {
-				LogWriter.showWarningAndWriteLog(PluginMessages.getString(
-					"Error.TemplateIndex"));
+				LogWriter.showWarningAndWriteLog(PluginMessages.getString("Error.TemplateIndex"));
 				return;
 			}
 			if (datasetAPI.createDatasetDriftInput(delta, index) == false) {
-				LogWriter.showWarningAndWriteLog(PluginMessages.getString(
-					"Error.Delta"));
+				LogWriter.showWarningAndWriteLog(PluginMessages.getString("Error.Delta"));
 				return;
 			}
 			DriftSetupDialog.this.dispose();
 			try {
 				final DriftExecutor executor = new DriftExecutor();
 				executor.execute();
-			}
-			catch (final Exception e) {
+			} catch (final Exception e) {
 				IJ.showMessage(e.getMessage());
 			}
 		}
@@ -109,8 +106,8 @@ public class DriftSetupDialog extends EFTEMFrame implements ChangeListener {
 	 */
 	// private JFormattedTextField deltaField;
 	/**
-	 * At this slider the max image shift is set. It can be accessed by the inner
-	 * ActionListener class.
+	 * At this slider the max image shift is set. It can be accessed by the
+	 * inner ActionListener class.
 	 */
 	private JSlider deltaSlider;
 
@@ -128,16 +125,14 @@ public class DriftSetupDialog extends EFTEMFrame implements ChangeListener {
 	/**
 	 * The constructor creates a new {@link Frame} using the constructor of
 	 * {@link EFTEMFrame}. The class {@link DescriptionPanel} is used for the
-	 * description. A {@link Panel} using the {@link GridLayout} is placed at the
-	 * CENTER and the {@link OkCancelPanel} is used at the SOUTH panel.
+	 * description. A {@link Panel} using the {@link GridLayout} is placed at
+	 * the CENTER and the {@link OkCancelPanel} is used at the SOUTH panel.
 	 */
 	public DriftSetupDialog() {
 		super(PluginMessages.getString("Titel.DriftSetupDialog"));
 		// NORTH: description
-		final DescriptionPanel northPanel = new DescriptionPanel(PluginMessages
-			.getString("Label.DriftSetupInfo"));
-		northPanel.setDetailedDescription(PluginMessages.getString(
-			"Label.DriftSetupDetailedInfo"));
+		final DescriptionPanel northPanel = new DescriptionPanel(PluginMessages.getString("Label.DriftSetupInfo"));
+		northPanel.setDetailedDescription(PluginMessages.getString("Label.DriftSetupDetailedInfo"));
 		super.addToNorthPanel(northPanel);
 		// CENTER: variable table to edit the energy loss
 		super.addToCenterPanel(createOptionPanel());
@@ -154,7 +149,8 @@ public class DriftSetupDialog extends EFTEMFrame implements ChangeListener {
 	/**
 	 * Sets the number of columns to 3 and the alignment to RIGHT.
 	 *
-	 * @param field The {@link JFormattedTextField} that gets configured
+	 * @param field
+	 *            The {@link JFormattedTextField} that gets configured
 	 */
 	/*
 	 * private void configField(JFormattedTextField field) {
@@ -164,24 +160,21 @@ public class DriftSetupDialog extends EFTEMFrame implements ChangeListener {
 
 	/**
 	 * At the CENTER of the {@link BorderLayout} an {@link GridLayout} is added
-	 * that contains the {@link JFormattedTextField}s for delta and templateIndex.
-	 * For both {@link JFormattedTextField}s an {@link Label} shows a short
-	 * description.
+	 * that contains the {@link JFormattedTextField}s for delta and
+	 * templateIndex. For both {@link JFormattedTextField}s an {@link Label}
+	 * shows a short description.
 	 */
 	private Panel createOptionPanel() {
 		// Configuration delta
 		final int maxDelta = getRoiBorderDist();
 		// The largest value should be a multiple of 10. But this only counts if
 		// larger than 10.
-		deltaSlider = new JSlider(0, Math.min(Math.max(maxDelta / 10 * 10, 10),
-			maxDelta));
-		final Hashtable<Integer, JLabel> labelTable =
-			new Hashtable<Integer, JLabel>();
+		deltaSlider = new JSlider(0, Math.min(Math.max(maxDelta / 10 * 10, 10), maxDelta));
+		final Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
 		labelTable.put(new Integer(0), new JLabel(Integer.toString(0)));
-		labelTable.put(new Integer(deltaSlider.getMaximum() / 2), new JLabel(Integer
-			.toString(deltaSlider.getMaximum() / 2)));
-		labelTable.put(new Integer(deltaSlider.getMaximum()), new JLabel(Integer
-			.toString(deltaSlider.getMaximum())));
+		labelTable.put(new Integer(deltaSlider.getMaximum() / 2),
+				new JLabel(Integer.toString(deltaSlider.getMaximum() / 2)));
+		labelTable.put(new Integer(deltaSlider.getMaximum()), new JLabel(Integer.toString(deltaSlider.getMaximum())));
 		deltaSlider.setValue(Math.min(maxDelta / 2, 20));
 		deltaSlider.setLabelTable(labelTable);
 		deltaSlider.setMinorTickSpacing(Math.min(Math.max(maxDelta / 10, 1), 10));
@@ -190,8 +183,7 @@ public class DriftSetupDialog extends EFTEMFrame implements ChangeListener {
 		deltaSlider.setBackground(this.getBackground());
 		deltaSlider.addChangeListener(this);
 
-		sliderSelectionLabel = new Label(String.format("%d", deltaSlider
-			.getValue()));
+		sliderSelectionLabel = new Label(String.format("%d", deltaSlider.getValue()));
 		/*
 		 * deltaField = new JFormattedTextField(new NumberFormatter( new
 		 * DecimalFormat("####")));
@@ -210,13 +202,11 @@ public class DriftSetupDialog extends EFTEMFrame implements ChangeListener {
 		 */
 		// Create a GridLayout
 		final Panel panel = new Panel();
-		final GridLayout gLayout = new GridLayout(4, 2, PluginConstants.LAYOUT__GAP,
-			PluginConstants.LAYOUT__GAP);
+		final GridLayout gLayout = new GridLayout(4, 2, PluginConstants.LAYOUT__GAP, PluginConstants.LAYOUT__GAP);
 		panel.setLayout(gLayout);
 		// Title of the image that is used
 		panel.add(new Label(PluginMessages.getString("Label.SelectedStack")));
-		panel.add(new Label(PluginAPI.getInstance().getDatasetAPI().getImagePlus()
-			.getTitle()));
+		panel.add(new Label(PluginAPI.getInstance().getDatasetAPI().getImagePlus().getTitle()));
 		// Add delta to GridLayout
 		panel.add(new Label(PluginMessages.getString("Label.Delta")));
 		panel.add(deltaSlider);
@@ -234,12 +224,16 @@ public class DriftSetupDialog extends EFTEMFrame implements ChangeListener {
 		final ImagePlus imp = datasetAPI.getImagePlus();
 		int dist = Math.max(imp.getWidth(), imp.getHeight());
 		final Rectangle roi = imp.getRoi().getBounds();
-		if (roi.x < dist) dist = roi.x;
-		if (roi.y < dist) dist = roi.y;
+		if (roi.x < dist)
+			dist = roi.x;
+		if (roi.y < dist)
+			dist = roi.y;
 		final int spacingRight = imp.getWidth() - roi.x - roi.width;
-		if (spacingRight < dist) dist = spacingRight;
+		if (spacingRight < dist)
+			dist = spacingRight;
 		final int spacingBot = imp.getHeight() - roi.y - roi.height;
-		if (spacingBot < dist) dist = spacingBot;
+		if (spacingBot < dist)
+			dist = spacingBot;
 		return dist;
 	}
 

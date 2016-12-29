@@ -30,6 +30,7 @@ package de.m_entrup.EFTEMj_ESI.simple;
 import java.util.ArrayList;
 
 import org.apache.commons.math3.fitting.WeightedObservedPoint;
+
 import de.m_entrup.EFTEMj_lib.lma.PowerLawFunction;
 
 /**
@@ -37,66 +38,66 @@ import de.m_entrup.EFTEMj_lib.lma.PowerLawFunction;
  */
 public class PowerLawFit_LMA extends PowerLawFit {
 
-    private static double[] initialGuess = { Math.exp(20), -2.0 };
-    private static LMACurveFitter fitter = new LMACurveFitter(new PowerLawFunction()).setInitialGuess(initialGuess);
-    private ArrayList<WeightedObservedPoint> points;
+	private static double[] initialGuess = { Math.exp(20), -2.0 };
+	private static LMACurveFitter fitter = new LMACurveFitter(new PowerLawFunction()).setInitialGuess(initialGuess);
+	private final ArrayList<WeightedObservedPoint> points;
 
-    public PowerLawFit_LMA(final double[] xValues, final double[] yValues, final double epsilon) {
-	super(xValues, yValues, epsilon);
-	if (fitter.getLimit() != epsilon) {
-	    fitter.setLimit(epsilon);
+	public PowerLawFit_LMA(final double[] xValues, final double[] yValues, final double epsilon) {
+		super(xValues, yValues, epsilon);
+		if (fitter.getLimit() != epsilon) {
+			fitter.setLimit(epsilon);
+		}
+		points = new ArrayList<>();
+		this.xValues = new double[xValues.length];
+		this.yValues = new double[yValues.length];
+		for (int i = 0; i < xValues.length; i++) {
+			this.xValues[i] = xValues[i];
+			this.yValues[i] = yValues[i];
+			points.add(new WeightedObservedPoint(Math.sqrt(yValues[i]), this.xValues[i], this.yValues[i]));
+		}
 	}
-	points = new ArrayList<WeightedObservedPoint>();
-	this.xValues = new double[xValues.length];
-	this.yValues = new double[yValues.length];
-	for (int i = 0; i < xValues.length; i++) {
-	    this.xValues[i] = xValues[i];
-	    this.yValues[i] = yValues[i];
-	    points.add(new WeightedObservedPoint(Math.sqrt(yValues[i]), this.xValues[i], this.yValues[i]));
-	}
-    }
 
-    @Override
-    public void doFit() {
-	if (checkPoints(points)) {
-	    double[] coeffs;
-	    try {
-		coeffs = fitter.fit(points);
-	    } catch (Exception e) {
-		coeffs = new double[2];
-		coeffs[0] = Double.NaN;
-		coeffs[1] = Double.NaN;
-	    }
-	    errorCode = ERROR_NONE;
-	    if (Double.isNaN(coeffs[0]))
-		errorCode = ERROR_A_NAN;
-	    if (Double.isInfinite(coeffs[0]))
-		errorCode = ERROR_A_INFINITE;
-	    if (Double.isNaN(coeffs[1]))
-		errorCode = ERROR_R_NAN;
-	    if (Double.isInfinite(coeffs[1]))
-		errorCode = ERROR_R_INFINITE;
-	    if (errorCode == ERROR_NONE) {
-		a = coeffs[0];
-		r = -coeffs[1];
-	    } else {
-		a = Double.NaN;
-		r = Double.NaN;
-	    }
-	} else {
-	    errorCode = ERROR_CONVERGE;
-	    a = Double.NaN;
-	    r = Double.NaN;
+	@Override
+	public void doFit() {
+		if (checkPoints(points)) {
+			double[] coeffs;
+			try {
+				coeffs = fitter.fit(points);
+			} catch (final Exception e) {
+				coeffs = new double[2];
+				coeffs[0] = Double.NaN;
+				coeffs[1] = Double.NaN;
+			}
+			errorCode = ERROR_NONE;
+			if (Double.isNaN(coeffs[0]))
+				errorCode = ERROR_A_NAN;
+			if (Double.isInfinite(coeffs[0]))
+				errorCode = ERROR_A_INFINITE;
+			if (Double.isNaN(coeffs[1]))
+				errorCode = ERROR_R_NAN;
+			if (Double.isInfinite(coeffs[1]))
+				errorCode = ERROR_R_INFINITE;
+			if (errorCode == ERROR_NONE) {
+				a = coeffs[0];
+				r = -coeffs[1];
+			} else {
+				a = Double.NaN;
+				r = Double.NaN;
+			}
+		} else {
+			errorCode = ERROR_CONVERGE;
+			a = Double.NaN;
+			r = Double.NaN;
+		}
+		done = true;
 	}
-	done = true;
-    }
 
-    private boolean checkPoints(ArrayList<WeightedObservedPoint> points2Check) {
-	for (WeightedObservedPoint point : points2Check) {
-	    if (Double.isInfinite(point.getY()) | Double.isNaN(point.getY()))
-		return false;
+	private boolean checkPoints(final ArrayList<WeightedObservedPoint> points2Check) {
+		for (final WeightedObservedPoint point : points2Check) {
+			if (Double.isInfinite(point.getY()) | Double.isNaN(point.getY()))
+				return false;
+		}
+		return true;
 	}
-	return true;
-    }
 
 }

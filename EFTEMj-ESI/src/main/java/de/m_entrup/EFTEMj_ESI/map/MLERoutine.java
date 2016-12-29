@@ -65,15 +65,15 @@ public class MLERoutine extends AbstractFitRoutine {
 	public MLERoutine() {
 		edgeIndex = datasetAPI.getEdgeIndex();
 		array_EFTEMImages = datasetAPI.getEFTEMImageArray();
-		r = new HashMap<Integer, Float>();
-		a = new HashMap<Integer, Float>();
+		r = new HashMap<>();
+		a = new HashMap<>();
 	}
 
 	public MLERoutine(final float epsilon) {
 		edgeIndex = datasetAPI.getEdgeIndex();
 		array_EFTEMImages = datasetAPI.getEFTEMImageArray();
-		r = new HashMap<Integer, Float>();
-		a = new HashMap<Integer, Float>();
+		r = new HashMap<>();
+		a = new HashMap<>();
 		this.epsilon = epsilon;
 	}
 
@@ -173,7 +173,8 @@ public class MLERoutine extends AbstractFitRoutine {
 	/**
 	 * The denominator of the equation to calculate <code>r</code>.
 	 *
-	 * @param rn The value of <code>r</code> at the current iteration.
+	 * @param rn
+	 *            The value of <code>r</code> at the current iteration.
 	 * @return The result of the equation at the denominator.
 	 */
 	private double denominator(final double rn) {
@@ -185,7 +186,8 @@ public class MLERoutine extends AbstractFitRoutine {
 	/**
 	 * The numerator of the equation to calculate <code>r</code>.
 	 *
-	 * @param rn The value of <code>r</code> at the current iteration.
+	 * @param rn
+	 *            The value of <code>r</code> at the current iteration.
 	 * @return The result of the equation at the numerator.
 	 */
 	private double numerator(final double rn) {
@@ -209,15 +211,17 @@ public class MLERoutine extends AbstractFitRoutine {
 	/**
 	 * Calculates the sum of E_i^{exponent}.
 	 *
-	 * @param rn The value of <code>r</code> at the current iteration.
-	 * @param exponent can be 0, 1, or 2.
+	 * @param rn
+	 *            The value of <code>r</code> at the current iteration.
+	 * @param exponent
+	 *            can be 0, 1, or 2.
 	 * @return The sum of power functions.
 	 */
 	private double sumExp(final double rn, final int exponent) {
 		double value = 0;
 		for (int i = 0; i < edgeIndex; i++) {
-			value += (Math.pow(Math.log(array_EFTEMImages[i].getELoss()), exponent)) *
-				Math.exp(-1 * rn * Math.log(array_EFTEMImages[i].getELoss()));
+			value += (Math.pow(Math.log(array_EFTEMImages[i].getELoss()), exponent))
+					* Math.exp(-1 * rn * Math.log(array_EFTEMImages[i].getELoss()));
 		}
 		return value;
 	}
@@ -231,12 +235,12 @@ public class MLERoutine extends AbstractFitRoutine {
 		double value1 = 0;
 		double value2 = 0;
 		for (int i = 0; i < edgeIndex; i++) {
-			value1 += Math.log(array_EFTEMImages[i].getELoss()) * array_EFTEMImages[i]
-				.getPixels()[currentIndex];
+			value1 += Math.log(array_EFTEMImages[i].getELoss()) * array_EFTEMImages[i].getPixels()[currentIndex];
 			value2 += array_EFTEMImages[i].getPixels()[currentIndex];
 		}
 		// If true this will result in 0/1
-		if (value2 == 0) value2 = 1;
+		if (value2 == 0)
+			value2 = 1;
 		return value1 / value2;
 	}
 
