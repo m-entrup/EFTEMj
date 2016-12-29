@@ -15,11 +15,32 @@ import ij.gui.Plot;
 import ij.plugin.PlugIn;
 import ij.plugin.Profiler;
 
+/**
+ * A plugin that is used to create an EEL spectrum from an image.
+ *
+ * If the source image contains Gatan meta data, this data is used to determine
+ * the energy loss interval of the spectrum.
+ *
+ * If there is no meta data and no calibration is stored, the plugin tries to
+ * guess the correct settings by parsing the file name.
+ */
 public class EELS_SpectrumFromImagePlugin extends Profiler {
 
+	/**
+	 * The image to create the spectrum from.
+	 */
 	private ImagePlus sourceImage;
+	/**
+	 * The scale of the energy axis.
+	 */
 	private double scale = 1;
+	/**
+	 * The origin of the energy axis.
+	 */
 	private int origin = 0;
+	/**
+	 * An instance of {@link GatanMetadataExtractor} to get scale and origin.
+	 */
 	private GatanMetadataExtractor extractor;
 
 	/*
@@ -35,17 +56,25 @@ public class EELS_SpectrumFromImagePlugin extends Profiler {
 		final float[] xValues = getEnergyAxis();
 		final float[] yValues = getEELSFromImage(false);
 		String x_label = extractor.getXUnit();
-		if (x_label == null)
+		if (x_label == null || x_label.equals(""))
 			x_label = "eV";
 		final String xLabel = "Energy loss (" + x_label + ")";
 		String y_label = extractor.getIntensityUnit();
-		if (y_label == null)
+		if (y_label == null || y_label.equals(""))
 			y_label = "a.u.";
 		final String yLabel = "Intensity (" + y_label + ")";
 		final Plot plot = new Plot("Plot of " + sourceImage.getTitle(), xLabel, yLabel, xValues, yValues);
 		return plot;
 	}
 
+	/**
+	 * Extract the spectral date from the input image.
+	 *
+	 * @param calcMean
+	 *            sets if per energy channel the mean is calculated. Using
+	 *            <code>false</code>, the sum is calculated.
+	 * @return an array that represents the EEL spectrum.
+	 */
 	private float[] getEELSFromImage(final boolean calcMean) {
 		final float[] eels = new float[sourceImage.getWidth()];
 		Arrays.fill(eels, 0);
@@ -73,6 +102,13 @@ public class EELS_SpectrumFromImagePlugin extends Profiler {
 		return eels;
 	}
 
+	/**
+	 * This method tries to create the energy axis by using meta data of the
+	 * given image.
+	 *
+	 * @return an array that represents the energy losses of each channel of the
+	 *         spectrum.
+	 */
 	private float[] getEnergyAxis() {
 		final float[] energies = new float[sourceImage.getWidth()];
 		if (sourceImage.getCalibration().getXUnit().toLowerCase().equals("ev")) {
@@ -87,17 +123,16 @@ public class EELS_SpectrumFromImagePlugin extends Profiler {
 		if (scale == 1) {
 			final Pattern patternSpecMag = Pattern.compile(".*SM(\\d{2,3}).*");
 			final Matcher matchSpecMag = patternSpecMag.matcher(sourceImage.getTitle());
-			EFTEMj_Debug.log(sourceImage.getOriginalFileInfo().directory);
 			final Matcher matchSpecMagPath = patternSpecMag.matcher(sourceImage.getOriginalFileInfo().directory);
 			boolean foundSpecMag = false;
 			String specMag = "";
 			if (matchSpecMag.find()) {
 				specMag = matchSpecMag.group(1);
-				EFTEMj_Debug.log(specMag);
+				EFTEMj_Debug.log(String.format("SpecMag from image title: %s", specMag));
 				foundSpecMag = true;
 			} else if (matchSpecMagPath.find()) {
 				specMag = matchSpecMagPath.group(1);
-				EFTEMj_Debug.log(specMag);
+				EFTEMj_Debug.log(String.format("SpecMag from file path: %s", specMag));
 				foundSpecMag = true;
 			}
 			if (foundSpecMag) {
@@ -118,11 +153,11 @@ public class EELS_SpectrumFromImagePlugin extends Profiler {
 			float energy = 0;
 			if (matchEnergy.find()) {
 				energy = Float.parseFloat(matchEnergy.group(1));
-				EFTEMj_Debug.log("" + energy);
+				EFTEMj_Debug.log(String.format("Energy loss from image title: %geV", energy));
 				foundEnergy = true;
 			} else if (matchEnergyPath.find()) {
 				energy = Float.parseFloat(matchEnergyPath.group(1));
-				EFTEMj_Debug.log("" + energy);
+				EFTEMj_Debug.log(String.format("Energy loss from file path: %geV", energy));
 				foundEnergy = true;
 			}
 			if (foundEnergy) {
@@ -155,6 +190,7 @@ public class EELS_SpectrumFromImagePlugin extends Profiler {
 	@Override
 	public void run(final String arg) {
 		sourceImage = IJ.getImage();
+		EFTEMj_Debug.log(String.format("Running %s with %s", this.getClass().getName(), sourceImage.getShortTitle()));
 		extractor = new GatanMetadataExtractor(sourceImage);
 		final Plot plot = getPlot();
 		if (plot == null)
