@@ -28,9 +28,7 @@
 
 package de.m_entrup.EFTEMj_SR_EELS.correction;
 
-import java.awt.Desktop;
 import java.io.File;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -52,6 +50,7 @@ import ij.ImageJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.gui.GenericDialog;
+import ij.gui.WaitForUserDialog;
 import ij.measure.Calibration;
 import ij.plugin.filter.ExtendedPlugInFilter;
 import ij.plugin.filter.PlugInFilterRunner;
@@ -347,7 +346,9 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 	public int showDialog(final ImagePlus imp, final String command, final PlugInFilterRunner pfr) {
 		final String searchPath = IJ.getDirectory("image");
 		final LinkedList<String> foundCharacterisationResults = new LinkedList<>();
-		findDatasets(searchPath, foundCharacterisationResults, imp.getShortTitle());
+		if (searchPath != null && !searchPath.isEmpty()) {
+			findDatasets(searchPath, foundCharacterisationResults, imp.getShortTitle());
+		}
 		final String otherResult = "other...";
 		foundCharacterisationResults.add(otherResult);
 		if (foundCharacterisationResults.size() > 1) {
@@ -375,8 +376,7 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 		 * dialog is shown. We have to check for the size to be 1 as there is
 		 * the entry "other..." in the list.
 		 */
-		if (foundCharacterisationResults.size() <= 1 | pathResults.equals(otherResult)) {
-
+		if (foundCharacterisationResults.size() <= 1 || pathResults.equals(otherResult)) {
 			do {
 				if (showParameterDialog(command) == CANCEL) {
 					canceled();
@@ -500,49 +500,17 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 		 * start ImageJ
 		 */
 		new ImageJ();
-
-		String baseFolder = "C:/Temp/";
-		final String os = System.getProperty("os.name").toLowerCase();
-		if (os.indexOf("nix") >= 0 || os.indexOf("nux") >= 0 || os.indexOf("aix") > 0) {
-			final String userHome = System.getProperty("user.home");
-			baseFolder = userHome + "/Downloads/";
-		}
-
-		/*
-		 * Check if the test image is available. Otherwise prompt a message with
-		 * the download link.
-		 */
-		final File testImage = new File(baseFolder + "20140106 SM125-20%/20140106_SR-EELS_TestImage_small.tif");
-		if (!testImage.exists()) {
-			final String url = "http://eftemj.entrup.com.de/SR-EELS_TestImage.zip";
-			/*
-			 * IJ.showMessage("Test image not found", "<html>" +
-			 * "Please download the file" + "<br />" + "<a href='" + url +
-			 * "'>SR-EELS_TestImage.zip</a> from" + "<br/>" + url + "<br />" +
-			 * "and extract it to 'C:\\temp\\'." + "</html>");
-			 */
-			final GenericDialog gd = new GenericDialog("Test image not found");
-			gd.addMessage("Please download the file 'SR-EELS_TestImage.zip' and extract it to '" + baseFolder + "'.");
-			gd.addMessage("Copy the following link, or click Ok to open it with your default browser.");
-			gd.addStringField("", url, url.length());
-			gd.showDialog();
-			if (gd.wasOKed()) {
-				try {
-					final URI link = new URI(url);
-					final Desktop desktop = Desktop.getDesktop();
-					desktop.browse(link);
-				} catch (final Exception exc) {
-					IJ.showMessage("An Exception occured", exc.getMessage());
-					return;
-				}
-			}
-			return;
-		}
 		/*
 		 * open the test image
 		 */
-		final ImagePlus image = IJ.openImage(baseFolder + "20140106 SM125-20%/20140106_SR-EELS_TestImage_small.tif");
+		final ImagePlus image = IJ.openImage();
 		image.show();
+
+		final WaitForUserDialog wait = new WaitForUserDialog("Debugging...", "Press OK to continue debugging.");
+		wait.show();
+		if (wait.escPressed()) {
+			return;
+		}
 
 		/*
 		 * run the plugin
