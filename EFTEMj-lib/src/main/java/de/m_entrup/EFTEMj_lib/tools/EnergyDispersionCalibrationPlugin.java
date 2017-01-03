@@ -309,7 +309,7 @@ public class EnergyDispersionCalibrationPlugin implements ExtendedPlugInFilter {
 		default:
 			break;
 		}
-		final Calibration cal = new Calibration(input);
+		final Calibration cal = input.getCalibration().copy();
 		if (orientation == 0) {
 			cal.pixelWidth = dispersion * binning;
 			/*
@@ -440,7 +440,7 @@ public class EnergyDispersionCalibrationPlugin implements ExtendedPlugInFilter {
 		new ImageJ();
 
 		// open the sample
-		final ImagePlus image = IJ.openImage("http://imagej.net/images/clown.jpg");
+		final ImagePlus image = IJ.openImage();
 		image.show();
 
 		// run the plugin
