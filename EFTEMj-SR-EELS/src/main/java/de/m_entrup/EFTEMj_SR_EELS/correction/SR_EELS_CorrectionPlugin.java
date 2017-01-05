@@ -383,13 +383,6 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 					return NO_CHANGES | DONE;
 				}
 			} while (!pathResults.contains(SR_EELS.FILENAME_RESULTS));
-		} else {
-			if (foundCharacterisationResults.size() == 1) {
-				pathResults = foundCharacterisationResults.getFirst();
-			} else {
-				canceled();
-				return NO_CHANGES | DONE;
-			}
 		}
 		inputProcessor = new SR_EELS_FloatProcessor((FloatProcessor) imp.getProcessor(),
 				CameraSetup.getFullWidth() / imp.getWidth(), CameraSetup.getFullHeight() / imp.getHeight(),
