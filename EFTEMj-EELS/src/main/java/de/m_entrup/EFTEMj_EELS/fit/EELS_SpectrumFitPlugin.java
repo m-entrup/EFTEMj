@@ -1,6 +1,7 @@
 
 package de.m_entrup.EFTEMj_EELS.fit;
 
+import java.awt.Point;
 import java.awt.Window;
 import java.io.File;
 import java.net.URI;
@@ -26,6 +27,7 @@ import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
 import ij.gui.GenericDialog;
+import ij.gui.ImageWindow;
 import ij.gui.Plot;
 import ij.gui.PlotWindow;
 import ij.plugin.filter.ExtendedPlugInFilter;
@@ -93,8 +95,19 @@ public class EELS_SpectrumFitPlugin implements ExtendedPlugInFilter {
 				final double[] limits = oldPlot.getLimits();
 				newPlot.setLimits(pl.getMin(), pl.getMax(), 0, limits[3]);
 				newPlotWin.drawPlot(newPlot);
+				newPlotWin.toFront();
 			} else {
+				/*
+				 * The old PlotWindow keeps the focus. By moving this window,
+				 * the new one gets visible.
+				 */
+				final ImageWindow oldPlotWin = oldPlot.getImagePlus().getWindow();
+				final Point position = oldPlotWin.getLocation();
+				final int plotHeight = oldPlotWin.getHeight();
+				position.y += plotHeight;
+				oldPlotWin.setLocation(position);
 				newPlotWin = newPlot.show();
+				newPlotWin.toFront();
 			}
 		}
 		/**
