@@ -18,4 +18,7 @@
 			<artifactId>EFTEMj-lib_</artifactId>
 		</dependency>
 	</dependencies>
+	<properties>
+		<enforcer.skip>true</enforcer.skip>
+	</properties>
 </project>

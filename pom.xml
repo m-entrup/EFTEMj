@@ -3,9 +3,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>sc.fiji</groupId>
-		<artifactId>pom-fiji</artifactId>
-		<version>26.1.1</version>
+		<groupId>org.scijava</groupId>
+		<artifactId>pom-scijava</artifactId>
+		<version>13.2.1</version>
+		<relativePath />
 	</parent>
 	<groupId>de.m-entrup</groupId>
 	<artifactId>pom-EFTEMj</artifactId>
@@ -29,6 +30,10 @@
 			<url>http://opensource.org/licenses/BSD-2-Clause</url>
 		</license>
 	</licenses>
+	<organization>
+		<name>Uni Münster</name>
+		<url>http://www.uni-muenster.de/Physik.PI/Kohl/index.html</url>
+	</organization>
 	<developers>
 		<developer>
 			<id>m-entrup</id>
@@ -38,18 +43,31 @@
 			<organization>WWU Münster</organization>
 			<organizationUrl>http://www.uni-muenster.de/</organizationUrl>
 			<roles>
-				<role>architect</role>
 				<role>developer</role>
 			</roles>
 			<timezone>+2</timezone>
 		</developer>
 	</developers>
+	<contributors>
+		<contributor>
+			<name>Marcel Reichstein</name>
+		</contributor>
+		<contributor>
+			<name>Henriette Merkel</name>
+		</contributor>
+	</contributors>
 	<repositories>
 		<repository>
 			<id>imagej.public</id>
 			<url>http://maven.imagej.net/content/groups/public</url>
 		</repository>
 	</repositories>
+	<mailingLists>
+		<mailingList>
+			<name>ImageJ Forum</name>
+			<archive>http://forum.imagej.net/</archive>
+		</mailingList>
+	</mailingLists>
 	<scm>
 		<connection>scm:git:git://github.com/m-entrup/EFTEMj</connection>
 		<developerConnection>scm:git:git@github.com:m-entrup/EFTEMj</developerConnection>
@@ -60,50 +78,41 @@
 		<url>https://github.com/EFTEMj/m-entrup/issues</url>
 		<system>GitHub Issues</system>
 	</issueManagement>
-	<dependencies>
-		<dependency>
-			<groupId>net.imagej</groupId>
-			<artifactId>ij</artifactId>
-			<version>1.51h</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-configuration</groupId>
-			<artifactId>commons-configuration</artifactId>
-			<version>1.10</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-collections</groupId>
-			<artifactId>commons-collections</artifactId>
-			<version>3.2.2</version>
-		</dependency>
-		<dependency>
-			<groupId>sc.fiji</groupId>
-			<artifactId>fiji-lib</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-math3</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>gov.nist.math</groupId>
-			<artifactId>jama</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>sc.fiji</groupId>
-			<artifactId>IO_</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>mpicbg</groupId>
-			<artifactId>mpicbg</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.opencsv</groupId>
-			<artifactId>opencsv</artifactId>
-			<version>3.8</version>
-		</dependency>
-	</dependencies>
+	<ciManagement>
+		<system>None</system>
+	</ciManagement>
+	<properties>
+		<package-name>de.m-entrup.EFTEMj</package-name>
+		<license.licenseName>BSD 2-Clause</license.licenseName>
+		<license.copyrightOwners>Michael Entrup</license.copyrightOwners>
+	</properties>
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>commons-configuration</groupId>
+				<artifactId>commons-configuration</artifactId>
+				<version>1.10</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-collections</groupId>
+				<artifactId>commons-collections</artifactId>
+				<version>3.2.2</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>3.5</version>
+			</dependency>
+			<dependency>
+				<groupId>org.reflections</groupId>
+				<artifactId>reflections</artifactId>
+				<version>0.9.10</version>
+			</dependency>
+			<dependency>
+				<groupId>com.opencsv</groupId>
+				<artifactId>opencsv</artifactId>
+				<version>3.9</version>
+			</dependency>
 			<dependency>
 				<groupId>de.m-entrup</groupId>
 				<artifactId>EFTEMj-lib_</artifactId>
@@ -111,12 +120,17 @@
 			</dependency>
 			<dependency>
 				<groupId>de.m-entrup</groupId>
-				<artifactId>EFTEMj-ESI</artifactId>
+				<artifactId>EFTEMj-ESI_</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>de.m-entrup</groupId>
-				<artifactId>EFTEMj-SR-EELS</artifactId>
+				<artifactId>EFTEMj-SR-EELS_</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.m-entrup</groupId>
+				<artifactId>EFTEMj-EELS_</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 		</dependencies>
