@@ -46,9 +46,7 @@ import de.m_entrup.EFTEMj_ESI.resources.PluginMessages;
  * 		this.addWindowListener(listener);</code><br>
  * <code>listener</code> has to extend {@link OkCancelListener}.
  */
-public abstract class OkCancelListener implements ActionListener,
-	WindowListener
-{
+public abstract class OkCancelListener implements ActionListener, WindowListener {
 
 	@Override
 	public void actionPerformed(final ActionEvent e) {

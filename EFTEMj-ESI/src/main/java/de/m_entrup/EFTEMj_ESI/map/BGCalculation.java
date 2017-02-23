@@ -60,7 +60,8 @@ public class BGCalculation extends Thread {
 	 */
 	private final float[] errorValues;
 	/**
-	 * The position of the processed image at the sorted input {@link ImageStack}.
+	 * The position of the processed image at the sorted input
+	 * {@link ImageStack}.
 	 */
 	private final int imageIndex;
 	/**
@@ -77,15 +78,17 @@ public class BGCalculation extends Thread {
 	private final ThreadInterface threadInterface = ThreadInterface.getInstance();
 
 	/**
-	 * Each instance calculates a background image at the energy loss of the given
-	 * eftemImage.
+	 * Each instance calculates a background image at the energy loss of the
+	 * given eftemImage.
 	 *
-	 * @param eftemImage The energy loss of this image i used for the background
-	 *          calculation. Additionally this image is compared to the calculated
-	 *          background.
-	 * @param imageIndex The position of the processed image at the sorted input
-	 *          {@link ImageStack}. This is used to save the results of the
-	 *          calculation by using the {@link DatasetAPI}.
+	 * @param eftemImage
+	 *            The energy loss of this image i used for the background
+	 *            calculation. Additionally this image is compared to the
+	 *            calculated background.
+	 * @param imageIndex
+	 *            The position of the processed image at the sorted input
+	 *            {@link ImageStack}. This is used to save the results of the
+	 *            calculation by using the {@link DatasetAPI}.
 	 */
 	public BGCalculation(final EFTEMImage eftemImage, final int imageIndex) {
 		super();
@@ -105,16 +108,13 @@ public class BGCalculation extends Thread {
 		final float[] relBackground = new float[length];
 		for (int index = 0; index < length; index++) {
 			if (errorValues[index] == 0) {
-				background[index] = (float) Math.exp(aMap[index] - rMap[index] * Math
-					.log(eLoss));
+				background[index] = (float) Math.exp(aMap[index] - rMap[index] * Math.log(eLoss));
 				if (pixels[index] != 0) {
 					relBackground[index] = background[index] / pixels[index];
-				}
-				else {
+				} else {
 					relBackground[index] = 0;
 				}
-			}
-			else {
+			} else {
 				background[index] = PluginConstants.VALUE_CALCULATION_FAILED;
 				relBackground[index] = PluginConstants.VALUE_CALCULATION_FAILED;
 			}

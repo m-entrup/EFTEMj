@@ -55,15 +55,15 @@ public class CrossCorrelation extends Thread {
 	 */
 	private final ThreadInterface threadInterface = ThreadInterface.getInstance();
 	/**
-	 * The x-coordinate of the processed pixel of the crosscorrelation coefficient
-	 * map. This corresponds to a shift in x-direction between the analysed
-	 * images.
+	 * The x-coordinate of the processed pixel of the crosscorrelation
+	 * coefficient map. This corresponds to a shift in x-direction between the
+	 * analysed images.
 	 */
 	private int x;
 	/**
-	 * The y-coordinate of the processed pixel of the crosscorrelation coefficient
-	 * map. This corresponds to a shift in y-direction between the analysed
-	 * images.
+	 * The y-coordinate of the processed pixel of the crosscorrelation
+	 * coefficient map. This corresponds to a shift in y-direction between the
+	 * analysed images.
 	 */
 	private final int y;
 
@@ -71,8 +71,10 @@ public class CrossCorrelation extends Thread {
 	 * Each {@link CrossCorrelation} thread processes a single image row. At the
 	 * constructor it is declared which image and row are processed.
 	 *
-	 * @param index The index the stack, it starts a 0.
-	 * @param y The row of the crosscorrelation coefficient map.
+	 * @param index
+	 *            The index the stack, it starts a 0.
+	 * @param y
+	 *            The row of the crosscorrelation coefficient map.
 	 */
 	public CrossCorrelation(final int index, final int y) {
 		super();
@@ -106,10 +108,10 @@ public class CrossCorrelation extends Thread {
 				}
 			}
 			final double tMean = tSum / (image.getWidth() * image.getHeight());
-			array_crossCorrelationCoefficients[x] = (float) ((covariance - (image
-				.getWidth() * image.getHeight()) * tMean * datasetAPI.getMean(index)) /
-				(Math.sqrt(tSquareSum - (image.getWidth() * image.getHeight()) * tMean *
-					tMean) * datasetAPI.getSigma(index)));
+			array_crossCorrelationCoefficients[x] = (float) ((covariance
+					- (image.getWidth() * image.getHeight()) * tMean * datasetAPI.getMean(index))
+					/ (Math.sqrt(tSquareSum - (image.getWidth() * image.getHeight()) * tMean * tMean)
+							* datasetAPI.getSigma(index)));
 		}
 		datasetAPI.saveCross(array_crossCorrelationCoefficients, index, y * width);
 		threadInterface.removeThread(ThreadInterface.CROSS);

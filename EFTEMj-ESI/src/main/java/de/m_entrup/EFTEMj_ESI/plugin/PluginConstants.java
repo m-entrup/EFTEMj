@@ -45,8 +45,8 @@ public class PluginConstants {
 	 */
 	public static final float EPSILON = 1e-6f;
 	/**
-	 * An error that is logged if a can't be calculated. There is a logarithm of a
-	 * negative number.
+	 * An error that is logged if a can't be calculated. There is a logarithm of
+	 * a negative number.
 	 */
 	public static final short ERROR__A_NOT_POSSIBLE_TO_CALCULATE = 230;
 	/**
@@ -81,16 +81,15 @@ public class PluginConstants {
 	/**
 	 * The system specific line separator.
 	 */
-	public static final String LINE_SEPARATOR = System.getProperty(
-		"line.separator");
+	public static final String LINE_SEPARATOR = System.getProperty("line.separator");
 	/**
-	 * This pattern is used to extract the energy loss from the image title. Long
-	 * version with squared brackets.
+	 * This pattern is used to extract the energy loss from the image title.
+	 * Long version with squared brackets.
 	 */
 	public static final String PATTERN_ELOSS_LONG = "\\[\\d*[.]?[,]?\\d+eV\\]";
 	/**
-	 * This pattern is used to extract the energy loss from the image title. Short
-	 * version.
+	 * This pattern is used to extract the energy loss from the image title.
+	 * Short version.
 	 */
 	public static final String PATTERN_ELOSS_SHORT = "\\d*[.]?[,]?\\d+eV";
 	/**

@@ -83,8 +83,9 @@ public class Chi2Calculation extends Thread {
 	 * The constructor creates a new instance of {@link Chi2Calculation} for the
 	 * Chi^2 calculation of each pixel at an image row.
 	 *
-	 * @param y The image row that is processed by the new instance of
-	 *          {@link Chi2Calculation}.
+	 * @param y
+	 *            The image row that is processed by the new instance of
+	 *            {@link Chi2Calculation}.
 	 */
 	public Chi2Calculation(final int y) {
 		super();
@@ -102,12 +103,12 @@ public class Chi2Calculation extends Thread {
 	 * Calculating the background again is faster than reading it from the saved
 	 * results, especially with a increasing number of pre-edge images.
 	 *
-	 * @param eLoss The energy loss that is used for the calculation.
+	 * @param eLoss
+	 *            The energy loss that is used for the calculation.
 	 * @return The background signal.
 	 */
 	private float calculateBG(final float eLoss) {
-		final float bg = (float) Math.exp(aMap[index] - rMap[index] * Math.log(
-			eLoss));
+		final float bg = (float) Math.exp(aMap[index] - rMap[index] * Math.log(eLoss));
 		return bg;
 	}
 
@@ -135,8 +136,7 @@ public class Chi2Calculation extends Thread {
 			index = x + y * width;
 			if (errorMap[index] == 0) {
 				chi2[x] = calculateChi2();
-			}
-			else {
+			} else {
 				chi2[x] = 0;
 			}
 		}

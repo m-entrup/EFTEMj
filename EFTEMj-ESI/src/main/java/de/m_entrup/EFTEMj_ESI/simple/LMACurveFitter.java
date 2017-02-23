@@ -43,11 +43,11 @@ import org.apache.commons.math3.optim.ConvergenceChecker;
  */
 public class LMACurveFitter extends AbstractCurveFitter {
 
-	private ParametricUnivariateFunction func;
+	private final ParametricUnivariateFunction func;
 	private static double limit = 0.001;
 	private static double[] initialGuess;
 
-	public LMACurveFitter(ParametricUnivariateFunction function) {
+	public LMACurveFitter(final ParametricUnivariateFunction function) {
 		func = function;
 	}
 
@@ -55,11 +55,11 @@ public class LMACurveFitter extends AbstractCurveFitter {
 		return limit;
 	}
 
-	public void setLimit(double epsilon) {
+	public void setLimit(final double epsilon) {
 		limit = epsilon;
 	}
 
-	public LMACurveFitter setInitialGuess(double[] init) {
+	public LMACurveFitter setInitialGuess(final double[] init) {
 		if (init.length >= 2) {
 			initialGuess = new double[2];
 			initialGuess[0] = init[0];
@@ -69,7 +69,7 @@ public class LMACurveFitter extends AbstractCurveFitter {
 	}
 
 	@Override
-	protected LeastSquaresProblem getProblem(Collection<WeightedObservedPoint> points) {
+	protected LeastSquaresProblem getProblem(final Collection<WeightedObservedPoint> points) {
 		final int len = points.size();
 		final double[] target = new double[len];
 		final double[] weights = new double[len];
@@ -80,7 +80,7 @@ public class LMACurveFitter extends AbstractCurveFitter {
 		}
 
 		int i = 0;
-		for (WeightedObservedPoint point : points) {
+		for (final WeightedObservedPoint point : points) {
 			target[i] = point.getY();
 			weights[i] = point.getWeight();
 			i += 1;
@@ -92,7 +92,7 @@ public class LMACurveFitter extends AbstractCurveFitter {
 		return new LeastSquaresBuilder().checker(new ConvergenceChecker<LeastSquaresProblem.Evaluation>() {
 
 			@Override
-			public boolean converged(int iteration, Evaluation previous, Evaluation current) {
+			public boolean converged(final int iteration, final Evaluation previous, final Evaluation current) {
 				if (Math.abs(current.getRMS() - previous.getRMS()) < limit)
 					return true;
 				return false;

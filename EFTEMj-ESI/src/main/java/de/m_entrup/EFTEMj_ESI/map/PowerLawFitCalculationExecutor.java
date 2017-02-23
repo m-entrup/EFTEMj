@@ -74,34 +74,26 @@ public class PowerLawFitCalculationExecutor extends SwingWorker<Void, Void> {
 		ThreadInterface.getInstance().configureThreadChecker(height);
 		LogWriter.clearProcessLog();
 		DateFormat df;
-		df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM,
-			Locale.ENGLISH);
+		df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.ENGLISH);
 		final String dateAndTime = df.format(new Date());
-		LogWriter.writeProcessLog("Starting elemental map calculation (" +
-			dateAndTime + "):", LogWriter.MAP);
-		DecimalFormat decF = new DecimalFormat("#.###", DecimalFormatSymbols
-			.getInstance(Locale.ENGLISH));
-		decF = new DecimalFormat("0.0##E0", DecimalFormatSymbols.getInstance(
-			Locale.ENGLISH));
-		LogWriter.writeProcessLog(
-			"The break condition for r is a change of less than " + decF.format(
-				PowerLawFitCalculation.getEpsilon()), LogWriter.MAP);
+		LogWriter.writeProcessLog("Starting elemental map calculation (" + dateAndTime + "):", LogWriter.MAP);
+		DecimalFormat decF = new DecimalFormat("#.###", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+		decF = new DecimalFormat("0.0##E0", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+		LogWriter.writeProcessLog("The break condition for r is a change of less than "
+				+ decF.format(PowerLawFitCalculation.getEpsilon()), LogWriter.MAP);
 		String preEdgeImages = "";
 		String postEdgeImages = "";
 		for (int i = 0; i < datasetAPI.getStackSize(); i++) {
 			if (i < datasetAPI.getEdgeIndex()) {
 				preEdgeImages += datasetAPI.getEFTEMImage(i).getLabel() + ", ";
-			}
-			else {
+			} else {
 				postEdgeImages += datasetAPI.getEFTEMImage(i).getLabel() + ", ";
 			}
 		}
 		preEdgeImages = preEdgeImages.substring(0, preEdgeImages.length() - 2);
 		postEdgeImages = postEdgeImages.substring(0, postEdgeImages.length() - 2);
-		LogWriter.writeProcessLog("Pre edge images: " + preEdgeImages,
-			LogWriter.MAP);
-		LogWriter.writeProcessLog("Post edge images: " + postEdgeImages,
-			LogWriter.MAP);
+		LogWriter.writeProcessLog("Pre edge images: " + preEdgeImages, LogWriter.MAP);
+		LogWriter.writeProcessLog("Post edge images: " + postEdgeImages, LogWriter.MAP);
 	}
 
 	@Override

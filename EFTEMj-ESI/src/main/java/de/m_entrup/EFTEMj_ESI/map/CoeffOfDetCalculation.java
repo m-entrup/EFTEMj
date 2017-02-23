@@ -80,11 +80,13 @@ public class CoeffOfDetCalculation extends Thread {
 	private final int y;
 
 	/**
-	 * The constructor creates a new instance of {@link CoeffOfDetCalculation} for
-	 * the coefficient of determination calculation of each pixel at an image row.
+	 * The constructor creates a new instance of {@link CoeffOfDetCalculation}
+	 * for the coefficient of determination calculation of each pixel at an
+	 * image row.
 	 *
-	 * @param y The image row that is processed by the new instance of
-	 *          {@link CoeffOfDetCalculation}.
+	 * @param y
+	 *            The image row that is processed by the new instance of
+	 *            {@link CoeffOfDetCalculation}.
 	 */
 	public CoeffOfDetCalculation(final int y) {
 		super();
@@ -105,9 +107,8 @@ public class CoeffOfDetCalculation extends Thread {
 	private double residual() {
 		double residuen = 0;
 		for (int i = 0; i < edgeIndex; i++) {
-			residuen += Math.pow(array_EFTEMImages[i].getPixels()[index] - Math.exp(
-				aMap[index] - rMap[index] * Math.log(array_EFTEMImages[i].getELoss())),
-				2);
+			residuen += Math.pow(array_EFTEMImages[i].getPixels()[index]
+					- Math.exp(aMap[index] - rMap[index] * Math.log(array_EFTEMImages[i].getELoss())), 2);
 		}
 		return residuen;
 	}
@@ -120,8 +121,7 @@ public class CoeffOfDetCalculation extends Thread {
 			index = x + y * width;
 			if (errorMap[index] == 0) {
 				coeffOfDetArray[x] = (float) (1 - residual() / variationY());
-			}
-			else {
+			} else {
 				coeffOfDetArray[x] = 0;
 			}
 		}
@@ -139,8 +139,7 @@ public class CoeffOfDetCalculation extends Thread {
 		}
 		double variation = 0;
 		for (int i = 0; i < edgeIndex; i++) {
-			variation += Math.pow(array_EFTEMImages[i].getPixels()[index] - mittel,
-				2);
+			variation += Math.pow(array_EFTEMImages[i].getPixels()[index] - mittel, 2);
 		}
 		return variation;
 	}

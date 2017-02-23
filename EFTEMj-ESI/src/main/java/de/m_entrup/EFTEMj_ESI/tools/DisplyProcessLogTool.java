@@ -49,8 +49,7 @@ public class DisplyProcessLogTool {
 	 */
 	public static void showExportDialog(final String fileName) {
 		IJ.showStatus("Finished Elemental-Mapping");
-		final GenericDialog gd = new GenericDialog(PluginMessages.getString(
-			"Titel.ProcessLog"));
+		final GenericDialog gd = new GenericDialog(PluginMessages.getString("Titel.ProcessLog"));
 		final Vector<String> logs = LogWriter.getProcessLog();
 		int maxLengt = 0;
 		String text = "";
@@ -67,26 +66,22 @@ public class DisplyProcessLogTool {
 		if (gd.wasCanceled()) {
 			return;
 		}
-		final FileDialog fDialog = new FileDialog(gd, PluginMessages.getString(
-			"Titel.SaveProcessLog"), FileDialog.SAVE);
+		final FileDialog fDialog = new FileDialog(gd, PluginMessages.getString("Titel.SaveProcessLog"),
+				FileDialog.SAVE);
 		/*
-		 * MultiMode is not available in Java 6
-		 * fDialog.setMultipleMode(false);
+		 * MultiMode is not available in Java 6 fDialog.setMultipleMode(false);
 		 */
 		fDialog.setDirectory(IJ.getDirectory("image"));
 		// adds date and time to the file name
 		final Calendar cal = Calendar.getInstance();
-		String extendedFileName = fileName + "_" + String.format(Locale.ENGLISH,
-			"%tF-%tR", cal, cal);
+		String extendedFileName = fileName + "_" + String.format(Locale.ENGLISH, "%tF-%tR", cal, cal);
 		// remove the ':' that is not allowed as at a file name
 		final int pos = extendedFileName.indexOf(":");
-		extendedFileName = extendedFileName.substring(0, pos) + extendedFileName
-			.substring(pos + 1);
+		extendedFileName = extendedFileName.substring(0, pos) + extendedFileName.substring(pos + 1);
 		fDialog.setFile(extendedFileName + ".txt");
 		fDialog.setVisible(true);
 		if (fDialog.getFile() != null) {
-			final String path = fDialog.getDirectory() + System.getProperty(
-				"file.separator") + fDialog.getFile();
+			final String path = fDialog.getDirectory() + System.getProperty("file.separator") + fDialog.getFile();
 			IJ.saveString(text, path);
 		}
 	}

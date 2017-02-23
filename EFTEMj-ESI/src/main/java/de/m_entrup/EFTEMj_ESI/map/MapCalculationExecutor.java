@@ -43,8 +43,8 @@ import ij.IJ;
 public class MapCalculationExecutor extends SwingWorker<Void, Void> {
 
 	/**
-	 * For each input image, with an index larger than edgeIndex, a elemental-map
-	 * image is calculated.
+	 * For each input image, with an index larger than edgeIndex, a
+	 * elemental-map image is calculated.
 	 */
 	private final EFTEMImage[] array_EFTEMImages;
 	/**
@@ -60,19 +60,16 @@ public class MapCalculationExecutor extends SwingWorker<Void, Void> {
 	 */
 	public MapCalculationExecutor() throws Exception {
 		super();
-		array_EFTEMImages = PluginAPI.getInstance().getDatasetAPI()
-			.getEFTEMImageArray();
+		array_EFTEMImages = PluginAPI.getInstance().getDatasetAPI().getEFTEMImageArray();
 		edgeIndex = PluginAPI.getInstance().getDatasetAPI().getEdgeIndex();
-		ThreadInterface.getInstance().configureThreadChecker(
-			array_EFTEMImages.length - edgeIndex);
+		ThreadInterface.getInstance().configureThreadChecker(array_EFTEMImages.length - edgeIndex);
 	}
 
 	@Override
 	protected Void doInBackground() throws Exception {
 		IJ.showStatus("Starting elemental map calculation...");
 		for (int i = edgeIndex; i < array_EFTEMImages.length; i++) {
-			final MapCalculation mapCalc = new MapCalculation(array_EFTEMImages[i],
-				i);
+			final MapCalculation mapCalc = new MapCalculation(array_EFTEMImages[i], i);
 			mapCalc.start();
 		}
 		return null;

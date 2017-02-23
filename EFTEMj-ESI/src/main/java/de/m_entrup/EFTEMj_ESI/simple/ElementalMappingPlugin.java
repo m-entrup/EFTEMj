@@ -330,11 +330,11 @@ public class ElementalMappingPlugin implements ExtendedPlugInFilter {
 			for (int i = 0; i < edgeCount; i++) {
 				edgeLabels[i] = possibleEdges[i] + "eV - " + edges.get(possibleEdges[i]);
 			}
-			ButtonGroup bg = new ButtonGroup();
-			String[] htmlLabels = new String[edgeLabels.length];
-			Panel panel = new Panel(new GridLayout(htmlLabels.length, 1));
+			final ButtonGroup bg = new ButtonGroup();
+			final String[] htmlLabels = new String[edgeLabels.length];
+			final Panel panel = new Panel(new GridLayout(htmlLabels.length, 1));
 			for (int i = 0; i < edgeLabels.length; i++) {
-				JRadioButton button = new JRadioButton("<HTML>" + edgeLabels[i] + "</HTML>");
+				final JRadioButton button = new JRadioButton("<HTML>" + edgeLabels[i] + "</HTML>");
 				if (i == 0) {
 					button.setSelected(true);
 				}
@@ -348,11 +348,11 @@ public class ElementalMappingPlugin implements ExtendedPlugInFilter {
 			if (gd.wasCanceled()) {
 				return false;
 			}
-			Enumeration<AbstractButton> iter = bg.getElements();
+			final Enumeration<AbstractButton> iter = bg.getElements();
 			while (iter.hasMoreElements()) {
-				JRadioButton button = (JRadioButton) iter.nextElement();
+				final JRadioButton button = (JRadioButton) iter.nextElement();
 				if (button.isSelected()) {
-					int index = Arrays.binarySearch(htmlLabels, button.getText());
+					final int index = Arrays.binarySearch(htmlLabels, button.getText());
 					edgeEnergyLoss = possibleEdges[index];
 					return true;
 				}

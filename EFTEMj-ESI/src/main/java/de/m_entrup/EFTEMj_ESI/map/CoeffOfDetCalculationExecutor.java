@@ -66,10 +66,8 @@ public class CoeffOfDetCalculationExecutor extends SwingWorker<Void, Void> {
 		if (PluginAPI.getInstance().getDatasetAPI().getEdgeIndex() > 2) {
 			height = PluginAPI.getInstance().getDatasetAPI().getHeight();
 			ThreadInterface.getInstance().configureThreadChecker(height);
-		}
-		else {
-			PluginAPI.getInstance().getMainMenu().enableMapResultButton(
-				"key_closeMapResult");
+		} else {
+			PluginAPI.getInstance().getMainMenu().enableMapResultButton("key_closeMapResult");
 		}
 	}
 
@@ -81,15 +79,14 @@ public class CoeffOfDetCalculationExecutor extends SwingWorker<Void, Void> {
 				final CoeffOfDetCalculation coeffOfDet = new CoeffOfDetCalculation(y);
 				coeffOfDet.run();
 			}
-		}
-		else {
+		} else {
 			// TODO Create a finished() method to reduce redundancy.
 			final Float timeInSeconds = (float) (MyTimer.stop()) / 1000;
-			LogWriter.writeProcessLog(String.format(Locale.ENGLISH,
-				"Time required (total): %.2f s", timeInSeconds), LogWriter.MAP);
+			LogWriter.writeProcessLog(String.format(Locale.ENGLISH, "Time required (total): %.2f s", timeInSeconds),
+					LogWriter.MAP);
 			// TODO add "show log" button to the MapResultPanel
-			DisplyProcessLogTool.showExportDialog("Map_" + PluginAPI.getInstance()
-				.getDatasetAPI().getImagePlusShortTitle());
+			DisplyProcessLogTool
+					.showExportDialog("Map_" + PluginAPI.getInstance().getDatasetAPI().getImagePlusShortTitle());
 		}
 		return null;
 	}

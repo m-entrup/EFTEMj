@@ -59,14 +59,16 @@ public class EFTEMImage implements Comparable<EFTEMImage> {
 	/**
 	 * Creates a new {@link EFTEMImage}.
 	 *
-	 * @param eLoss The energy loss of the image.
-	 * @param label The label of the image. Use the short label.
-	 * @param pixels A float array representing the pixels of the image.
-	 * @param width The width of the image.
+	 * @param eLoss
+	 *            The energy loss of the image.
+	 * @param label
+	 *            The label of the image. Use the short label.
+	 * @param pixels
+	 *            A float array representing the pixels of the image.
+	 * @param width
+	 *            The width of the image.
 	 */
-	public EFTEMImage(final float eLoss, final String label, final float[] pixels,
-		final int width)
-	{
+	public EFTEMImage(final float eLoss, final String label, final float[] pixels, final int width) {
 		super();
 		this.eLoss = eLoss;
 		this.label = label;
@@ -76,8 +78,10 @@ public class EFTEMImage implements Comparable<EFTEMImage> {
 
 	@Override
 	public int compareTo(final EFTEMImage o) {
-		if (this.eLoss > o.eLoss) return 1;
-		if (this.eLoss < o.eLoss) return -1;
+		if (this.eLoss > o.eLoss)
+			return 1;
+		if (this.eLoss < o.eLoss)
+			return -1;
 		return 0;
 	}
 
@@ -96,8 +100,8 @@ public class EFTEMImage implements Comparable<EFTEMImage> {
 	}
 
 	/**
-	 * @return The label of the {@link EFTEMImage}. This should be the same a the
-	 *         shortLabel of the initial {@link IJ} image.
+	 * @return The label of the {@link EFTEMImage}. This should be the same a
+	 *         the shortLabel of the initial {@link IJ} image.
 	 */
 	public String getLabel() {
 		return label;

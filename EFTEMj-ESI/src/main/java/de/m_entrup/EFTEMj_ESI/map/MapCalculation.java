@@ -54,7 +54,8 @@ public class MapCalculation extends Thread {
 	 */
 	private final float[] errorValues;
 	/**
-	 * The position of the processed image at the sorted input {@link ImageStack}.
+	 * The position of the processed image at the sorted input
+	 * {@link ImageStack}.
 	 */
 	private final int imageIndex;
 	/**
@@ -70,10 +71,12 @@ public class MapCalculation extends Thread {
 	 * Each instance calculates the elemental-map of the given eftemImage by
 	 * subtracting the calculated background.
 	 *
-	 * @param eftemImage The measured signal is taken from this object.
-	 * @param imageIndex The position of the processed image at the sorted input
-	 *          {@link ImageStack}. This is used to save the results of the
-	 *          calculation by using the {@link DatasetAPI}.
+	 * @param eftemImage
+	 *            The measured signal is taken from this object.
+	 * @param imageIndex
+	 *            The position of the processed image at the sorted input
+	 *            {@link ImageStack}. This is used to save the results of the
+	 *            calculation by using the {@link DatasetAPI}.
 	 */
 	public MapCalculation(final EFTEMImage eftemImage, final int imageIndex) {
 		super();
@@ -90,8 +93,7 @@ public class MapCalculation extends Thread {
 		for (int index = 0; index < signal.length; index++) {
 			if (errorValues[index] == 0) {
 				map[index] = signal[index] - bg[index];
-			}
-			else {
+			} else {
 				map[index] = PluginConstants.VALUE_CALCULATION_FAILED;
 			}
 		}

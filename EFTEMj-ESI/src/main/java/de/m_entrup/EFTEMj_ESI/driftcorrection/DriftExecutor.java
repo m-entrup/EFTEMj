@@ -54,8 +54,8 @@ public class DriftExecutor extends SwingWorker<Void, Void> {
 	 */
 	private final DatasetAPI datasetAPI = PluginAPI.getInstance().getDatasetAPI();
 	/**
-	 * The height of the crosscorrelation coefficient map. The calculation will be
-	 * split up into subtasks, each processes a single image row.
+	 * The height of the crosscorrelation coefficient map. The calculation will
+	 * be split up into subtasks, each processes a single image row.
 	 */
 	private final int height;
 
@@ -68,23 +68,19 @@ public class DriftExecutor extends SwingWorker<Void, Void> {
 	public DriftExecutor() throws Exception {
 		super();
 		height = (2 * datasetAPI.getDelta() + 1);
-		ThreadInterface.getInstance().configureThreadChecker((datasetAPI
-			.getStackSize() - 1) * height);
+		ThreadInterface.getInstance().configureThreadChecker((datasetAPI.getStackSize() - 1) * height);
 		LogWriter.clearProcessLog();
 		DateFormat df;
-		df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM,
-			Locale.ENGLISH);
+		df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.ENGLISH);
 		final String dateAndTime = df.format(new Date());
-		LogWriter.writeProcessLog("Starting drift correction (" + dateAndTime +
-			"):", LogWriter.DRIFT);
-		LogWriter.writeProcessLog("The template image is \"" + datasetAPI
-			.getShortSliceLabel(datasetAPI.getTemplateIndex()) + "\"",
-			LogWriter.DRIFT);
-		LogWriter.writeProcessLog("The max drift checked is " + datasetAPI
-			.getDelta() + " pixels", LogWriter.DRIFT);
+		LogWriter.writeProcessLog("Starting drift correction (" + dateAndTime + "):", LogWriter.DRIFT);
+		LogWriter.writeProcessLog(
+				"The template image is \"" + datasetAPI.getShortSliceLabel(datasetAPI.getTemplateIndex()) + "\"",
+				LogWriter.DRIFT);
+		LogWriter.writeProcessLog("The max drift checked is " + datasetAPI.getDelta() + " pixels", LogWriter.DRIFT);
 		final Rectangle roi = datasetAPI.getRoi();
-		LogWriter.writeProcessLog("The ROI is: x=" + roi.x + ", y=" + roi.y +
-			", w=" + roi.width + ", h=" + roi.height, LogWriter.DRIFT);
+		LogWriter.writeProcessLog("The ROI is: x=" + roi.x + ", y=" + roi.y + ", w=" + roi.width + ", h=" + roi.height,
+				LogWriter.DRIFT);
 	}
 
 	@Override

@@ -51,7 +51,8 @@ public class DatasetStack {
 	/**
 	 * Creates a {@link DatasetStack} object that is used in calculations.
 	 *
-	 * @param imp The {@link ImageStack} you want to use at calculations.
+	 * @param imp
+	 *            The {@link ImageStack} you want to use at calculations.
 	 */
 	public DatasetStack(final ImagePlus imp) {
 		super();
@@ -64,20 +65,18 @@ public class DatasetStack {
 			for (int i = 0; i < imageStack.getSize(); i++) {
 				eLossArray[i] = ELossTool.eLossFromSliceLabel(imp, i);
 			}
-		}
-		catch (final NullPointerException e) {
+		} catch (final NullPointerException e) {
 			/**
-			 * When no energy loss was found at the slice label, this part is used to
-			 * calculate the energy loss from two values at the stack title: starting
-			 * energy and energy increment.
+			 * When no energy loss was found at the slice label, this part is
+			 * used to calculate the energy loss from two values at the stack
+			 * title: starting energy and energy increment.
 			 */
 			for (int i = 0; i < imageStack.getSize(); i++) {
 				eLossArray[i] = ELossTool.eLossFromTitle(imp, i);
 				final String label = imageStack.getSliceLabel(i + 1);
 				if (label == null) {
 					imageStack.setSliceLabel("[" + eLossArray[i] + "eV]", i + 1);
-				}
-				else {
+				} else {
 					imageStack.setSliceLabel(label + "_[" + eLossArray[i] + "eV]", i + 1);
 				}
 			}

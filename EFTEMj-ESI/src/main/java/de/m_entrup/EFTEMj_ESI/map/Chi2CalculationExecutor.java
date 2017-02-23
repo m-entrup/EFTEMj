@@ -53,9 +53,10 @@ public class Chi2CalculationExecutor extends SwingWorker<Void, Void> {
 	private int height;
 
 	/**
-	 * the calculation of Chi² does only start if there are more than 2 post-edge
-	 * images. For 2 post-edge images the coefficient is always 1. The constructor
-	 * transmits the number of subtasks to the {@link ThreadInterface}.
+	 * the calculation of Chi² does only start if there are more than 2
+	 * post-edge images. For 2 post-edge images the coefficient is always 1. The
+	 * constructor transmits the number of subtasks to the
+	 * {@link ThreadInterface}.
 	 *
 	 * @throws Exception
 	 */
@@ -75,17 +76,16 @@ public class Chi2CalculationExecutor extends SwingWorker<Void, Void> {
 				final Chi2Calculation chi2 = new Chi2Calculation(y);
 				chi2.run();
 			}
-		}
-		else {
+		} else {
 			// TODO Create a finished() method to reduce redundancy.
 			// if chi² can be calculated the log is created by an instance of
 			// the class Chi2Finisher
 			final Float timeInSeconds = (float) (MyTimer.stop()) / 1000;
-			LogWriter.writeProcessLog(String.format(Locale.ENGLISH,
-				"Time required (total): %.2f s", timeInSeconds), LogWriter.MAP);
+			LogWriter.writeProcessLog(String.format(Locale.ENGLISH, "Time required (total): %.2f s", timeInSeconds),
+					LogWriter.MAP);
 			// TODO add "show log" button to the MapResultPanel
-			DisplyProcessLogTool.showExportDialog("Map_" + PluginAPI.getInstance()
-				.getDatasetAPI().getImagePlusShortTitle());
+			DisplyProcessLogTool
+					.showExportDialog("Map_" + PluginAPI.getInstance().getDatasetAPI().getImagePlusShortTitle());
 		}
 		return null;
 	}

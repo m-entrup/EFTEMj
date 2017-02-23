@@ -80,13 +80,14 @@ public class StackSetupDialog extends EFTEMFrame {
 		}
 
 		/**
-		 * For each image the value of the related {@link JFormattedTextField} is
-		 * saved as energy loss. The title of each image is changed to match the new
-		 * energy loss.
+		 * For each image the value of the related {@link JFormattedTextField}
+		 * is saved as energy loss. The title of each image is changed to match
+		 * the new energy loss.
 		 *
-		 * @param textFields An array of {@link JFormattedTextField} that uses the
-		 *          same index as the selected {@link ImagePlus}. The
-		 *          {@link JFormattedTextField} has to contain Integers only.
+		 * @param textFields
+		 *            An array of {@link JFormattedTextField} that uses the same
+		 *            index as the selected {@link ImagePlus}. The
+		 *            {@link JFormattedTextField} has to contain Integers only.
 		 */
 		private void setELoss(final JFormattedTextField[] textFields) {
 			// new in v0.6:
@@ -97,18 +98,12 @@ public class StackSetupDialog extends EFTEMFrame {
 			for (int i = 0; i < textFields.length; i++) {
 				final Float value = new Float(textFields[i].getText());
 				if (value < 0) {
-					LogWriter.showWarningAndWriteLog(PluginMessages.getString(
-						"Error.eLossLessThanZero"));
-				}
-				else if (Float.isNaN(value)) {
-					LogWriter.showWarningAndWriteLog(PluginMessages.getString(
-						"Error.eLossIsNAN"));
-				}
-				else if (Float.isInfinite(value)) {
-					LogWriter.showWarningAndWriteLog(PluginMessages.getString(
-						"Error.eLossIsInfinite"));
-				}
-				else {
+					LogWriter.showWarningAndWriteLog(PluginMessages.getString("Error.eLossLessThanZero"));
+				} else if (Float.isNaN(value)) {
+					LogWriter.showWarningAndWriteLog(PluginMessages.getString("Error.eLossIsNAN"));
+				} else if (Float.isInfinite(value)) {
+					LogWriter.showWarningAndWriteLog(PluginMessages.getString("Error.eLossIsInfinite"));
+				} else {
 					if (datasetAPI.getELossArray()[i] != value) {
 						datasetAPI.setELoss(i, value);
 						String label;
@@ -116,66 +111,56 @@ public class StackSetupDialog extends EFTEMFrame {
 						// different.
 						if (datasetAPI.getStackSize() == 1) {
 							label = datasetAPI.getImagePlus().getTitle();
-						}
-						else {
+						} else {
 							label = datasetAPI.getSliceLabel(i);
 						}
 						// A search for a arbitrary count of numbers (including
 						// '.' and ',') and the string "eV" that can be found
 						// between box brackets.
-						final Matcher matcher1 = Pattern.compile(
-							PluginConstants.PATTERN_ELOSS_LONG).matcher(label);
+						final Matcher matcher1 = Pattern.compile(PluginConstants.PATTERN_ELOSS_LONG).matcher(label);
 						if (matcher1.find()) {
 							String s1;
 							String s2;
 							if (matcher1.start() == 0) {
 								s1 = "";
-							}
-							else {
+							} else {
 								s1 = label.substring(0, matcher1.start());
 							}
 							if (matcher1.end() > label.length() - 3) {
 								s2 = "";
-							}
-							else {
+							} else {
 								s2 = label.substring(matcher1.end());
 							}
 
 							if (datasetAPI.getELossArray()[i] != 0) {
 								label = s1 + "[" + datasetAPI.getELossAsString(i) + "eV]" + s2;
-							}
-							else {
+							} else {
 								label = s1 + s2;
 							}
-						}
-						else {
+						} else {
 							// A second search without box brackets
-							final Matcher matcher2 = Pattern.compile(
-								PluginConstants.PATTERN_ELOSS_SHORT).matcher(label);
+							final Matcher matcher2 = Pattern.compile(PluginConstants.PATTERN_ELOSS_SHORT)
+									.matcher(label);
 							if (matcher2.find()) {
 								String s1;
 								String s2;
 								if (matcher2.start() == 0) {
 									s1 = "";
-								}
-								else {
+								} else {
 									s1 = label.substring(0, matcher2.start());
 								}
 								if (matcher2.end() > label.length() - 2) {
 									s2 = "";
-								}
-								else {
+								} else {
 									s2 = label.substring(matcher2.end());
 								}
 
 								if (datasetAPI.getELossArray()[i] != 0) {
 									label = s1 + datasetAPI.getELossAsString(i) + "eV" + s2;
-								}
-								else {
+								} else {
 									label = s1 + s2;
 								}
-							}
-							else {
+							} else {
 								/*
 								 * If the slice label does not contain an energy
 								 * loss, this part is used: The slice label
@@ -197,35 +182,28 @@ public class StackSetupDialog extends EFTEMFrame {
 										// has
 										// been found
 										if (label.lastIndexOf('.', label.indexOf("\n")) != -1) {
-											s1 = label.substring(0, label.lastIndexOf('.', label
-												.indexOf("\n")));
-											s2 = label.substring(label.lastIndexOf('.', label.indexOf(
-												"\n")));
+											s1 = label.substring(0, label.lastIndexOf('.', label.indexOf("\n")));
+											s2 = label.substring(label.lastIndexOf('.', label.indexOf("\n")));
 											// The '.' contains to the image
 											// description
-										}
-										else {
+										} else {
 											s1 = label.substring(0, label.indexOf("\n"));
 											s2 = label.substring(label.indexOf("\n"));
 										}
 										// Only a '.' but no image description
-									}
-									else if (label.lastIndexOf('.') != -1) {
+									} else if (label.lastIndexOf('.') != -1) {
 										s1 = label.substring(0, label.lastIndexOf('.'));
 										s2 = label.substring(label.lastIndexOf('.'));
 										// No '.' but an image description
-									}
-									else if (label.indexOf("\n") != -1) {
+									} else if (label.indexOf("\n") != -1) {
 										s1 = label.substring(0, label.indexOf("\n"));
 										s2 = label.substring(label.indexOf("\n"));
 										// No '.' and no image description
-									}
-									else {
+									} else {
 										s1 = label;
 										s2 = "";
 									}
-									label = s1 + "_[" + datasetAPI.getELossAsString(i) + "eV]" +
-										s2;
+									label = s1 + "_[" + datasetAPI.getELossAsString(i) + "eV]" + s2;
 								}
 							}
 						}
@@ -238,8 +216,7 @@ public class StackSetupDialog extends EFTEMFrame {
 						// ImagePlus title is still the same.
 						if (i == 0 & datasetAPI.getStackSize() == 1) {
 							datasetAPI.getImagePlus().setTitle(label);
-						}
-						else {
+						} else {
 							datasetAPI.setSliceLabel(i, label);
 						}
 						isChanged = true;
@@ -286,10 +263,8 @@ public class StackSetupDialog extends EFTEMFrame {
 	public StackSetupDialog() {
 		super(PluginMessages.getString("Title.StackSetupDialog"));
 		// NORTH: description
-		final DescriptionPanel northPanel = new DescriptionPanel(PluginMessages
-			.getString("Label.StackSetupInfo"));
-		northPanel.setDetailedDescription(PluginMessages.getString(
-			"Label.StackSetupDetailedInfo"));
+		final DescriptionPanel northPanel = new DescriptionPanel(PluginMessages.getString("Label.StackSetupInfo"));
+		northPanel.setDetailedDescription(PluginMessages.getString("Label.StackSetupDetailedInfo"));
 		super.addToNorthPanel(northPanel);
 		// CENTER: variable table to edit the energy loss
 		textFields = new JFormattedTextField[datasetAPI.getStackSize()];
@@ -309,18 +284,21 @@ public class StackSetupDialog extends EFTEMFrame {
 	}
 
 	/**
-	 * This method collects all setting for adding a new {@link Component} to the
-	 * gridBagPanel of {@link StackSetupDialog}.
+	 * This method collects all setting for adding a new {@link Component} to
+	 * the gridBagPanel of {@link StackSetupDialog}.
 	 *
-	 * @param comp The {@link Component} you want to add
-	 * @param x Column, starts at 0
-	 * @param y Row, starts at 0
-	 * @param width Width in rows
-	 * @param height Height in columns
+	 * @param comp
+	 *            The {@link Component} you want to add
+	 * @param x
+	 *            Column, starts at 0
+	 * @param y
+	 *            Row, starts at 0
+	 * @param width
+	 *            Width in rows
+	 * @param height
+	 *            Height in columns
 	 */
-	private void addElement(final Component comp, final int x, final int y,
-		final int width, final int height)
-	{
+	private void addElement(final Component comp, final int x, final int y, final int width, final int height) {
 		final GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = x;
 		gbc.gridy = y;
@@ -337,18 +315,16 @@ public class StackSetupDialog extends EFTEMFrame {
 	 * A table like layout is used with 2 rows and a variable number of columns.
 	 * The first row shows the current name of all images that are stored in the
 	 * selected {@link ImageStack}. The second row contains one or more
-	 * {@link JFormattedTextField} that lists the current energy loss of the image
-	 * and and it allows to edit the energy loss.<br>
+	 * {@link JFormattedTextField} that lists the current energy loss of the
+	 * image and and it allows to edit the energy loss.<br>
 	 * The first row has a width of 2 and the second one a width of 1.
 	 */
 	private void addELossFields() {
 		// Title of the image that is used
-		addElement(new Label(PluginMessages.getString("Label.SelectedStack") +
-			PluginAPI.getInstance().getDatasetAPI().getImagePlus().getTitle()), 0, 0,
-			3, 1);
+		addElement(new Label(PluginMessages.getString("Label.SelectedStack")
+				+ PluginAPI.getInstance().getDatasetAPI().getImagePlus().getTitle()), 0, 0, 3, 1);
 		// Title of the first row
-		addElement(new Label(PluginMessages.getString("Label.ImageTitle")), 0, 1, 2,
-			1);
+		addElement(new Label(PluginMessages.getString("Label.ImageTitle")), 0, 1, 2, 1);
 		// Title of the second row
 		addElement(new Label(PluginMessages.getString("Label.ELoss")), 2, 1, 1, 1);
 		final Panel placeholder = new Panel();
@@ -358,22 +334,17 @@ public class StackSetupDialog extends EFTEMFrame {
 		for (int i = 0; i < datasetAPI.getStackSize(); i++) {
 			if (datasetAPI.getStackSize() > 1) {
 				addElement(new Label(datasetAPI.getShortSliceLabel(i)), 0, i + 3, 2, 1);
+			} else {
+				addElement(new Label(datasetAPI.getImagePlusShortTitle()), 0, i + 3, 2, 1);
 			}
-			else {
-				addElement(new Label(datasetAPI.getImagePlusShortTitle()), 0, i + 3, 2,
-					1);
-			}
-			final DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(
-				Locale.ENGLISH);
+			final DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(Locale.ENGLISH);
 			df.applyPattern("####.##");
 			final JFormattedTextField eLossField = new JFormattedTextField(df);
 			this.configField(eLossField);
 			if (datasetAPI.getELossArray()[i] != 0) {
 				eLossField.setValue(datasetAPI.getELossArray()[i]);
-			}
-			else {
-				eLossField.setValue(ELossTool.eLossFromSliceLabel(datasetAPI
-					.getImagePlus(), i));
+			} else {
+				eLossField.setValue(ELossTool.eLossFromSliceLabel(datasetAPI.getImagePlus(), i));
 			}
 			textFields[i] = eLossField;
 			addElement(eLossField, 2, i + 3, 1, 1);
@@ -383,7 +354,8 @@ public class StackSetupDialog extends EFTEMFrame {
 	/**
 	 * Sets the number of columns to 7 and the alignment to RIGHT.
 	 *
-	 * @param field The {@link JFormattedTextField} that gets configured
+	 * @param field
+	 *            The {@link JFormattedTextField} that gets configured
 	 */
 	private void configField(final JFormattedTextField field) {
 		field.setColumns(7);

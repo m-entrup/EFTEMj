@@ -68,8 +68,7 @@ public class MapSetupDialog extends EFTEMFrame {
 		 * Read the settings of {@link MapSetupDialog} from IJ_Prefs.txt.
 		 */
 		private void readSettings() {
-			epsilon = (float) Prefs.get(EFTEMj_Prefs.PREFS_PREFIX + ESI_PREFIX +
-				"epsilon", epsilon);
+			epsilon = (float) Prefs.get(EFTEMj_Prefs.PREFS_PREFIX + ESI_PREFIX + "epsilon", epsilon);
 		}
 
 		/**
@@ -99,30 +98,26 @@ public class MapSetupDialog extends EFTEMFrame {
 			eLoss = Float.valueOf(eLossField.getText());
 			epsilon = Float.valueOf(epsilonField.getText());
 			try {
-				PluginAPI.getInstance().getDatasetAPI().createDatasetMapInput(eLoss,
-					epsilon);
-			}
-			catch (final Exception e) {
+				PluginAPI.getInstance().getDatasetAPI().createDatasetMapInput(eLoss, epsilon);
+			} catch (final Exception e) {
 				LogWriter.showWarningAndWriteLog(e.getMessage());
 				return;
 			}
 			new LoadAndSaveConfig().writeSettings();
 			MapSetupDialog.this.dispose();
 			try {
-				final PowerLawFitCalculationExecutor executor =
-					new PowerLawFitCalculationExecutor();
+				final PowerLawFitCalculationExecutor executor = new PowerLawFitCalculationExecutor();
 				executor.execute();
 				PluginAPI.getInstance().getMainMenu().showMapResultPanel();
-			}
-			catch (final Exception e) {
+			} catch (final Exception e) {
 				LogWriter.showWarningAndWriteLog(e.getMessage());
 			}
 		}
 	} // END MapSetupListener
 
 	/**
-	 * Detector quantum efficiency. A camera specific value that lowers the signal
-	 * to noise ratio.
+	 * Detector quantum efficiency. A camera specific value that lowers the
+	 * signal to noise ratio.
 	 */
 	// private double dqe = 1.0f;
 	/**
@@ -162,10 +157,8 @@ public class MapSetupDialog extends EFTEMFrame {
 		final LoadAndSaveConfig fileHandler = new LoadAndSaveConfig();
 		fileHandler.readSettings();
 		// NORTH: Description
-		final DescriptionPanel northPanel = new DescriptionPanel(PluginMessages
-			.getString("Label.MapSetupInfo"));
-		northPanel.setDetailedDescription(PluginMessages.getString(
-			"Label.MapSetupDetailedInfo"));
+		final DescriptionPanel northPanel = new DescriptionPanel(PluginMessages.getString("Label.MapSetupInfo"));
+		northPanel.setDetailedDescription(PluginMessages.getString("Label.MapSetupDetailedInfo"));
 		super.addToNorthPanel(northPanel);
 		// CENTER: stackChooser
 		super.addToCenterPanel(createOptionPanel());
@@ -183,16 +176,21 @@ public class MapSetupDialog extends EFTEMFrame {
 	 * This method combines all setting for adding a new {@link Component} to a
 	 * {@link Panel}.
 	 *
-	 * @param comp The {@link Component} you want to add.
-	 * @param panel The {@link Panel} where you add the {@link Component}.
-	 * @param x Column, starts at 0.
-	 * @param y Row, starts at 0.
-	 * @param width Width in rows.
-	 * @param height Height in columns.
+	 * @param comp
+	 *            The {@link Component} you want to add.
+	 * @param panel
+	 *            The {@link Panel} where you add the {@link Component}.
+	 * @param x
+	 *            Column, starts at 0.
+	 * @param y
+	 *            Row, starts at 0.
+	 * @param width
+	 *            Width in rows.
+	 * @param height
+	 *            Height in columns.
 	 */
-	private void addElement(final Component comp, final Panel panel, final int x,
-		final int y, final int width, final int height)
-	{
+	private void addElement(final Component comp, final Panel panel, final int x, final int y, final int width,
+			final int height) {
 		final GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = x;
 		gbc.gridy = y;
@@ -208,7 +206,8 @@ public class MapSetupDialog extends EFTEMFrame {
 	/**
 	 * Sets the number of columns to 8 and the alignment to RIGHT.
 	 *
-	 * @param field The {@link JFormattedTextField} that gets configured
+	 * @param field
+	 *            The {@link JFormattedTextField} that gets configured
 	 */
 	private void configField(final JFormattedTextField field) {
 		field.setColumns(8);
@@ -217,8 +216,8 @@ public class MapSetupDialog extends EFTEMFrame {
 
 	/**
 	 * The {@link Panel} at the position CENTER uses the {@link GridBagLayout}.
-	 * Each row contains of a {@link JFormattedTextField} to setup a parameter for
-	 * the map calculation and the corresponding {@link Label}.
+	 * Each row contains of a {@link JFormattedTextField} to setup a parameter
+	 * for the map calculation and the corresponding {@link Label}.
 	 */
 	private Panel createOptionPanel() {
 		final Panel optionPanel = new Panel();
@@ -226,26 +225,22 @@ public class MapSetupDialog extends EFTEMFrame {
 		optionPanel.setLayout(gridBagLayout);
 		int pos = 0;
 		// Title of the image that is used
-		addElement(new Label(PluginMessages.getString("Label.SelectedStack") +
-			PluginAPI.getInstance().getDatasetAPI().getImagePlus().getTitle()),
-			optionPanel, 0, pos, 2, 1);
+		addElement(
+				new Label(PluginMessages.getString("Label.SelectedStack")
+						+ PluginAPI.getInstance().getDatasetAPI().getImagePlus().getTitle()),
+				optionPanel, 0, pos, 2, 1);
 		pos++;
 		// Edge energy loss and related label
-		final Label edgeLabel = new Label(PluginMessages.getString(
-			"Label.EdgeELoss"));
-		final DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(
-			Locale.ENGLISH);
+		final Label edgeLabel = new Label(PluginMessages.getString("Label.EdgeELoss"));
+		final DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(Locale.ENGLISH);
 		df.applyPattern("####.##");
 		eLossField = new JFormattedTextField(df);
 		this.configField(eLossField);
-		final float edgeELoss = PluginAPI.getInstance().getDatasetAPI()
-			.getPredictedEdgeELoss();
+		final float edgeELoss = PluginAPI.getInstance().getDatasetAPI().getPredictedEdgeELoss();
 		eLossField.setValue(edgeELoss);
-		final String edgeString = PluginAPI.getInstance().getDatasetAPI()
-			.getPredictedEdgeLabel(Math.round(edgeELoss));
-		addElement(new JLabel("<html>" + PluginMessages.getString(
-			"Label.EdgeString") + " " + edgeString + "</html>"), optionPanel, 0, pos,
-			2, 1);
+		final String edgeString = PluginAPI.getInstance().getDatasetAPI().getPredictedEdgeLabel(Math.round(edgeELoss));
+		addElement(new JLabel("<html>" + PluginMessages.getString("Label.EdgeString") + " " + edgeString + "</html>"),
+				optionPanel, 0, pos, 2, 1);
 		pos++;
 		addElement(edgeLabel, optionPanel, 0, pos, 1, 1);
 		addElement(eLossField, optionPanel, 1, pos, 1, 1);
@@ -261,11 +256,9 @@ public class MapSetupDialog extends EFTEMFrame {
 		 * addElement(dqeField, optionPanel, 1, pos, 1, 1);
 		 */
 		// Exit condition for the MLE
-		final Label epsilonLabel = new Label(PluginMessages.getString(
-			"Label.MapPrecision"));
+		final Label epsilonLabel = new Label(PluginMessages.getString("Label.MapPrecision"));
 		addElement(epsilonLabel, optionPanel, 0, pos, 1, 1);
-		final DecimalFormat df2 = (DecimalFormat) NumberFormat.getInstance(
-			Locale.ENGLISH);
+		final DecimalFormat df2 = (DecimalFormat) NumberFormat.getInstance(Locale.ENGLISH);
 		df2.applyPattern("0.0E0#");
 		epsilonField = new JFormattedTextField(df2);
 		this.configField(epsilonField);

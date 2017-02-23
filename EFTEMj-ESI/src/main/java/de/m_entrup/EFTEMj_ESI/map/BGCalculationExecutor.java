@@ -55,10 +55,8 @@ public class BGCalculationExecutor extends SwingWorker<Void, Void> {
 	 */
 	public BGCalculationExecutor() throws Exception {
 		super();
-		array_EFTEMImages = PluginAPI.getInstance().getDatasetAPI()
-			.getEFTEMImageArray();
-		ThreadInterface.getInstance().configureThreadChecker(
-			array_EFTEMImages.length);
+		array_EFTEMImages = PluginAPI.getInstance().getDatasetAPI().getEFTEMImageArray();
+		ThreadInterface.getInstance().configureThreadChecker(array_EFTEMImages.length);
 	}
 
 	@Override

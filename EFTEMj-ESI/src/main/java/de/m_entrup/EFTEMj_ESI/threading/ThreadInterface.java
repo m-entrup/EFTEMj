@@ -77,8 +77,8 @@ public class ThreadInterface {
 
 	/**
 	 * The {@link BGFinisher} is started when the {@link BGCalculation} has been
-	 * finished. The next step is initialised, the {@link MapCalculation}. At the
-	 * MapResultPanel two buttons are enabled.
+	 * finished. The next step is initialised, the {@link MapCalculation}. At
+	 * the MapResultPanel two buttons are enabled.
 	 */
 	private class BGFinisher implements Runnable {
 
@@ -88,20 +88,19 @@ public class ThreadInterface {
 			final float[] errorMap = dataset.getErrorMap();
 			Statistics statistics;
 			for (int i = 0; i < dataset.getEdgeIndex(); i++) {
-				statistics = new Statistics(dataset.getRelBackgroundImages()[i]
-					.getPixels(), errorMap);
-				LogWriter.writeProcessLog(dataset.getRelBackgroundImages()[i]
-					.getLabel() + " " + statistics.getAllAsString(), LogWriter.MAP);
+				statistics = new Statistics(dataset.getRelBackgroundImages()[i].getPixels(), errorMap);
+				LogWriter.writeProcessLog(
+						dataset.getRelBackgroundImages()[i].getLabel() + " " + statistics.getAllAsString(),
+						LogWriter.MAP);
 			}
 			final Float timeInSeconds = (float) (MyTimer.interval()) / 1000;
-			LogWriter.writeProcessLog(String.format(Locale.ENGLISH,
-				"Time required (BG calc.): %.2f s", timeInSeconds), LogWriter.MAP);
+			LogWriter.writeProcessLog(String.format(Locale.ENGLISH, "Time required (BG calc.): %.2f s", timeInSeconds),
+					LogWriter.MAP);
 			MapCalculationExecutor executor;
 			try {
 				executor = new MapCalculationExecutor();
 				executor.execute();
-			}
-			catch (final Exception e) {
+			} catch (final Exception e) {
 				mainMenu.closeMapResultPanel();
 				mainMenu.enableMainMenuButtons();
 				JOptionPane.showMessageDialog(null, e);
@@ -123,28 +122,26 @@ public class ThreadInterface {
 			final DatasetAPI dataset = PluginAPI.getInstance().getDatasetAPI();
 			final float[] errorMap = dataset.getErrorMap();
 			final Statistics statistics = new Statistics(dataset.getChi2(), errorMap);
-			LogWriter.writeProcessLog("Chi² " + statistics.getAllAsString(),
-				LogWriter.MAP);
+			LogWriter.writeProcessLog("Chi² " + statistics.getAllAsString(), LogWriter.MAP);
 			Float timeInSeconds = (float) (MyTimer.interval()) / 1000;
-			LogWriter.writeProcessLog(String.format(Locale.ENGLISH,
-				"Time required (Chi²): %.2f s", timeInSeconds), LogWriter.MAP);
+			LogWriter.writeProcessLog(String.format(Locale.ENGLISH, "Time required (Chi²): %.2f s", timeInSeconds),
+					LogWriter.MAP);
 			// TODO Create a finished() method to reduce redundancy.
 			timeInSeconds = (float) (MyTimer.stop()) / 1000;
-			LogWriter.writeProcessLog(String.format(Locale.ENGLISH,
-				"Time required (total): %.2f s", timeInSeconds), LogWriter.MAP);
+			LogWriter.writeProcessLog(String.format(Locale.ENGLISH, "Time required (total): %.2f s", timeInSeconds),
+					LogWriter.MAP);
 			mainMenu.enableMapResultButton("key_showChi2");
 			mainMenu.enableMapResultButton("key_closeMapResult");
 			// TODO add "show log" button to the MapResultPanel
-			DisplyProcessLogTool.showExportDialog("Map_" + dataset
-				.getImagePlusShortTitle());
+			DisplyProcessLogTool.showExportDialog("Map_" + dataset.getImagePlusShortTitle());
 		}
 	}
 
 	/**
-	 * The {@link CODFinisher} is used when the {@link CoeffOfDetCalculation} has
-	 * finished. An instance of this class enables buttons at the
-	 * {@link MapResultPanel}. Additionally the {@link Chi2CalculationExecutor} is
-	 * initialised to start the {@link Chi2Calculation}.
+	 * The {@link CODFinisher} is used when the {@link CoeffOfDetCalculation}
+	 * has finished. An instance of this class enables buttons at the
+	 * {@link MapResultPanel}. Additionally the {@link Chi2CalculationExecutor}
+	 * is initialised to start the {@link Chi2Calculation}.
 	 */
 	private class CODFinisher implements Runnable {
 
@@ -152,19 +149,16 @@ public class ThreadInterface {
 		public void run() {
 			final DatasetAPI dataset = PluginAPI.getInstance().getDatasetAPI();
 			final float[] errorMap = dataset.getErrorMap();
-			final Statistics statistics = new Statistics(dataset.getCoeffOFDet(),
-				errorMap);
-			LogWriter.writeProcessLog("coefficient of determination " + statistics
-				.getAllAsString(), LogWriter.MAP);
+			final Statistics statistics = new Statistics(dataset.getCoeffOFDet(), errorMap);
+			LogWriter.writeProcessLog("coefficient of determination " + statistics.getAllAsString(), LogWriter.MAP);
 			final Float timeInSeconds = (float) (MyTimer.interval()) / 1000;
-			LogWriter.writeProcessLog(String.format(Locale.ENGLISH,
-				"Time required (COD): %.2f s", timeInSeconds), LogWriter.MAP);
+			LogWriter.writeProcessLog(String.format(Locale.ENGLISH, "Time required (COD): %.2f s", timeInSeconds),
+					LogWriter.MAP);
 			Chi2CalculationExecutor executor;
 			try {
 				executor = new Chi2CalculationExecutor();
 				executor.execute();
-			}
-			catch (final Exception e) {
+			} catch (final Exception e) {
 				mainMenu.closeMapResultPanel();
 				mainMenu.enableMainMenuButtons();
 				JOptionPane.showMessageDialog(null, e);
@@ -176,10 +170,10 @@ public class ThreadInterface {
 	/**
 	 * {@link CROSSFinisher} is the finisher class of the drift correction. The
 	 * first part of the drift correction is the calculation of the normalised
-	 * crosscorrelation coefficient, this is done by {@link CrossCorrelation}. If
-	 * the coefficients are calculated, this class is initialised and determines
-	 * the drift from the coefficient map. Ongoing the images are shifted and
-	 * finally displayed.
+	 * crosscorrelation coefficient, this is done by {@link CrossCorrelation}.
+	 * If the coefficients are calculated, this class is initialised and
+	 * determines the drift from the coefficient map. Ongoing the images are
+	 * shifted and finally displayed.
 	 */
 	private class CROSSFinisher implements Runnable {
 
@@ -189,13 +183,13 @@ public class ThreadInterface {
 		 * this method is used to create a {@link ImageStack} from an array of
 		 * {@link FloatProcessor}s.
 		 *
-		 * @param array An array of {@link FloatProcessor}s.
-		 * @return The {@link ImageStack} that contains the {@link FloatProcessor}s
-		 *         of the parameter array.
+		 * @param array
+		 *            An array of {@link FloatProcessor}s.
+		 * @return The {@link ImageStack} that contains the
+		 *         {@link FloatProcessor}s of the parameter array.
 		 */
 		private ImageStack arrayToStack(final FloatProcessor[] array) {
-			final ImageStack stack = new ImageStack(array[0].getWidth(), array[0]
-				.getHeight());
+			final ImageStack stack = new ImageStack(array[0].getWidth(), array[0].getHeight());
 			for (int i = 0; i < array.length; i++) {
 				stack.addSlice(datasetAPI.getSliceLabel(i), array[i]);
 			}
@@ -206,22 +200,17 @@ public class ThreadInterface {
 		public void run() {
 			final int templateIndex = datasetAPI.getTemplateIndex();
 			final ImageStack imageStack = datasetAPI.getImagePlus().getStack();
-			final FloatProcessor[] correctedImages = new FloatProcessor[datasetAPI
-				.getStackSize()];
-			correctedImages[templateIndex] = new FloatProcessor(datasetAPI.getWidth(),
-				datasetAPI.getHeight());
-			correctedImages[templateIndex].copyBits(imageStack.getProcessor(
-				templateIndex + 1), 0, 0, Blitter.COPY);
+			final FloatProcessor[] correctedImages = new FloatProcessor[datasetAPI.getStackSize()];
+			correctedImages[templateIndex] = new FloatProcessor(datasetAPI.getWidth(), datasetAPI.getHeight());
+			correctedImages[templateIndex].copyBits(imageStack.getProcessor(templateIndex + 1), 0, 0, Blitter.COPY);
 			for (int i = 0; i < datasetAPI.getStackSize(); i++) {
 				if (i != templateIndex) {
-					final Point maxPos = ImageShifter.calcShift(datasetAPI
-						.getCorrelationCoefficientsAsFP()[i]);
+					final Point maxPos = ImageShifter.calcShift(datasetAPI.getCorrelationCoefficientsAsFP()[i]);
 					// 'x' and 'y' are shift values.
-					LogWriter.writeProcessLog("Drift of \"" + imageStack
-						.getShortSliceLabel(i + 1) + "\" " + ": x=" + -maxPos.x + " y=" +
-						-maxPos.y, LogWriter.DRIFT);
+					LogWriter.writeProcessLog("Drift of \"" + imageStack.getShortSliceLabel(i + 1) + "\" " + ": x="
+							+ -maxPos.x + " y=" + -maxPos.y, LogWriter.DRIFT);
 					correctedImages[i] = ImageShifter.moveImage(maxPos,
-						(FloatProcessor) imageStack.getProcessor(i + 1));
+							(FloatProcessor) imageStack.getProcessor(i + 1));
 					// When an image is changed you have to call this method to
 					// get the
 					// right min & max (used for display limits).
@@ -229,37 +218,32 @@ public class ThreadInterface {
 				}
 			}
 			final ImageStack correctedStack = arrayToStack(correctedImages);
-			final ImagePlus driftStackWin = new ImagePlus("DK-" + datasetAPI
-				.getImagePlus().getTitle(), correctedStack);
-			driftStackWin.setDisplayRange(WindowManager.getCurrentImage()
-				.getDisplayRangeMin(), WindowManager.getCurrentImage()
-					.getDisplayRangeMax());
+			final ImagePlus driftStackWin = new ImagePlus("DK-" + datasetAPI.getImagePlus().getTitle(), correctedStack);
+			driftStackWin.setDisplayRange(WindowManager.getCurrentImage().getDisplayRangeMin(),
+					WindowManager.getCurrentImage().getDisplayRangeMax());
 			final Float timeInSeconds = (float) (MyTimer.stop()) / 1000;
-			LogWriter.writeProcessLog(String.format(Locale.ENGLISH,
-				"Time required: %.2f s", timeInSeconds), LogWriter.DRIFT);
+			LogWriter.writeProcessLog(String.format(Locale.ENGLISH, "Time required: %.2f s", timeInSeconds),
+					LogWriter.DRIFT);
 			driftStackWin.show();
 			// TODO Add a non modal dialog that offers the options to save the
 			// corrected stack, redo the correction, or cancel without saving.
-			LogWriter.writeLog("The drift at stack \"" + driftStackWin
-				.getShortTitle() + "\" has been corrected.");
+			LogWriter.writeLog("The drift at stack \"" + driftStackWin.getShortTitle() + "\" has been corrected.");
 			if (driftStackWin.getOriginalFileInfo() != null) {
-				final String path = driftStackWin.getOriginalFileInfo().directory +
-					driftStackWin.getOriginalFileInfo().fileName;
-				LogWriter.writeProcessLog("The stack has been saved: " + path,
-					LogWriter.DRIFT);
+				final String path = driftStackWin.getOriginalFileInfo().directory
+						+ driftStackWin.getOriginalFileInfo().fileName;
+				LogWriter.writeProcessLog("The stack has been saved: " + path, LogWriter.DRIFT);
 				datasetAPI.deleteDriftDataset();
 			}
 			PluginAPI.getInstance().enableMainMenuButtons();
-			DisplyProcessLogTool.showExportDialog("DK_" + datasetAPI
-				.getImagePlusShortTitle());
+			DisplyProcessLogTool.showExportDialog("DK_" + datasetAPI.getImagePlusShortTitle());
 			ImagePlusTool.saveImagePlus(driftStackWin, true);
 		}
 	}
 
 	/**
-	 * The {@link MapFinisher} is started when the {@link MapCalculation} has been
-	 * finished. The next step is initialised, the {@link SNRCalculation}. At the
-	 * MapResultPanel another button is enabled.
+	 * The {@link MapFinisher} is started when the {@link MapCalculation} has
+	 * been finished. The next step is initialised, the {@link SNRCalculation}.
+	 * At the MapResultPanel another button is enabled.
 	 */
 	private class MapFinisher implements Runnable {
 
@@ -270,18 +254,17 @@ public class ThreadInterface {
 			Statistics statistics;
 			for (int i = 0; i < dataset.getMap().length; i++) {
 				statistics = new Statistics(dataset.getMap()[i].getPixels(), errorMap);
-				LogWriter.writeProcessLog(dataset.getMap()[i].getLabel() + " " +
-					statistics.getAllAsString(), LogWriter.MAP);
+				LogWriter.writeProcessLog(dataset.getMap()[i].getLabel() + " " + statistics.getAllAsString(),
+						LogWriter.MAP);
 			}
 			final Float timeInSeconds = (float) (MyTimer.interval()) / 1000;
-			LogWriter.writeProcessLog(String.format(Locale.ENGLISH,
-				"Time required (Map calc): %.2f s", timeInSeconds), LogWriter.MAP);
+			LogWriter.writeProcessLog(String.format(Locale.ENGLISH, "Time required (Map calc): %.2f s", timeInSeconds),
+					LogWriter.MAP);
 			SNRCalculationExecutor executor;
 			try {
 				executor = new SNRCalculationExecutor();
 				executor.execute();
-			}
-			catch (final Exception e) {
+			} catch (final Exception e) {
 				mainMenu.closeMapResultPanel();
 				mainMenu.enableMainMenuButtons();
 				JOptionPane.showMessageDialog(null, e);
@@ -292,10 +275,10 @@ public class ThreadInterface {
 
 	/**
 	 * When the MLE calculation is finished, the next calculation
-	 * {@link BGCalculation} is started. As the {@link PowerLawFitCalculation} is
-	 * the first part of the elemental-map calculation the MapResultPanel will be
-	 * displayed by this finisher Thread. The buttons of the already available
-	 * results are enabled.
+	 * {@link BGCalculation} is started. As the {@link PowerLawFitCalculation}
+	 * is the first part of the elemental-map calculation the MapResultPanel
+	 * will be displayed by this finisher Thread. The buttons of the already
+	 * available results are enabled.
 	 */
 	private class MLEFinisher implements Runnable {
 
@@ -309,46 +292,35 @@ public class ThreadInterface {
 			}
 			final long pixelCount = errorMap.length;
 			long errorCount = errorHistogram[PluginConstants.ERROR__NON];
-			LogWriter.writeProcessLog(String.format(Locale.ENGLISH,
-				"no error: %d pixels (%s)", errorCount, NumberFormat
-					.getPercentInstance().format((double) errorCount / pixelCount)),
-				LogWriter.MAP);
+			LogWriter.writeProcessLog(String.format(Locale.ENGLISH, "no error: %d pixels (%s)", errorCount,
+					NumberFormat.getPercentInstance().format((double) errorCount / pixelCount)), LogWriter.MAP);
 			errorCount = errorHistogram[PluginConstants.ERROR__SIGNAL_LESS_THAN_ZERO];
-			LogWriter.writeProcessLog(String.format(Locale.ENGLISH,
-				"signal is less than 0: %d pixels (%s)", errorCount, NumberFormat
-					.getPercentInstance().format((double) errorCount / pixelCount)),
-				LogWriter.MAP);
-			errorCount =
-				errorHistogram[PluginConstants.ERROR__A_NOT_POSSIBLE_TO_CALCULATE];
-			LogWriter.writeProcessLog(String.format(Locale.ENGLISH,
-				"can't calculate a: %d pixels (%s)", errorCount, NumberFormat
-					.getPercentInstance().format((double) errorCount / pixelCount)),
-				LogWriter.MAP);
+			LogWriter.writeProcessLog(String.format(Locale.ENGLISH, "signal is less than 0: %d pixels (%s)", errorCount,
+					NumberFormat.getPercentInstance().format((double) errorCount / pixelCount)), LogWriter.MAP);
+			errorCount = errorHistogram[PluginConstants.ERROR__A_NOT_POSSIBLE_TO_CALCULATE];
+			LogWriter.writeProcessLog(String.format(Locale.ENGLISH, "can't calculate a: %d pixels (%s)", errorCount,
+					NumberFormat.getPercentInstance().format((double) errorCount / pixelCount)), LogWriter.MAP);
 			errorCount = errorHistogram[PluginConstants.ERROR__CONVERGENCE];
-			LogWriter.writeProcessLog(String.format(Locale.ENGLISH,
-				"no convergence at MLE calc.: %d pixels (%s)", errorCount, NumberFormat
-					.getPercentInstance().format((double) errorCount / pixelCount)),
-				LogWriter.MAP);
+			LogWriter
+					.writeProcessLog(
+							String.format(Locale.ENGLISH, "no convergence at MLE calc.: %d pixels (%s)", errorCount,
+									NumberFormat.getPercentInstance().format((double) errorCount / pixelCount)),
+							LogWriter.MAP);
 			errorCount = errorHistogram[PluginConstants.ERROR__NAN];
-			LogWriter.writeProcessLog(String.format(Locale.ENGLISH,
-				"NAN error: %d pixels (%s)", errorCount, NumberFormat
-					.getPercentInstance().format((double) errorCount / pixelCount)),
-				LogWriter.MAP);
+			LogWriter.writeProcessLog(String.format(Locale.ENGLISH, "NAN error: %d pixels (%s)", errorCount,
+					NumberFormat.getPercentInstance().format((double) errorCount / pixelCount)), LogWriter.MAP);
 			Statistics statistics = new Statistics(dataset.getRMap(), errorMap);
-			LogWriter.writeProcessLog("r " + statistics.getAllAsString(),
-				LogWriter.MAP);
+			LogWriter.writeProcessLog("r " + statistics.getAllAsString(), LogWriter.MAP);
 			statistics = new Statistics(dataset.getAMap(), errorMap);
-			LogWriter.writeProcessLog("a " + statistics.getAllAsString(),
-				LogWriter.MAP);
+			LogWriter.writeProcessLog("a " + statistics.getAllAsString(), LogWriter.MAP);
 			final Float timeInSeconds = (float) (MyTimer.interval()) / 1000;
-			LogWriter.writeProcessLog(String.format(Locale.ENGLISH,
-				"Time required (MLE): %.2f s", timeInSeconds), LogWriter.MAP);
+			LogWriter.writeProcessLog(String.format(Locale.ENGLISH, "Time required (MLE): %.2f s", timeInSeconds),
+					LogWriter.MAP);
 			BGCalculationExecutor executor;
 			try {
 				executor = new BGCalculationExecutor();
 				executor.execute();
-			}
-			catch (final Exception e) {
+			} catch (final Exception e) {
 				mainMenu.closeMapResultPanel();
 				mainMenu.enableMainMenuButtons();
 				JOptionPane.showMessageDialog(null, e);
@@ -360,9 +332,10 @@ public class ThreadInterface {
 	}
 
 	/**
-	 * The {@link SNRFinisher} is started when the {@link SNRCalculation} has been
-	 * finished. The next step is initialised, the {@link CoeffOfDetCalculation}.
-	 * At the MapResultPanel two buttons are enabled.
+	 * The {@link SNRFinisher} is started when the {@link SNRCalculation} has
+	 * been finished. The next step is initialised, the
+	 * {@link CoeffOfDetCalculation}. At the MapResultPanel two buttons are
+	 * enabled.
 	 */
 	private class SNRFinisher implements Runnable {
 
@@ -372,24 +345,21 @@ public class ThreadInterface {
 			final float[] errorMap = dataset.getErrorMap();
 			Statistics statistics;
 			for (int i = 0; i < dataset.getSNR().length; i++) {
-				statistics = new Statistics(dataset.getSigma2()[i].getPixels(),
-					errorMap);
-				LogWriter.writeProcessLog(dataset.getSigma2()[i].getLabel() + " " +
-					statistics.getAllAsString(), LogWriter.MAP);
+				statistics = new Statistics(dataset.getSigma2()[i].getPixels(), errorMap);
+				LogWriter.writeProcessLog(dataset.getSigma2()[i].getLabel() + " " + statistics.getAllAsString(),
+						LogWriter.MAP);
 				statistics = new Statistics(dataset.getSNR()[i].getPixels(), errorMap);
-				LogWriter.writeProcessLog(String.format(Locale.ENGLISH,
-					"%s with DQE=1 %s", dataset.getSNR()[i].getLabel(), statistics
-						.getAllAsString()), LogWriter.MAP);
+				LogWriter.writeProcessLog(String.format(Locale.ENGLISH, "%s with DQE=1 %s",
+						dataset.getSNR()[i].getLabel(), statistics.getAllAsString()), LogWriter.MAP);
 			}
 			final Float timeInSeconds = (float) (MyTimer.interval()) / 1000;
-			LogWriter.writeProcessLog(String.format(Locale.ENGLISH,
-				"Time required (SNR): %.2f s", timeInSeconds), LogWriter.MAP);
+			LogWriter.writeProcessLog(String.format(Locale.ENGLISH, "Time required (SNR): %.2f s", timeInSeconds),
+					LogWriter.MAP);
 			CoeffOfDetCalculationExecutor executor;
 			try {
 				executor = new CoeffOfDetCalculationExecutor();
 				executor.execute();
-			}
-			catch (final Exception e) {
+			} catch (final Exception e) {
 				mainMenu.closeMapResultPanel();
 				mainMenu.enableMainMenuButtons();
 				JOptionPane.showMessageDialog(null, e);
@@ -410,7 +380,8 @@ public class ThreadInterface {
 	 */
 	private final MainMenu mainMenu = PluginAPI.getInstance().getMainMenu();
 	/*
-	 * These constants are used to determinate the finisher thread that has to be used when a calculation ends.
+	 * These constants are used to determinate the finisher thread that has to
+	 * be used when a calculation ends.
 	 */
 	public static final int MLE = 1;
 	public static final int BG = 2;
@@ -450,8 +421,7 @@ public class ThreadInterface {
 	public void addThread() {
 		try {
 			threadChecker.addThread();
-		}
-		catch (final InterruptedException e) {
+		} catch (final InterruptedException e) {
 			// TODO export String
 			LogWriter.writeLog("Fehler! (wait interrupted)");
 			e.printStackTrace();
@@ -462,16 +432,15 @@ public class ThreadInterface {
 	 * A new instance of {@link ThreadChecker} is created that will handle the
 	 * number of running threads.
 	 *
-	 * @param subTasks The number of subtasks.
+	 * @param subTasks
+	 *            The number of subtasks.
 	 * @throws Exception
 	 */
 	public void configureThreadChecker(final int subTasks) throws Exception {
 		if (threadChecker == null) {
 			threadChecker = new ThreadChecker(subTasks);
-		}
-		else {
-			throw new Exception(PluginMessages.getString(
-				"Error.ConfiguteThreadChecker"));
+		} else {
+			throw new Exception(PluginMessages.getString("Error.ConfiguteThreadChecker"));
 		}
 	}
 
@@ -481,36 +450,37 @@ public class ThreadInterface {
 
 	/**
 	 * Uses <code>threadChecker.removeThread()</code> and creates the
-	 * {@link MapResultPanel} if <code>threadChecker.isFinished() == true</code>.
+	 * {@link MapResultPanel} if
+	 * <code>threadChecker.isFinished() == true</code>.
 	 */
 	public synchronized void removeThread(final int type) {
 		threadChecker.removeThread();
 		if (threadChecker.isFinished()) {
 			threadChecker = null;
 			switch (type) {
-				case MLE:
-					new Thread(new MLEFinisher()).run();
-					break;
-				case BG:
-					new Thread(new BGFinisher()).run();
-					break;
-				case MAP:
-					new Thread(new MapFinisher()).run();
-					break;
-				case SNR:
-					new Thread(new SNRFinisher()).run();
-					break;
-				case COD:
-					new Thread(new CODFinisher()).run();
-					break;
-				case CROSS:
-					new Thread(new CROSSFinisher()).run();
-					break;
-				case CHI2:
-					new Thread(new Chi2Finisher()).run();
-					break;
-				default:
-					break;
+			case MLE:
+				new Thread(new MLEFinisher()).run();
+				break;
+			case BG:
+				new Thread(new BGFinisher()).run();
+				break;
+			case MAP:
+				new Thread(new MapFinisher()).run();
+				break;
+			case SNR:
+				new Thread(new SNRFinisher()).run();
+				break;
+			case COD:
+				new Thread(new CODFinisher()).run();
+				break;
+			case CROSS:
+				new Thread(new CROSSFinisher()).run();
+				break;
+			case CHI2:
+				new Thread(new Chi2Finisher()).run();
+				break;
+			default:
+				break;
 			}
 		}
 	}

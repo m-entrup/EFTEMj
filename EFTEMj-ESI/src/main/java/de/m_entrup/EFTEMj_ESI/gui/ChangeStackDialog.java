@@ -70,8 +70,7 @@ public class ChangeStackDialog extends EFTEMFrame {
 			// selected.
 			final ImagePlus imagePlus = WindowManager.getImage(titleSelectedImage);
 			if (imagePlus == null) {
-				LogWriter.showWarningAndWriteLog(PluginMessages.getString(
-					"Error.UnableToSelectImage"));
+				LogWriter.showWarningAndWriteLog(PluginMessages.getString("Error.UnableToSelectImage"));
 				return;
 			}
 			PluginAPI.getInstance().initDatasetAPI(imagePlus);
@@ -99,14 +98,12 @@ public class ChangeStackDialog extends EFTEMFrame {
 	public ChangeStackDialog() {
 		super(PluginMessages.getString("Title.ChangeStackDialog"));
 		// NORTH: Description
-		final DescriptionPanel northPanel = new DescriptionPanel(PluginMessages
-			.getString("Label.ChangeStackInfo"));
-		northPanel.setDetailedDescription(PluginMessages.getString(
-			"Label.ChangeStackDetailedInfo"));
+		final DescriptionPanel northPanel = new DescriptionPanel(PluginMessages.getString("Label.ChangeStackInfo"));
+		northPanel.setDetailedDescription(PluginMessages.getString("Label.ChangeStackDetailedInfo"));
 		super.addToNorthPanel(northPanel);
 		// CENTER: stackChooser
-		final Panel centerPanel = new Panel(new FlowLayout(FlowLayout.CENTER,
-			PluginConstants.LAYOUT__GAP, PluginConstants.LAYOUT__GAP));
+		final Panel centerPanel = new Panel(
+				new FlowLayout(FlowLayout.CENTER, PluginConstants.LAYOUT__GAP, PluginConstants.LAYOUT__GAP));
 		stackChooser = new Choice();
 		for (int i = 0; i < ImagePlusTool.getImagePlusTitels().length; i++) {
 			stackChooser.add(ImagePlusTool.getImagePlusTitels()[i]);

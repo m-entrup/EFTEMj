@@ -71,21 +71,16 @@ public class PluginDQE implements PlugInFilter {
 	@Override
 	public void run(final ImageProcessor ip) {
 		FloatProcessor fp = (FloatProcessor) imp.getProcessor().clone();
-		fp.setRoi(border, border, imp.getWidth() - 2 * border, imp.getHeight() - 2 *
-			border);
+		fp.setRoi(border, border, imp.getWidth() - 2 * border, imp.getHeight() - 2 * border);
 		fp = (FloatProcessor) fp.crop();
-		if (maxBinning == 0 | maxBinning > fp.getWidth() / 10 | maxBinning > fp
-			.getHeight() / 10)
-		{
+		if (maxBinning == 0 | maxBinning > fp.getWidth() / 10 | maxBinning > fp.getHeight() / 10) {
 			maxBinning = Math.min(fp.getWidth(), fp.getHeight()) / 10;
-			IJ.showMessage("Max. binning", String.format(
-				"The max. binning was set to %d", maxBinning));
+			IJ.showMessage("Max. binning", String.format("The max. binning was set to %d", maxBinning));
 		}
 		// Reset timer to get the correct processing time.
 		imp.startTiming();
 		final String summary = createSummary();
-		final DQE_ByBinning task = new DQE_ByBinning(maxBinning, sensitivity, fp,
-			imp.getTitle(), summary);
+		final DQE_ByBinning task = new DQE_ByBinning(maxBinning, sensitivity, fp, imp.getTitle(), summary);
 		task.waitForResults();
 		final MyRunnable runnable = new MyRunnable(task);
 		new Thread(runnable).start();
@@ -93,9 +88,11 @@ public class PluginDQE implements PlugInFilter {
 
 	@Override
 	public int setup(final String arg, final ImagePlus imp) {
-		if (imp == null) return DOES_ALL;
+		if (imp == null)
+			return DOES_ALL;
 		this.imp = imp;
-		if (showDialog() == false) return DONE;
+		if (showDialog() == false)
+			return DONE;
 		return DOES_32 + NO_CHANGES;
 	}
 
@@ -106,13 +103,13 @@ public class PluginDQE implements PlugInFilter {
 		gd.addNumericField("Sensitivity S", 1, 0);
 		gd.setResizable(false);
 		gd.showDialog();
-		if (gd.wasCanceled()) return false;
+		if (gd.wasCanceled())
+			return false;
 		border = (int) gd.getNextNumber();
 		maxBinning = (int) gd.getNextNumber();
 		sensitivity = (float) gd.getNextNumber();
-		System.out.println(String.format(
-			"Border: %d; Max. Binning: %d; Sensitivity: %f", border, maxBinning,
-			sensitivity));
+		System.out.println(
+				String.format("Border: %d; Max. Binning: %d; Sensitivity: %f", border, maxBinning, sensitivity));
 		return true;
 	}
 

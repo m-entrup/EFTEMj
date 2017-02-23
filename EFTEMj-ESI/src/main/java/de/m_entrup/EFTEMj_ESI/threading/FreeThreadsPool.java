@@ -36,8 +36,7 @@ public class FreeThreadsPool {
 	/**
 	 * The maximum number of threads that is used for calculations.
 	 */
-	private static final int MAX_THREADS = Runtime.getRuntime()
-		.availableProcessors();
+	private static final int MAX_THREADS = Runtime.getRuntime().availableProcessors();
 	/**
 	 * This field is used to handle the number of threads. freeThreads is
 	 * initialised with the maximum number of Threads.
@@ -59,8 +58,8 @@ public class FreeThreadsPool {
 	}
 
 	/**
-	 * It is checked if there are free threads available. If there are free once a
-	 * thread is reserved.
+	 * It is checked if there are free threads available. If there are free once
+	 * a thread is reserved.
 	 *
 	 * @return <code>true</code> if the reservation was successful,
 	 *         <code>false</code> else

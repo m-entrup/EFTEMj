@@ -71,8 +71,7 @@ public class PluginLoader implements PlugIn {
 		if (PluginAPI.getInstance().getMainMenu() == null) {
 			LogWriter.newSession();
 			PluginAPI.getInstance().initMainMenu();
-		}
-		else {
+		} else {
 			final MainMenu mainMenu = PluginAPI.getInstance().getMainMenu();
 			mainMenu.setVisible(true);
 			mainMenu.toFront();

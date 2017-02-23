@@ -107,10 +107,8 @@ public class OptimizeAcqTimes implements PlugIn {
 			table.addValue("tau", tau_B2);
 			table.addValue("time", tau_B2 / maxTau * acqTime);
 			table.show("Optimized Acquisition Times");
-		}
-		else {
-			final MessageFormat form = new MessageFormat(
-				"loss={0}eV; tau={1,number,#.###}; t={2,number,#.###}s");
+		} else {
+			final MessageFormat form = new MessageFormat("loss={0}eV; tau={1,number,#.###}; t={2,number,#.###}s");
 			final Object[] para_S = { eLoss_S, tau_S, tau_S / maxTau * acqTime };
 			final Object[] para_B1 = { eLoss_B1, tau_B1, tau_B1 / maxTau * acqTime };
 			final Object[] para_B2 = { eLoss_B2, tau_B2, tau_B2 / maxTau * acqTime };
@@ -121,8 +119,7 @@ public class OptimizeAcqTimes implements PlugIn {
 	}
 
 	private void calculate() {
-		final double denum = Math.log(eLoss_S) - 0.5 * (Math.log(eLoss_B2) + Math
-			.log(eLoss_B1));
+		final double denum = Math.log(eLoss_S) - 0.5 * (Math.log(eLoss_B2) + Math.log(eLoss_B1));
 		double num = Math.log(eLoss_B2) - Math.log(eLoss_B1);
 		q = denum / num;
 		final double a = getBG() / counts_S;
@@ -133,8 +130,7 @@ public class OptimizeAcqTimes implements PlugIn {
 	}
 
 	private double getBG() {
-		final double counts_B = Math.sqrt(counts_B1 * counts_B2) * Math.pow(
-			counts_B2 / counts_B1, q);
+		final double counts_B = Math.sqrt(counts_B1 * counts_B2) * Math.pow(counts_B2 / counts_B1, q);
 		return counts_B;
 	}
 }

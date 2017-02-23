@@ -66,7 +66,8 @@ public class ThreadChecker {
 		/**
 		 * <code>wait()</code> is called.
 		 *
-		 * @throws InterruptedException If <code>wait()</code> is interrupted
+		 * @throws InterruptedException
+		 *             If <code>wait()</code> is interrupted
 		 */
 		private synchronized void doWait() throws InterruptedException {
 			wait();
@@ -96,7 +97,8 @@ public class ThreadChecker {
 	 * The instance of {@link ThreadChecker} is initialised with the number of
 	 * subtasks.
 	 *
-	 * @param fullSteps The number of subtasks
+	 * @param fullSteps
+	 *            The number of subtasks
 	 */
 	public ThreadChecker(final int fullSteps) {
 		super();
@@ -107,10 +109,11 @@ public class ThreadChecker {
 	}
 
 	/**
-	 * The {@link ThreadChecker} reserves a thread at the {@link FreeThreadsPool}.
-	 * If no thread is available
+	 * The {@link ThreadChecker} reserves a thread at the
+	 * {@link FreeThreadsPool}. If no thread is available
 	 *
-	 * @throws InterruptedException If <code>wait()</code> is interrupted
+	 * @throws InterruptedException
+	 *             If <code>wait()</code> is interrupted
 	 */
 	public void addThread() throws InterruptedException {
 		// Other tasks can block all free threads. That's why each task always
@@ -124,16 +127,17 @@ public class ThreadChecker {
 	/**
 	 * Increases or decreases the number of active threads.
 	 *
-	 * @param mode 1 to increase and -1 to degrease
+	 * @param mode
+	 *            1 to increase and -1 to degrease
 	 */
 	private synchronized void changethreadCount(final int mode) {
 		switch (mode) {
-			case 1:
-				threadCount++;
-				break;
-			case -1:
-				threadCount--;
-				break;
+		case 1:
+			threadCount++;
+			break;
+		case -1:
+			threadCount--;
+			break;
 		}
 	}
 
@@ -147,8 +151,9 @@ public class ThreadChecker {
 	}
 
 	/**
-	 * A thread is removed and a notify is called to start a new subtask. If this
-	 * method is called by the last subtask it sets <code>finished = true</code>.
+	 * A thread is removed and a notify is called to start a new subtask. If
+	 * this method is called by the last subtask it sets
+	 * <code>finished = true</code>.
 	 */
 	public synchronized void removeThread() {
 		changethreadCount(-1);
@@ -157,12 +162,13 @@ public class ThreadChecker {
 		PluginAPI.getInstance().updateProgrssbar((int) (step * 100.0 / fullSteps));
 		if (threadCount == 0 & step == fullSteps) {
 			finished = true;
-		}
-		else {
+		} else {
 			// Another task can free many threads. If this happens
 			// <code>doNotifyAll()</code> is called.
-			if (FreeThreadsPool.getFreeThreads() > 1) WaitRoom.INSTANCE.doNotifyAll();
-			else WaitRoom.INSTANCE.doNotify();
+			if (FreeThreadsPool.getFreeThreads() > 1)
+				WaitRoom.INSTANCE.doNotifyAll();
+			else
+				WaitRoom.INSTANCE.doNotify();
 		}
 	}
 }

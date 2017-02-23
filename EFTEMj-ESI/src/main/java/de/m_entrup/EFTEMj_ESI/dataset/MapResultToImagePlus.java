@@ -56,8 +56,7 @@ public class MapResultToImagePlus {
 		for (int i = 0; i < datasetAPI.getEdgeIndex(); i++) {
 			strOfPreELoss += datasetAPI.getEFTEMImage(i).getELoss() + "eV-";
 		}
-		strOfPreELoss = strOfPreELoss.substring(0, strOfPreELoss.length() - 1) +
-			"]";
+		strOfPreELoss = strOfPreELoss.substring(0, strOfPreELoss.length() - 1) + "]";
 	}
 
 	/**
@@ -68,11 +67,10 @@ public class MapResultToImagePlus {
 		ImagePlus imp;
 		final int width = datasetAPI.getWidth();
 		final int height = datasetAPI.getHeight();
-		final FloatProcessor fp = new FloatProcessor(width, height, datasetAPI
-			.getAMap(), null);
+		final FloatProcessor fp = new FloatProcessor(width, height, datasetAPI.getAMap(), null);
 		fp.resetMinAndMax();
-		imp = ImagePlusTool.createImagePlus("a-Map" + strOfPreELoss + " " +
-			datasetAPI.getImagePlusShortTitle(), fp, true);
+		imp = ImagePlusTool.createImagePlus("a-Map" + strOfPreELoss + " " + datasetAPI.getImagePlusShortTitle(), fp,
+				true);
 		final ImagePlus[] images = new ImagePlus[7];
 		images[0] = getErrorMap();
 		images[3] = imp;
@@ -91,15 +89,12 @@ public class MapResultToImagePlus {
 		final int length = array_Background.length;
 		final ImageStack stack = new ImageStack(width, height);
 		for (int i = 0; i < length; i++) {
-			final FloatProcessor fp = new FloatProcessor(width, height,
-				array_Background[i].getPixels(), null);
+			final FloatProcessor fp = new FloatProcessor(width, height, array_Background[i].getPixels(), null);
 			fp.resetMinAndMax();
-			stack.addSlice("BG[" + array_Background[i].getELoss() + "eV] " +
-				datasetAPI.getImagePlusShortTitle(), fp);
+			stack.addSlice("BG[" + array_Background[i].getELoss() + "eV] " + datasetAPI.getImagePlusShortTitle(), fp);
 		}
 
-		imp = ImagePlusTool.createImagePlus("BG-Maps " + datasetAPI
-			.getImagePlusShortTitle(), stack, true);
+		imp = ImagePlusTool.createImagePlus("BG-Maps " + datasetAPI.getImagePlusShortTitle(), stack, true);
 		return imp;
 	}
 
@@ -111,11 +106,10 @@ public class MapResultToImagePlus {
 		ImagePlus imp;
 		final int width = datasetAPI.getWidth();
 		final int height = datasetAPI.getHeight();
-		final FloatProcessor fp = new FloatProcessor(width, height, datasetAPI
-			.getChi2(), null);
+		final FloatProcessor fp = new FloatProcessor(width, height, datasetAPI.getChi2(), null);
 		fp.resetMinAndMax();
-		imp = ImagePlusTool.createImagePlus("Chi^2-Map" + strOfPreELoss + " " +
-			datasetAPI.getImagePlusShortTitle(), fp, true);
+		imp = ImagePlusTool.createImagePlus("Chi^2-Map" + strOfPreELoss + " " + datasetAPI.getImagePlusShortTitle(), fp,
+				true);
 		final ImagePlus[] images = new ImagePlus[7];
 		images[0] = getErrorMap();
 		images[3] = imp;
@@ -134,11 +128,10 @@ public class MapResultToImagePlus {
 		ImagePlus imp;
 		final int width = datasetAPI.getWidth();
 		final int height = datasetAPI.getHeight();
-		final FloatProcessor fp = new FloatProcessor(width, height, datasetAPI
-			.getCoeffOFDet(), null);
+		final FloatProcessor fp = new FloatProcessor(width, height, datasetAPI.getCoeffOFDet(), null);
 		fp.resetMinAndMax();
-		imp = ImagePlusTool.createImagePlus("COD-Map" + strOfPreELoss + " " +
-			datasetAPI.getImagePlusShortTitle(), fp, true);
+		imp = ImagePlusTool.createImagePlus("COD-Map" + strOfPreELoss + " " + datasetAPI.getImagePlusShortTitle(), fp,
+				true);
 		final ImagePlus[] images = new ImagePlus[7];
 		images[0] = getErrorMap();
 		images[3] = imp;
@@ -156,11 +149,10 @@ public class MapResultToImagePlus {
 		ImagePlus imp;
 		final int width = datasetAPI.getWidth();
 		final int height = datasetAPI.getHeight();
-		final FloatProcessor fp = new FloatProcessor(width, height, datasetAPI
-			.getErrorMap(), null);
+		final FloatProcessor fp = new FloatProcessor(width, height, datasetAPI.getErrorMap(), null);
 		fp.resetMinAndMax();
-		imp = ImagePlusTool.createImagePlus("Error-Map" + strOfPreELoss + " " +
-			datasetAPI.getImagePlusShortTitle(), fp, false);
+		imp = ImagePlusTool.createImagePlus("Error-Map" + strOfPreELoss + " " + datasetAPI.getImagePlusShortTitle(), fp,
+				false);
 		imp.setDisplayRange(0, 255);
 		return imp;
 	}
@@ -173,19 +165,15 @@ public class MapResultToImagePlus {
 		final int length = array_Map.length;
 		final ImageStack stack = new ImageStack(width, height);
 		for (int i = 0; i < length; i++) {
-			final FloatProcessor fp = new FloatProcessor(width, height, array_Map[i]
-				.getPixels(), null);
+			final FloatProcessor fp = new FloatProcessor(width, height, array_Map[i].getPixels(), null);
 			fp.resetMinAndMax();
-			stack.addSlice("Map[" + array_Map[i].getELoss() + "eV] " + datasetAPI
-				.getImagePlusShortTitle(), fp);
+			stack.addSlice("Map[" + array_Map[i].getELoss() + "eV] " + datasetAPI.getImagePlusShortTitle(), fp);
 		}
 		if (length == 1) {
-			imp = ImagePlusTool.createImagePlus("Map[" + array_Map[0].getELoss() +
-				"eV] " + datasetAPI.getImagePlusShortTitle(), stack, true);
-		}
-		else {
-			imp = ImagePlusTool.createImagePlus("Elemental-Maps " + datasetAPI
-				.getImagePlusShortTitle(), stack, true);
+			imp = ImagePlusTool.createImagePlus(
+					"Map[" + array_Map[0].getELoss() + "eV] " + datasetAPI.getImagePlusShortTitle(), stack, true);
+		} else {
+			imp = ImagePlusTool.createImagePlus("Elemental-Maps " + datasetAPI.getImagePlusShortTitle(), stack, true);
 		}
 		if (length < 2) {
 			final ImagePlus[] images = new ImagePlus[7];
@@ -208,11 +196,10 @@ public class MapResultToImagePlus {
 		ImagePlus imp;
 		final int width = datasetAPI.getWidth();
 		final int height = datasetAPI.getHeight();
-		final FloatProcessor fp = new FloatProcessor(width, height, datasetAPI
-			.getRMap(), null);
+		final FloatProcessor fp = new FloatProcessor(width, height, datasetAPI.getRMap(), null);
 		fp.resetMinAndMax();
-		imp = ImagePlusTool.createImagePlus("r-Map" + strOfPreELoss + " " +
-			datasetAPI.getImagePlusShortTitle(), fp, true);
+		imp = ImagePlusTool.createImagePlus("r-Map" + strOfPreELoss + " " + datasetAPI.getImagePlusShortTitle(), fp,
+				true);
 		final ImagePlus[] images = new ImagePlus[7];
 		images[0] = getErrorMap();
 		images[3] = imp;
@@ -225,22 +212,20 @@ public class MapResultToImagePlus {
 
 	protected ImagePlus getRelBG() {
 		ImagePlus imp;
-		final EFTEMImage[] array_RelBackground = datasetAPI
-			.getRelBackgroundImages();
+		final EFTEMImage[] array_RelBackground = datasetAPI.getRelBackgroundImages();
 		final int width = array_RelBackground[0].getWidth();
 		final int height = array_RelBackground[0].getHeight();
 		final int length = array_RelBackground.length;
 		final ImageStack stack = new ImageStack(width, height);
 		for (int i = 0; i < length; i++) {
-			final FloatProcessor fp = new FloatProcessor(width, height,
-				array_RelBackground[i].getPixels(), null);
+			final FloatProcessor fp = new FloatProcessor(width, height, array_RelBackground[i].getPixels(), null);
 			fp.resetMinAndMax();
-			stack.addSlice("relative BG[" + array_RelBackground[i].getELoss() +
-				"eV] " + datasetAPI.getImagePlusShortTitle(), fp);
+			stack.addSlice(
+					"relative BG[" + array_RelBackground[i].getELoss() + "eV] " + datasetAPI.getImagePlusShortTitle(),
+					fp);
 		}
 
-		imp = ImagePlusTool.createImagePlus("relative BG-Maps " + datasetAPI
-			.getImagePlusShortTitle(), stack, true);
+		imp = ImagePlusTool.createImagePlus("relative BG-Maps " + datasetAPI.getImagePlusShortTitle(), stack, true);
 		if (length < 2) {
 			final ImagePlus[] images = new ImagePlus[7];
 			images[0] = getErrorMap();
@@ -262,20 +247,15 @@ public class MapResultToImagePlus {
 		final int length = array_Sigma2.length;
 		final ImageStack stack = new ImageStack(width, height);
 		for (int i = 0; i < length; i++) {
-			final FloatProcessor fp = new FloatProcessor(width, height,
-				array_Sigma2[i].getPixels(), null);
+			final FloatProcessor fp = new FloatProcessor(width, height, array_Sigma2[i].getPixels(), null);
 			fp.resetMinAndMax();
-			stack.addSlice("Sigma²[" + array_Sigma2[i].getELoss() + "eV] " +
-				datasetAPI.getImagePlusShortTitle(), fp);
+			stack.addSlice("Sigma²[" + array_Sigma2[i].getELoss() + "eV] " + datasetAPI.getImagePlusShortTitle(), fp);
 		}
 		if (length == 1) {
-			imp = ImagePlusTool.createImagePlus("Sigma²[" + array_Sigma2[0]
-				.getELoss() + "eV] " + datasetAPI.getImagePlusShortTitle(), stack,
-				true);
-		}
-		else {
-			imp = ImagePlusTool.createImagePlus("Sigma²-Maps " + datasetAPI
-				.getImagePlusShortTitle(), stack, true);
+			imp = ImagePlusTool.createImagePlus(
+					"Sigma²[" + array_Sigma2[0].getELoss() + "eV] " + datasetAPI.getImagePlusShortTitle(), stack, true);
+		} else {
+			imp = ImagePlusTool.createImagePlus("Sigma²-Maps " + datasetAPI.getImagePlusShortTitle(), stack, true);
 		}
 		if (length < 2) {
 			final ImagePlus[] images = new ImagePlus[7];
@@ -301,31 +281,27 @@ public class MapResultToImagePlus {
 			for (int i = 0; i < array_SNR.length; i++) {
 				array_SNR_Out[i] = new float[array_SNR[i].pixels.length];
 				for (int j = 0; j < array_SNR[i].pixels.length; j++) {
-					array_SNR_Out[i][j] = (float) (Math.sqrt(dqe) *
-						array_SNR[i].pixels[j]);
+					array_SNR_Out[i][j] = (float) (Math.sqrt(dqe) * array_SNR[i].pixels[j]);
 				}
 			}
-		}
-		else {
+		} else {
 			for (int i = 0; i < array_SNR.length; i++) {
 				array_SNR_Out[i] = array_SNR[i].pixels;
 			}
 		}
 		final ImageStack stack = new ImageStack(width, height);
 		for (int i = 0; i < length; i++) {
-			final FloatProcessor fp = new FloatProcessor(width, height,
-				array_SNR_Out[i], null);
+			final FloatProcessor fp = new FloatProcessor(width, height, array_SNR_Out[i], null);
 			fp.resetMinAndMax();
-			stack.addSlice("SNR(DQE=" + dqe + ")[" + array_SNR[i].getELoss() +
-				"eV] " + datasetAPI.getImagePlusShortTitle(), fp);
+			stack.addSlice(
+					"SNR(DQE=" + dqe + ")[" + array_SNR[i].getELoss() + "eV] " + datasetAPI.getImagePlusShortTitle(),
+					fp);
 		}
 		if (length == 1) {
-			imp = ImagePlusTool.createImagePlus("SNR[" + array_SNR[0].getELoss() +
-				"eV] " + datasetAPI.getImagePlusShortTitle(), stack, true);
-		}
-		else {
-			imp = ImagePlusTool.createImagePlus("SNR-Maps " + datasetAPI
-				.getImagePlusShortTitle(), stack, true);
+			imp = ImagePlusTool.createImagePlus(
+					"SNR[" + array_SNR[0].getELoss() + "eV] " + datasetAPI.getImagePlusShortTitle(), stack, true);
+		} else {
+			imp = ImagePlusTool.createImagePlus("SNR-Maps " + datasetAPI.getImagePlusShortTitle(), stack, true);
 		}
 		if (length < 2) {
 			final ImagePlus[] images = new ImagePlus[7];

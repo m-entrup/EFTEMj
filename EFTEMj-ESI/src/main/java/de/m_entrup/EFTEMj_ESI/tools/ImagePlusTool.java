@@ -45,7 +45,8 @@ import ij.process.ImageProcessor;
 public class ImagePlusTool {
 
 	/**
-	 * The display limit is adjusted. The lowest and highest 1% are not displayed.
+	 * The display limit is adjusted. The lowest and highest 1% are not
+	 * displayed.
 	 *
 	 * @param imp
 	 */
@@ -62,8 +63,7 @@ public class ImagePlusTool {
 			// right min & max.
 			fp.resetMinAndMax();
 			final double max = fp.getMax();
-			final float[] errorMap = PluginAPI.getInstance().getDatasetAPI()
-				.getErrorMap();
+			final float[] errorMap = PluginAPI.getInstance().getDatasetAPI().getErrorMap();
 			int pixelCount = 0;
 			for (int i = 0; i < pixels.length; i++) {
 				if (errorMap[i] == 0) {
@@ -90,13 +90,11 @@ public class ImagePlusTool {
 				lowLimit++;
 				sum += histogram[lowLimit];
 			}
-			imp.setDisplayRange(max * lowLimit / (histCh - 1), max * highLimit /
-				(histCh - 1));
-		}
-		catch (final Exception e) {
+			imp.setDisplayRange(max * lowLimit / (histCh - 1), max * highLimit / (histCh - 1));
+		} catch (final Exception e) {
 			System.out.println(e);
-			LogWriter.showWarningAndWriteLog(PluginMessages.getString(
-				"Error.DisplyLimits") + "<p>" + e.getMessage() + "</p></html>");
+			LogWriter.showWarningAndWriteLog(
+					PluginMessages.getString("Error.DisplyLimits") + "<p>" + e.getMessage() + "</p></html>");
 			return;
 		}
 	}
@@ -104,13 +102,13 @@ public class ImagePlusTool {
 	/**
 	 * Creates an {@link ImagePlus} from an {@link ImageProcessor} and shows it.
 	 *
-	 * @param title The title of the new {@link ImagePlus}
-	 * @param ip The {@link ImageProcessor} that the {@link ImagePlus} is created
-	 *          from
+	 * @param title
+	 *            The title of the new {@link ImagePlus}
+	 * @param ip
+	 *            The {@link ImageProcessor} that the {@link ImagePlus} is
+	 *            created from
 	 */
-	public static ImagePlus createImagePlus(final String title,
-		final ImageProcessor ip, final boolean cal)
-	{
+	public static ImagePlus createImagePlus(final String title, final ImageProcessor ip, final boolean cal) {
 		final ImagePlus imp = new ImagePlus(title, ip);
 		if (cal & ip.getClass() == FloatProcessor.class) {
 			calDisplayLimit(imp);
@@ -122,13 +120,13 @@ public class ImagePlusTool {
 	/**
 	 * Creates an {@link ImagePlus} from an {@link ImageStack} and shows it.
 	 *
-	 * @param title The title of the new {@link ImagePlus}
-	 * @param stack The {@link ImageStack} that the {@link ImagePlus} is created
-	 *          from
+	 * @param title
+	 *            The title of the new {@link ImagePlus}
+	 * @param stack
+	 *            The {@link ImageStack} that the {@link ImagePlus} is created
+	 *            from
 	 */
-	public static ImagePlus createImagePlus(final String title,
-		final ImageStack stack, final boolean cal)
-	{
+	public static ImagePlus createImagePlus(final String title, final ImageStack stack, final boolean cal) {
 		final ImagePlus imp = new ImagePlus(title, stack);
 		if (cal) {
 			calDisplayLimit(imp);
@@ -167,8 +165,7 @@ public class ImagePlusTool {
 
 	public static void saveImagePlus(final ImagePlus imp, final boolean ask) {
 		if (ask == true) {
-			final GenericDialog gd = new GenericDialog(PluginMessages.getString(
-				"Title.ConfirmSaving"));
+			final GenericDialog gd = new GenericDialog(PluginMessages.getString("Title.ConfirmSaving"));
 			String title = imp.getShortTitle();
 			if (!title.contains(".")) {
 				title += ".tif";

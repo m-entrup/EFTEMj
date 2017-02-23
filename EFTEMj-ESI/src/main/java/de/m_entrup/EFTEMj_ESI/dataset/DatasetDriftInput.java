@@ -38,9 +38,9 @@ import ij.process.FloatProcessor;
 public class DatasetDriftInput {
 
 	/**
-	 * An array of cropped images that is used for the crosscorrelation. The image
-	 * at the position referenceImageIndex is the reference image, which is larger
-	 * (width+2*delta, height+2*delta) than the other once.
+	 * An array of cropped images that is used for the crosscorrelation. The
+	 * image at the position referenceImageIndex is the reference image, which
+	 * is larger (width+2*delta, height+2*delta) than the other once.
 	 */
 	protected FloatProcessor[] array_CroppedImages;
 	/**
@@ -48,8 +48,8 @@ public class DatasetDriftInput {
 	 */
 	protected int delta;
 	/**
-	 * Because the used crosscorrelation is normalised a mean value of each image,
-	 * expect the reference image, is needed.
+	 * Because the used crosscorrelation is normalised a mean value of each
+	 * image, expect the reference image, is needed.
 	 */
 	protected float[] mean;
 	/**
@@ -65,9 +65,8 @@ public class DatasetDriftInput {
 	protected double[] sigma;
 	protected Rectangle roi;
 
-	public DatasetDriftInput(final FloatProcessor[] array_croppedImages,
-		final Rectangle roi, final int referenceIndex, final int delta)
-	{
+	public DatasetDriftInput(final FloatProcessor[] array_croppedImages, final Rectangle roi, final int referenceIndex,
+			final int delta) {
 		this.array_CroppedImages = array_croppedImages;
 		this.roi = (Rectangle) roi.clone();
 		referenceImageIndex = referenceIndex - 1;

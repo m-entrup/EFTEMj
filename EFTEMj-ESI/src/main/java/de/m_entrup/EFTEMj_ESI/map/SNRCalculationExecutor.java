@@ -66,11 +66,9 @@ public class SNRCalculationExecutor extends SwingWorker<Void, Void> {
 	public SNRCalculationExecutor() throws Exception {
 		super();
 		height = PluginAPI.getInstance().getDatasetAPI().getHeight();
-		array_EFTEMImages = PluginAPI.getInstance().getDatasetAPI()
-			.getEFTEMImageArray();
+		array_EFTEMImages = PluginAPI.getInstance().getDatasetAPI().getEFTEMImageArray();
 		edgeIndex = PluginAPI.getInstance().getDatasetAPI().getEdgeIndex();
-		ThreadInterface.getInstance().configureThreadChecker(
-			(array_EFTEMImages.length - edgeIndex) * height);
+		ThreadInterface.getInstance().configureThreadChecker((array_EFTEMImages.length - edgeIndex) * height);
 	}
 
 	@Override

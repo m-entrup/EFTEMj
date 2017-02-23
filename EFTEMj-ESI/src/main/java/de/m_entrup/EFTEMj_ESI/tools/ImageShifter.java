@@ -40,8 +40,9 @@ public class ImageShifter {
 	/**
 	 * The Position of the maximum is detected.
 	 *
-	 * @param fp An image that contains the cross correlation coefficients (size:
-	 *          [2*delta+1; 2*delta+1])
+	 * @param fp
+	 *            An image that contains the cross correlation coefficients
+	 *            (size: [2*delta+1; 2*delta+1])
 	 */
 	public static Point calcShift(final FloatProcessor fp) {
 		final int sizeX = fp.getWidth();
@@ -65,16 +66,16 @@ public class ImageShifter {
 
 	/**
 	 * This methods creates a new {@link FloatProcessor} with a contend that is
-	 * shifted by the value saved in shiftValue. The passed {@link FloatProcessor}
-	 * is not changed.
+	 * shifted by the value saved in shiftValue. The passed
+	 * {@link FloatProcessor} is not changed.
 	 *
-	 * @param shiftValue Number of pixel the image has to be shifted [x, y]
-	 * @param fp The image that has to be shifted
+	 * @param shiftValue
+	 *            Number of pixel the image has to be shifted [x, y]
+	 * @param fp
+	 *            The image that has to be shifted
 	 * @return A new {@link FloatProcessor} with the shifted image
 	 */
-	public static FloatProcessor moveImage(final Point shiftValue,
-		final FloatProcessor fp)
-	{
+	public static FloatProcessor moveImage(final Point shiftValue, final FloatProcessor fp) {
 		final int width = fp.getWidth();
 		final int height = fp.getHeight();
 
@@ -115,8 +116,7 @@ public class ImageShifter {
 			}
 		}
 
-		final FloatProcessor moved = new FloatProcessor(width, height, newPixels,
-			null);
+		final FloatProcessor moved = new FloatProcessor(width, height, newPixels, null);
 		return moved;
 	}
 }

@@ -64,8 +64,7 @@ public class DescriptionPanel extends Panel {
 		@Override
 		public void actionPerformed(final ActionEvent e) {
 			if (e.getActionCommand() == PluginMessages.getString("Button.MoreInfo")) {
-				new InfoDialog(PluginMessages.getString("Titel.DetailedInfo"),
-					detailedDescription);
+				new InfoDialog(PluginMessages.getString("Titel.DetailedInfo"), detailedDescription);
 			}
 		}
 	} // END DescriptionPanelActionListener
@@ -79,7 +78,8 @@ public class DescriptionPanel extends Panel {
 	 * Creates a {@link DescriptionPanel} using the {@link BoxLayout}. The only
 	 * used component is a {@link Label}.
 	 *
-	 * @param text The text of the {@link Label}.
+	 * @param text
+	 *            The text of the {@link Label}.
 	 */
 	public DescriptionPanel(final String text) {
 		super();
@@ -95,12 +95,12 @@ public class DescriptionPanel extends Panel {
 	 * This method adds a {@link Button} to the {@link DescriptionPanel} that
 	 * opens a dialog to display the detailed description.
 	 *
-	 * @param text The detailed description.
+	 * @param text
+	 *            The detailed description.
 	 */
 	public void setDetailedDescription(final String text) {
 		detailedDescription = text;
-		final Button detailButton = new Button(PluginMessages.getString(
-			"Button.MoreInfo"));
+		final Button detailButton = new Button(PluginMessages.getString("Button.MoreInfo"));
 		detailButton.addActionListener(new DescriptionPanelActionListener());
 		final Panel buttonPanel = new Panel();
 		buttonPanel.add(detailButton);
@@ -108,7 +108,8 @@ public class DescriptionPanel extends Panel {
 	}
 
 	/**
-	 * This Class was created as a non modal Version of {@link ij.gui.HTMLDialog}.
+	 * This Class was created as a non modal Version of
+	 * {@link ij.gui.HTMLDialog}.
 	 */
 	private class InfoDialog extends JDialog implements ActionListener {
 
@@ -122,8 +123,10 @@ public class DescriptionPanel extends Panel {
 			final Container container = getContentPane();
 			container.setLayout(new BorderLayout());
 			String labelStr;
-			if (message == null) labelStr = "";
-			else labelStr = message;
+			if (message == null)
+				labelStr = "";
+			else
+				labelStr = message;
 			final JLabel label = new JLabel(labelStr);
 			JPanel panel = new JPanel();
 			panel.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 15));

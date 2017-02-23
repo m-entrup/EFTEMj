@@ -66,7 +66,8 @@ public class SNRCalculation extends Thread {
 	 */
 	private final int edgeIndex;
 	/**
-	 * The energy loss of the {@link EFTEMImage} at the array position imageIndex.
+	 * The energy loss of the {@link EFTEMImage} at the array position
+	 * imageIndex.
 	 */
 	private final float eLoss;
 	/**
@@ -74,7 +75,8 @@ public class SNRCalculation extends Thread {
 	 */
 	private final float[] errorValues;
 	/**
-	 * The position of the processed image at the sorted input {@link ImageStack}.
+	 * The position of the processed image at the sorted input
+	 * {@link ImageStack}.
 	 */
 	private final int imageIndex;
 	/**
@@ -106,11 +108,13 @@ public class SNRCalculation extends Thread {
 	 * The constructor creates a new instance of {@link SNRCalculation} for the
 	 * SNR calculation of each pixel at an image row.
 	 *
-	 * @param y The image row that is processed by the new instance of
-	 *          {@link SNRCalculation}
-	 * @param imageIndex The position of the processed image at the sorted input
-	 *          {@link ImageStack}. This is used to save the results of the
-	 *          calculation by using the {@link DatasetAPI}.
+	 * @param y
+	 *            The image row that is processed by the new instance of
+	 *            {@link SNRCalculation}
+	 * @param imageIndex
+	 *            The position of the processed image at the sorted input
+	 *            {@link ImageStack}. This is used to save the results of the
+	 *            calculation by using the {@link DatasetAPI}.
 	 */
 	public SNRCalculation(final int y, final int imageIndex) {
 		super();
@@ -131,12 +135,12 @@ public class SNRCalculation extends Thread {
 	 * Calculating the background again is faster than reading it from the saved
 	 * results, especially with a increasing number of pre-edge images.
 	 *
-	 * @param energyLoss The energy loss that is used for the calculation.
+	 * @param energyLoss
+	 *            The energy loss that is used for the calculation.
 	 * @return The background signal.
 	 */
 	private float calcBG(final float energyLoss) {
-		final float bg = (float) Math.exp(aMap[index] - rMap[index] * Math.log(
-			energyLoss));
+		final float bg = (float) Math.exp(aMap[index] - rMap[index] * Math.log(energyLoss));
 		return bg;
 	}
 
@@ -151,31 +155,33 @@ public class SNRCalculation extends Thread {
 	 * By using a switch statement the power law can be differentiated with
 	 * respect to different variables.
 	 *
-	 * @param x The power law is differentiated with respect to x
+	 * @param x
+	 *            The power law is differentiated with respect to x
 	 * @return The derivative of the power law at E=eloss.
 	 */
 	private double dI(final int x) {
 		switch (x) {
-			case da:
-				return calcBG(eLoss);
-			case dr:
-				return -Math.log(eLoss) * calcBG(eLoss);
+		case da:
+			return calcBG(eLoss);
+		case dr:
+			return -Math.log(eLoss) * calcBG(eLoss);
 		}
 		return Double.NaN;
 	}
 
 	/**
-	 * This is a weight. The numerator is a sum of <code>bg(eLoss)*eloss^k</code>
-	 * and the denominator is the sum of <code>bg(eLoss)</code>.
+	 * This is a weight. The numerator is a sum of
+	 * <code>bg(eLoss)*eloss^k</code> and the denominator is the sum of
+	 * <code>bg(eLoss)</code>.
 	 *
-	 * @param k Can be 1 or 2.
+	 * @param k
+	 *            Can be 1 or 2.
 	 * @return A linear or cubic weight.
 	 */
 	private double m(final int k) {
 		double sum1 = 0;
 		for (int i = 0; i < edgeIndex; i++) {
-			sum1 += calcBG(array_EFTEMImages[i].getELoss()) * Math.pow(Math.log(
-				array_EFTEMImages[i].getELoss()), k);
+			sum1 += calcBG(array_EFTEMImages[i].getELoss()) * Math.pow(Math.log(array_EFTEMImages[i].getELoss()), k);
 		}
 		double sum2 = 0;
 		for (int i = 0; i < edgeIndex; i++) {
@@ -193,14 +199,12 @@ public class SNRCalculation extends Thread {
 			index = currentX + currentY * width;
 			if (errorValues[index] == 0) {
 				sigma2[currentX] = (float) sigma2();
-				double snrAtPixel = signal[index] / Math.sqrt(signal[index] + calcBG(
-					eLoss) + sigma2[currentX]);
+				double snrAtPixel = signal[index] / Math.sqrt(signal[index] + calcBG(eLoss) + sigma2[currentX]);
 				if (Double.isNaN(snrAtPixel) | Double.isInfinite(snrAtPixel)) {
 					snrAtPixel = 0;
 				}
 				snr[currentX] = (float) snrAtPixel;
-			}
-			else {
+			} else {
 				snr[currentX] = PluginConstants.VALUE_CALCULATION_FAILED;
 			}
 		}
@@ -216,8 +220,7 @@ public class SNRCalculation extends Thread {
 	 * @return Sigma²
 	 */
 	private double sigma2() {
-		return Math.pow(dI(da), 2) * varA() + Math.pow(dI(dr), 2) * varR() + 2 * dI(
-			da) * dI(dr) * covar();
+		return Math.pow(dI(da), 2) * varA() + Math.pow(dI(dr), 2) * varR() + 2 * dI(da) * dI(dr) * covar();
 	}
 
 	/**
@@ -233,8 +236,8 @@ public class SNRCalculation extends Thread {
 	private double varR() {
 		double sum = 0;
 		for (int i = 0; i < edgeIndex; i++) {
-			sum += calcBG(array_EFTEMImages[i].getELoss()) * Math.pow(Math.log(
-				array_EFTEMImages[i].getELoss()) - m(1), 2);
+			sum += calcBG(array_EFTEMImages[i].getELoss())
+					* Math.pow(Math.log(array_EFTEMImages[i].getELoss()) - m(1), 2);
 		}
 		return 1 / sum;
 	}

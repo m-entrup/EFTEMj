@@ -41,8 +41,8 @@ import ij.ImagePlus;
 public class PluginAPI {
 
 	/**
-	 * There is only one instance of {@link PluginAPI}. That is why the Singleton
-	 * pattern is used.
+	 * There is only one instance of {@link PluginAPI}. That is why the
+	 * Singleton pattern is used.
 	 */
 	private static final PluginAPI INSTANCE = new PluginAPI();
 
@@ -57,9 +57,10 @@ public class PluginAPI {
 	}
 
 	/**
-	 * Through the {@link DatasetAPI} all calculations get access to the different
-	 * data classes. If the image is changed the current instance if
-	 * {@link DatasetAPI} is replaced by a new one and all collected data is lost.
+	 * Through the {@link DatasetAPI} all calculations get access to the
+	 * different data classes. If the image is changed the current instance if
+	 * {@link DatasetAPI} is replaced by a new one and all collected data is
+	 * lost.
 	 */
 	private DatasetAPI datasetAPI;
 	/**
@@ -77,9 +78,10 @@ public class PluginAPI {
 	/**
 	 * This method is used to disable the buttons at the {@link MainMenu}.
 	 *
-	 * @param disableStackSelection If a process is started this value should be
-	 *          <code>true</code> . <code>false</code> is used if no image is
-	 *          selected and starting a process would make no sense.
+	 * @param disableStackSelection
+	 *            If a process is started this value should be <code>true</code>
+	 *            . <code>false</code> is used if no image is selected and
+	 *            starting a process would make no sense.
 	 */
 	public void disableMainMenuButtons(final boolean disableStackSelection) {
 		mainMenu.disableMainMenuButtons(disableStackSelection);
@@ -109,12 +111,13 @@ public class PluginAPI {
 	}
 
 	/**
-	 * If an {@link ImagePlus} object is selected a instance of {@link DatasetAPI}
-	 * is created.
+	 * If an {@link ImagePlus} object is selected a instance of
+	 * {@link DatasetAPI} is created.
 	 *
-	 * @param imagePlus A {@link ImagePlus} object that is selected by the plugin.
-	 *          The parameter can be <code>null</code>. This results in setting
-	 *          datasetAPI to <code>null</code>.
+	 * @param imagePlus
+	 *            A {@link ImagePlus} object that is selected by the plugin. The
+	 *            parameter can be <code>null</code>. This results in setting
+	 *            datasetAPI to <code>null</code>.
 	 */
 	public void initDatasetAPI(final ImagePlus imagePlus) {
 		if (imagePlus == null) {
@@ -126,8 +129,8 @@ public class PluginAPI {
 	}
 
 	/**
-	 * A new instance of {@link MainMenu} is created. This is the only instance of
-	 * {@link MainMenu}.
+	 * A new instance of {@link MainMenu} is created. This is the only instance
+	 * of {@link MainMenu}.
 	 */
 	public void initMainMenu() {
 		mainMenu = new MainMenu();
@@ -141,8 +144,8 @@ public class PluginAPI {
 	}
 
 	/**
-	 * The method <code>updateMainMenu</code> at the instance of {@link MainMenu}
-	 * is called.
+	 * The method <code>updateMainMenu</code> at the instance of
+	 * {@link MainMenu} is called.
 	 */
 	public void updateMainMenu() {
 		mainMenu.updateMainMenu();
@@ -151,7 +154,8 @@ public class PluginAPI {
 	/**
 	 * The progress bar at the {@link MainMenu} is set to a new value.
 	 *
-	 * @param progress A new value between 0 and 100.
+	 * @param progress
+	 *            A new value between 0 and 100.
 	 */
 	public void updateProgrssbar(final int progress) {
 		mainMenu.setProgress(progress);

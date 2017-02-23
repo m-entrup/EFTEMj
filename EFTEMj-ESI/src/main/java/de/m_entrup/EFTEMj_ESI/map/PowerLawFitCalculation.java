@@ -60,7 +60,8 @@ public class PowerLawFitCalculation extends Thread {
 	 * The exit condition is saved as a static field so each instance can access
 	 * it. This method is used to change the value.
 	 *
-	 * @param newEpsilon The new exit condition that is set by the GUI.
+	 * @param newEpsilon
+	 *            The new exit condition that is set by the GUI.
 	 */
 	public static void setEpsilon(final float newEpsilon) {
 		epsilon = newEpsilon;
@@ -97,8 +98,9 @@ public class PowerLawFitCalculation extends Thread {
 	 * The constructor creates a new instance of {@link PowerLawFitCalculation}
 	 * for the parameter calculation of each pixel at an image row.
 	 *
-	 * @param y The image row that is processed by the new instance of
-	 *          {@link PowerLawFitCalculation}.
+	 * @param y
+	 *            The image row that is processed by the new instance of
+	 *            {@link PowerLawFitCalculation}.
 	 */
 	public PowerLawFitCalculation(final int y) {
 		super();
@@ -128,12 +130,12 @@ public class PowerLawFitCalculation extends Thread {
 
 	private void selectTypeOfFit() {
 		switch (DEBUGCODE) {
-			case 1:
-				typeOfFit = new MLERoutine(epsilon);
-				break;
-			default:
-				typeOfFit = new MLERoutine(epsilon);
-				break;
+		case 1:
+			typeOfFit = new MLERoutine(epsilon);
+			break;
+		default:
+			typeOfFit = new MLERoutine(epsilon);
+			break;
 		}
 	}
 

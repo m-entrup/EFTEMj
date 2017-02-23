@@ -38,24 +38,26 @@ import ij.process.FloatProcessor;
 public class DatasetDriftResult {
 
 	/**
-	 * The crosscorrelation coefficients of each image are saved at this 2D-array.
+	 * The crosscorrelation coefficients of each image are saved at this
+	 * 2D-array.
 	 */
 	protected float[][] array_correlationCoefficients;
 	/**
-	 * To create an {@link ImagePlus} object the crosscorrelation coefficients of
-	 * each image are packed into a {@link FloatProcessor}.
+	 * To create an {@link ImagePlus} object the crosscorrelation coefficients
+	 * of each image are packed into a {@link FloatProcessor}.
 	 */
 	protected FloatProcessor[] array_correlationCoefficientsAsFP;
 
 	/**
 	 * When a new instance of {@link DatasetDriftResult} is created
-	 * array_correlationCoefficients is initialised. The size of the array is <br>
+	 * array_correlationCoefficients is initialised. The size of the array is
+	 * <br>
 	 * [datasetAPI.getStackSize()]*[(2*datasetAPI.getDelta()+1)^2]
 	 */
 	public DatasetDriftResult() {
 		final DatasetAPI datasetAPI = PluginAPI.getInstance().getDatasetAPI();
-		array_correlationCoefficients = new float[datasetAPI.getStackSize()][(2 *
-			datasetAPI.getDelta() + 1) * (2 * datasetAPI.getDelta() + 1)];
+		array_correlationCoefficients = new float[datasetAPI.getStackSize()][(2 * datasetAPI.getDelta() + 1)
+				* (2 * datasetAPI.getDelta() + 1)];
 	}
 
 	/**
@@ -64,13 +66,10 @@ public class DatasetDriftResult {
 	 * coefficients.
 	 */
 	protected void createFloatProcessorFromArray() {
-		array_correlationCoefficientsAsFP =
-			new FloatProcessor[array_correlationCoefficients.length];
+		array_correlationCoefficientsAsFP = new FloatProcessor[array_correlationCoefficients.length];
 		for (int i = 0; i < array_correlationCoefficients.length; i++) {
-			final int width = (int) Math.sqrt(
-				array_correlationCoefficients[i].length);
-			array_correlationCoefficientsAsFP[i] = new FloatProcessor(width, width,
-				array_correlationCoefficients[i]);
+			final int width = (int) Math.sqrt(array_correlationCoefficients[i].length);
+			array_correlationCoefficientsAsFP[i] = new FloatProcessor(width, width, array_correlationCoefficients[i]);
 		}
 	}
 

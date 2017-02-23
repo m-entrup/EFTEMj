@@ -42,9 +42,9 @@ public class DatasetMapInput {
 	 */
 	protected EFTEMImage[] array_InputImages;
 	/**
-	 * The energy loss that separates pre-edge and post-edge images. An image with
-	 * the same energy loss value as edgeELoss will be handled as a post-edge
-	 * image.
+	 * The energy loss that separates pre-edge and post-edge images. An image
+	 * with the same energy loss value as edgeELoss will be handled as a
+	 * post-edge image.
 	 */
 	protected float edgeELoss;
 	/**
@@ -56,14 +56,16 @@ public class DatasetMapInput {
 	 * The constructor creates an object of {@link DatasetMapInput} that is
 	 * necessary to start the MLE calculation.
 	 *
-	 * @param inputImages A sorted array of {@link EFTEMImage}s.
-	 * @param edgeELoss The energy loss where the elemental signal starts.
-	 * @param epsilon The exit condition for the MLE calculation.
+	 * @param inputImages
+	 *            A sorted array of {@link EFTEMImage}s.
+	 * @param edgeELoss
+	 *            The energy loss where the elemental signal starts.
+	 * @param epsilon
+	 *            The exit condition for the MLE calculation.
 	 * @throws Exception
 	 */
-	public DatasetMapInput(final EFTEMImage[] inputImages, final float edgeELoss,
-		final float epsilon) throws Exception
-	{
+	public DatasetMapInput(final EFTEMImage[] inputImages, final float edgeELoss, final float epsilon)
+			throws Exception {
 		this.array_InputImages = inputImages;
 		this.edgeELoss = edgeELoss;
 		PowerLawFitCalculation.setEpsilon(epsilon);

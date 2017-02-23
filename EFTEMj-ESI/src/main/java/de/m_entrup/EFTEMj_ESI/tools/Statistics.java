@@ -56,9 +56,8 @@ public class Statistics {
 		final double meanValue = getMean();
 		final double medianValue = getMedian();
 		final double stdvValue = getStdv();
-		final String output = String.format(Locale.ENGLISH,
-			"(mean/median/stdv): %.3f / %.3f / %.3f", meanValue, medianValue,
-			stdvValue);
+		final String output = String.format(Locale.ENGLISH, "(mean/median/stdv): %.3f / %.3f / %.3f", meanValue,
+				medianValue, stdvValue);
 		return output;
 	}
 
@@ -98,10 +97,8 @@ public class Statistics {
 		}
 		if (count % 2 == 1) {
 			median = values[(int) Math.floor(count / 2)];
-		}
-		else {
-			median = (values[(int) Math.floor(count / 2)] + values[(int) Math.ceil(
-				count / 2)]) / 2;
+		} else {
+			median = (values[(int) Math.floor(count / 2)] + values[(int) Math.ceil(count / 2)]) / 2;
 		}
 		return median;
 	}

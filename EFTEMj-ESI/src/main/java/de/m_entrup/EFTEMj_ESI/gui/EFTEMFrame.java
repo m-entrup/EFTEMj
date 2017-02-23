@@ -64,15 +64,15 @@ public abstract class EFTEMFrame extends Frame {
 	 * The 3 {@link Panel} are placed at NORTH, CENTER and SOUTH of a
 	 * {@link BorderLayout}. Gaps and the border are assigned.
 	 *
-	 * @param title The title of the Frame.
+	 * @param title
+	 *            The title of the Frame.
 	 * @throws HeadlessException
 	 */
 	public EFTEMFrame(final String title) throws HeadlessException {
 		super(title);
 		PluginAPI.getInstance().disableMainMenuButtons(true);
-		final BorderLayout borderLayout = new BorderLayout(
-			PluginConstants.LAYOUT__BORDER_LAYOUT_GAP,
-			PluginConstants.LAYOUT__BORDER_LAYOUT_GAP);
+		final BorderLayout borderLayout = new BorderLayout(PluginConstants.LAYOUT__BORDER_LAYOUT_GAP,
+				PluginConstants.LAYOUT__BORDER_LAYOUT_GAP);
 		this.setLayout(borderLayout);
 		this.setBackground(ImageJ.backgroundColor);
 		northPanel = new Panel();
@@ -86,7 +86,8 @@ public abstract class EFTEMFrame extends Frame {
 	/**
 	 * Adds a {@link Component} to the centerPanel.
 	 *
-	 * @param comp The {@link Component} you want to add.
+	 * @param comp
+	 *            The {@link Component} you want to add.
 	 */
 	public void addToCenterPanel(final Component comp) {
 		centerPanel.add(comp);
@@ -95,7 +96,8 @@ public abstract class EFTEMFrame extends Frame {
 	/**
 	 * Adds a {@link Component} to the northPanel.
 	 *
-	 * @param comp The {@link Component} you want to add.
+	 * @param comp
+	 *            The {@link Component} you want to add.
 	 */
 	public void addToNorthPanel(final Component comp) {
 		northPanel.add(comp);
@@ -104,7 +106,8 @@ public abstract class EFTEMFrame extends Frame {
 	/**
 	 * Adds a {@link Component} to the southPanel.
 	 *
-	 * @param comp The {@link Component} you want to add.
+	 * @param comp
+	 *            The {@link Component} you want to add.
 	 */
 	public void addToSouthPanel(final Component comp) {
 		southPanel.add(comp);
