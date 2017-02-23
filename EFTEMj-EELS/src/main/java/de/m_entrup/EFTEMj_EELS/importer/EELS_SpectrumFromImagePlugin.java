@@ -209,6 +209,8 @@ public class EELS_SpectrumFromImagePlugin extends Profiler {
 	 */
 	public static void main(final String[] args) {
 		final ImagePlus imp = IJ.openImage();
+		if (imp == null)
+			return;
 		imp.show();
 		EFTEMj_Debug.debug(EELS_SpectrumFromImagePlugin.class);
 	}
