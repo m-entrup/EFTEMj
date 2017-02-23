@@ -45,10 +45,10 @@ import javax.swing.JRadioButton;
 
 import de.m_entrup.EFTEMj_ESI.dataset.IonisationEdges;
 import de.m_entrup.EFTEMj_ESI.simple.ElementalMapping.AVAILABLE_METHODS;
+import de.m_entrup.EFTEMj_lib.EFTEMj_Debug;
 import de.m_entrup.EFTEMj_lib.tools.EnergyLossExtractor;
 import de.m_entrup.EFTEMj_lib.tools.ExposureExtractor;
 import ij.IJ;
-import ij.ImageJ;
 import ij.ImagePlus;
 import ij.gui.GenericDialog;
 import ij.measure.Calibration;
@@ -436,15 +436,6 @@ public class ElementalMappingPlugin implements ExtendedPlugInFilter {
 	}
 
 	public static void main(final String[] args) {
-		// start ImageJ
-		new ImageJ();
-
-		// open the sample stack
-		final ImagePlus image = IJ.openImage("C:\\Temp\\ESI_20130730_4-Window_Cr.tif");
-		image.show();
-
-		// run the plugin
-		final Class<?> clazz = ElementalMappingPlugin.class;
-		IJ.runPlugIn(clazz.getName(), "");
+		EFTEMj_Debug.debugWithImage(ElementalMappingPlugin.class);
 	}
 }

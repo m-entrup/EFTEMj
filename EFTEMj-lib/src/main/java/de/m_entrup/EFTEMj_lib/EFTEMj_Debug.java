@@ -107,7 +107,18 @@ public class EFTEMj_Debug {
 	 */
 	public static void debug(final Class<?> caller) {
 		EFTEMj_Debug.debugLevel = DEBUG_FULL;
-		EFTEMj_Debug.debug(caller, debugLevel);
+		EFTEMj_Debug.debug(caller, debugLevel, false);
+	}
+
+	/**
+	 * Start {@link ImageJ}, open an image and run a {@link PlugIn}.
+	 *
+	 * @param caller
+	 *            is a class that contains a run method.
+	 */
+	public static void debugWithImage(final Class<?> caller) {
+		EFTEMj_Debug.debugLevel = DEBUG_FULL;
+		EFTEMj_Debug.debug(caller, debugLevel, true);
 	}
 
 	/**
@@ -117,13 +128,23 @@ public class EFTEMj_Debug {
 	 *            is a class that contains a run method.
 	 * @param debugLevel
 	 *            defines the used level of debugging.
+	 * @param withImage
+	 *            defines if the user is asked to open an image.
 	 */
 	@SuppressWarnings("hiding")
-	public static void debug(final Class<?> caller, final int debugLevel) {
+	public static void debug(final Class<?> caller, final int debugLevel, final boolean withImage) {
 		EFTEMj_Debug.debugLevel = debugLevel;
+
 		// start ImageJ
 		final ImageJ ij = new ImageJ();
 		System.out.println("Testing with " + ij.getInfo());
+
+		if (withImage == true) {
+			final ImagePlus imp = IJ.openImage();
+			if (imp == null)
+				return;
+			imp.show();
+		}
 
 		if (caller != null) {
 			// run the plugin
@@ -150,4 +171,5 @@ public class EFTEMj_Debug {
 			imp.show();
 		}
 	}
+
 }
