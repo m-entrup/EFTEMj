@@ -1,14 +1,16 @@
 package de.m_entrup.EFTEMj_EELS.importer;
 
 import java.io.File;
+import java.util.Arrays;
+
 import de.m_entrup.EFTEMj_lib.EFTEMj_Debug;
 import de.m_entrup.EFTEMj_lib.tools.GatanMetadataExtractor;
-import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Plot;
 import ij.io.OpenDialog;
 import ij.plugin.PlugIn;
 import ij.plugin.Profiler;
+import sc.fiji.io.DM3_Reader;
 
 public class EELS_SpectrumFromDm3Plugin extends Profiler {
 
@@ -36,11 +38,24 @@ public class EELS_SpectrumFromDm3Plugin extends Profiler {
 		if (file == null) {
 			return null;
 		}
-		ImagePlus dm3Spec = IJ.openImage(file.getAbsolutePath());
-		GatanMetadataExtractor extractor = new GatanMetadataExtractor(dm3Spec);
-		final float[] yValues = (float[]) dm3Spec.getProcessor().getPixels();
-		float origin = (float) extractor.getXOrigin();
-		float scale = (float) extractor.getXScale();
+		final DM3_Reader reader = new DM3_Reader();
+		final ImagePlus dm3Spec = reader.load(file.getParent(), file.getName());
+		final GatanMetadataExtractor extractor = new GatanMetadataExtractor(dm3Spec);
+		final float[] yValues = new float[dm3Spec.getWidth()];
+		if (dm3Spec.getHeight() == 1) {
+			for (int x = 0; x < dm3Spec.getWidth(); x++) {
+				yValues[x] = dm3Spec.getProcessor().getf(x, 0);
+			}
+		} else {
+			Arrays.fill(yValues, 0);
+			for (int y = 0; y < dm3Spec.getHeight(); y++) {
+				for (int x = 0; x < dm3Spec.getWidth(); x++) {
+					yValues[x] += dm3Spec.getProcessor().getf(x, y);
+				}
+			}
+		}
+		final float origin = (float) extractor.getXOrigin();
+		final float scale = (float) extractor.getXScale();
 		final float[] xValues = new float[yValues.length];
 		for (int i = 0; i < xValues.length; i++) {
 			xValues[i] = scale * (i - origin);
