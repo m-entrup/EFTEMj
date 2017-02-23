@@ -72,8 +72,10 @@ public class EELS_SpectrumFromMsaPlugin extends Profiler {
 
 	public Plot getPlot(final String path) {
 		final File file = new File(path);
-		if (!file.exists()) return null;
-		if (file.isDirectory()) return null;
+		if (!file.exists())
+			return null;
+		if (file.isDirectory())
+			return null;
 		return getPlot(file);
 	}
 
@@ -84,36 +86,35 @@ public class EELS_SpectrumFromMsaPlugin extends Profiler {
 		loader = null;
 		try {
 			loader = new LoadMsa(file.getAbsolutePath());
-		}
-		catch (final IOException e) {
-			IJ.error(String.format("Error while loading %1s:\n%2s", (loader != null)
-				? file.getName() : "no file", e.toString()));
+		} catch (final IOException e) {
+			IJ.error(String.format("Error while loading %1s:\n%2s", (loader != null) ? file.getName() : "no file",
+					e.toString()));
 			return null;
 		}
 		final float[] xValues = loader.getEnergyArray();
 		final float[] yValues = loader.getCountArray();
 		String s = loader.getXUnit();
-		if (s == null) s = "eV";
+		if (s == null)
+			s = "eV";
 		final String xLabel = "Energy loss (" + s + ")";
 		s = loader.getYUnit();
-		if (s == null) s = "a.u.";
+		if (s == null)
+			s = "a.u.";
 		final String yLabel = "Intensity (" + s + ")";
-		final Plot plot = new Plot("Plot of " + file.getName(), xLabel, yLabel,
-			xValues, yValues);
+		final Plot plot = new Plot("Plot of " + file.getName(), xLabel, yLabel, xValues, yValues);
 		return plot;
 	}
 
 	private File getFile() {
 		final OpenDialog od = new OpenDialog("Select a msa file...");
-		if (od.getFileName() == null) return null;
+		if (od.getFileName() == null)
+			return null;
 		final File file = new File(od.getPath());
 		if (file.getName().toLowerCase().endsWith(".msa")) {
 			return file;
 		}
-		final GenericDialog gd = new GenericDialog("Confirm loading...", IJ
-			.getInstance());
-		gd.addMessage("You have not selected a msa file.\n" +
-			"Confirm to continue.");
+		final GenericDialog gd = new GenericDialog("Confirm loading...", IJ.getInstance());
+		gd.addMessage("You have not selected a msa file.\n" + "Confirm to continue.");
 		gd.addCheckbox("Load_non_msa file.", false);
 		gd.showDialog();
 		if (gd.wasOKed()) {
@@ -142,17 +143,19 @@ public class EELS_SpectrumFromMsaPlugin extends Profiler {
 	@Override
 	public void run(final String arg) {
 		final Plot plot = getPlot();
-		if (plot == null) return;
+		if (plot == null)
+			return;
 		plot.setPlotMaker(this);
 		plot.show();
 	}
 
 	/**
-	 * Main method for debugging. For debugging, it is convenient to have a method
-	 * that starts ImageJ, loads an image and calls the {@link PlugIn}, e.g. after
-	 * setting breakpoints.
+	 * Main method for debugging. For debugging, it is convenient to have a
+	 * method that starts ImageJ, loads an image and calls the {@link PlugIn},
+	 * e.g. after setting breakpoints.
 	 *
-	 * @param args unused
+	 * @param args
+	 *            unused
 	 */
 	public static void main(final String[] args) {
 		EFTEMj_Debug.debug(EELS_SpectrumFromMsaPlugin.class);

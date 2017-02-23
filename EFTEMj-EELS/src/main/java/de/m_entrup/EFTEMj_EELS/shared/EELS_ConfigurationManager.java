@@ -42,13 +42,12 @@ public class EELS_ConfigurationManager {
 
 	private static EFTEMj_Configuration config;
 
-	public static EFTEMj_Configuration getConfiguration()
-		throws ConfigurationException
-	{
-		if (config != null) return config;
+	public static EFTEMj_Configuration getConfiguration() throws ConfigurationException {
+		if (config != null)
+			return config;
 		config = EFTEMj_ConfigurationManager.getConfiguration();
-		PropertiesConfiguration defaultConfig = new PropertiesConfiguration();
-		InputStream is = config.getClass().getResourceAsStream(defaultConfigName);
+		final PropertiesConfiguration defaultConfig = new PropertiesConfiguration();
+		final InputStream is = config.getClass().getResourceAsStream(defaultConfigName);
 		defaultConfig.load(is);
 		/*
 		 * Iterator<String> iter = defaultConfig.getKeys(); while
