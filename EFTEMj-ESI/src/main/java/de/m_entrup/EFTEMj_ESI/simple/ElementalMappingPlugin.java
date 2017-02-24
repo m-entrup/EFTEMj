@@ -323,6 +323,7 @@ public class ElementalMappingPlugin implements ExtendedPlugInFilter {
 			return false;
 		} else if (edgeCount == 1) {
 			edgeEnergyLoss = possibleEdges[0];
+			return true;
 		} else {
 			final GenericDialog gd = new GenericDialog("Select an ionisation edge", IJ.getInstance());
 			gd.addMessage("More than one edge is qualified for the given energy losses.\nPlease select one.");
