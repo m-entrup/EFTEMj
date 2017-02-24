@@ -258,6 +258,8 @@ public class GatanMetadataExtractor {
 
 		// open the sample stack
 		final ImagePlus image = IJ.openImage();
+		if (image == null)
+			return;
 		image.show();
 
 		final GatanMetadataExtractor extractor = new GatanMetadataExtractor(image);
