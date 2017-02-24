@@ -70,8 +70,11 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 			}
 			DirectoryChooser.setDefaultDirectory(settings.path.getAbsolutePath());
 			final DirectoryChooser dc = new DirectoryChooser("Select folder for characterisation...");
-			settings.path = new File(dc.getDirectory());
-			if (settings.path == null)
+			String directory = dc.getDirectory();
+			if (directory == null)
+				return;
+			settings.path = new File(directory);
+			if (settings.path == null | !settings.path.isDirectory())
 				return;
 			settings.images = getImages(settings);
 			this.results = new SR_EELS_CharacterisationResults();
