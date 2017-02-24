@@ -46,11 +46,9 @@ import de.m_entrup.EFTEMj_lib.EFTEMj_Debug;
 import de.m_entrup.EFTEMj_lib.tools.StringManipulator;
 import fiji.util.gui.GenericDialogPlus;
 import ij.IJ;
-import ij.ImageJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.gui.GenericDialog;
-import ij.gui.WaitForUserDialog;
 import ij.measure.Calibration;
 import ij.plugin.filter.ExtendedPlugInFilter;
 import ij.plugin.filter.PlugInFilterRunner;
@@ -473,43 +471,14 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 
 	/**
 	 * <p>
-	 * This main method is used for testing. It starts ImageJ, loads a test
-	 * image and starts the plugin.
-	 * </p>
-	 * <p>
-	 * User interaction is necessary, as the plugin uses a GUI.
-	 * </p>
-	 * <p>
-	 * <a href=
-	 * "https://github.com/imagej/minimal-ij1-plugin/blob/master/src/main/java/Process_Pixels.java"
-	 * >see minimal-ij1-plugin on GitHub</a>
+	 * This main method is used for testing. It starts ImageJ, asks the user to
+	 * load a test image and starts the plugin.
 	 * </p>
 	 *
 	 * @param args
 	 */
 	public static void main(final String[] args) {
-		EFTEMj_Debug.setDebugLevel(EFTEMj_Debug.DEBUG_FULL);
-		/*
-		 * start ImageJ
-		 */
-		new ImageJ();
-		/*
-		 * open the test image
-		 */
-		final ImagePlus image = IJ.openImage();
-		image.show();
-
-		final WaitForUserDialog wait = new WaitForUserDialog("Debugging...", "Press OK to continue debugging.");
-		wait.show();
-		if (wait.escPressed()) {
-			return;
-		}
-
-		/*
-		 * run the plugin
-		 */
-		final Class<?> clazz = SR_EELS_CorrectionPlugin.class;
-		IJ.runPlugIn(clazz.getName(), "");
+		EFTEMj_Debug.debugWithImage(SR_EELS_CorrectionPlugin.class);
 	}
 
 	/**
