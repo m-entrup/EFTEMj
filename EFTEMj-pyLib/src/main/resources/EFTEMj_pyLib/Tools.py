@@ -1,7 +1,7 @@
 '''
 file:       Tools.py
 author:     Michael Entrup b. Epping (michael.entrup@wwu.de)
-version:    20161017
+version:    20170224
 info:       This module contains different usefull functions.
 '''
 
@@ -34,7 +34,7 @@ def mean_of_list_of_tuples(list_of_tuples):
     '''
     def mean(vals):
         '''Returns the mean value of the lists content.'''
-        return sum(vals)/len(vals)
+        return sum(vals) / len(vals)
     return perform_func_on_list_of_tuples(mean, list_of_tuples)
 
 
@@ -63,7 +63,8 @@ def stack_to_list_of_imp(imp_stack):
     :param stack: The ImagePlus containing astack that is converted to a list.
     '''
     size = imp_stack.getStackSize()
-    labels = [imp_stack.getStack().getShortSliceLabel(i) for i in range(1, size + 1)]
+    labels = [imp_stack.getStack().getShortSliceLabel(i)
+              for i in range(1, size + 1)]
     ips = [imp_stack.getStack().getProcessor(i) for i in range(1, size + 1)]
     image_list = [ImagePlus(label, ip) for label, ip in zip(labels, ips)]
     return image_list
@@ -116,16 +117,18 @@ def get_images(minimum=0, maximum=None, exact=None):
     images_selected = dialogs.create_selection_dialog(image_titles,
                                                       range(img_count),
                                                       'Select images for drift correction'
-                                                     )
+                                                      )
     # dialogs.create_selection_dialog() returns None if canceled
     if not images_selected:
         return None
-    # This is only true if 'None has been appended to image_titles and the user selected it.
+    # This is only true if 'None has been appended to image_titles and the
+    # user selected it.
     if len(image_ids) in images_selected:
         images_selected.remove(len(image_ids))
     if not check_count(len(images_selected)):
         return None
-    image_list = [WindowManager.getImage(image_ids[selection]) for selection in images_selected]
+    image_list = [WindowManager.getImage(image_ids[selection])
+                  for selection in images_selected]
     return image_list
 
 
@@ -190,15 +193,15 @@ def batch_open_images(directory, file_type=None, name_filter=None, recursive=Fal
         for file_name in os.listdir(directory):
             full_path = os.path.join(directory, file_name)
             if os.path.isfile(full_path) \
-            and check_type(file_name, file_type) \
-            and check_filter(file_name, name_filter):
+                    and check_type(file_name, file_type) \
+                    and check_filter(file_name, name_filter):
                 path_to_images.append(full_path)
     else:
         for directory, _, file_names in os.walk(directory):
             for file_name in file_names:
                 full_path = os.path.join(directory, file_name)
                 if check_type(file_name, file_type) \
-                and check_filter(file_name, name_filter):
+                        and check_filter(file_name, name_filter):
                     path_to_images.append(full_path)
     image_list = []
     for img_path in path_to_images:
@@ -207,25 +210,55 @@ def batch_open_images(directory, file_type=None, name_filter=None, recursive=Fal
             image_list.append(imp)
     return image_list
 
-def test_module():
-    # pylint: disable-msg=C0103
-    path = '~/Temp/BatchOpener-Test'
-    images = batch_open_images(path, None, None, False)
+
+def _test_batch_open():
+    path = IJ.getDirectory('Select a directory that contains images...')
+    if not path:
+        return
+    images = batch_open_images(
+        path, file_type=None, name_filter=None, recursive=False)
+    print('- - Result (recursive=False) - -')
+    for image in images:
+        print(image)
+    images = batch_open_images(
+        path, file_type=None, name_filter=None, recursive=True)
+    print('- - Result (recursive=True) - -')
+    for image in images:
+        print(image)
+    appendix_list = []
+    while (True):
+        appendix = IJ.getString('Please enter a file appendix', 'tif')
+        if appendix:
+            appendix_list.append(appendix)
+        else:
+            break
+    contains = IJ.getString(
+        'Please enter a sting the files should contain', 'eV')
+    images = batch_open_images(
+        path, file_type=appendix_list, name_filter=contains, recursive=True)
     print('- - Result - -')
     for image in images:
         print(image)
-    images = batch_open_images(path, None, None, True)
-    print('- - Result - -')
-    for image in images:
-        print(image)
-    images = batch_open_images(path, ['tif', 'jpg'], 'SIFT', True)
-    print('- - Result - -')
-    for image in images:
-        print(image)
-    images = batch_open_images(path, 'png', ('SIFT', 'dpi'), True)
+    appendix = IJ.getString('Please enter a file appendix', 'tif')
+    contains_list = []
+    while (True):
+        contains = IJ.getString(
+            'Please enter a sting the files should contain', 'eV')
+        if contains:
+            contains_list.append(contains)
+        else:
+            break
+    images = batch_open_images(
+        path, file_type=appendix, name_filter=tuple(contains_list), recursive=True)
     print('- - Result - -')
     for image in images:
         print(image)
 
+
+def _test_module():
+    # pylint: disable-msg=C0103
+    _test_batch_open()
+
+
 if __name__ == '__main__':
-    test_module()
+    _test_module()
