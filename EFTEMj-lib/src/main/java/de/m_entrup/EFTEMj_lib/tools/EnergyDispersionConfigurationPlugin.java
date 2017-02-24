@@ -106,7 +106,8 @@ public class EnergyDispersionConfigurationPlugin implements PlugIn {
 			final double dispersion = gd.getNextNumber();
 			if (dispersion <= 0)
 				return false;
-			dispersionStorage.put(key, dispersion);
+			// A comma in key will break the HashTable.
+			dispersionStorage.put(key.replace(",", ";"), dispersion);
 			somethingChanged = true;
 			return true;
 		}
@@ -124,7 +125,7 @@ public class EnergyDispersionConfigurationPlugin implements PlugIn {
 		final GenericDialog gd = new GenericDialog("Edit dispersion values", IJ.getInstance());
 		gd.addMessage("Set the dispersion to 0 to remove an entry.");
 		final String[] keys = dispersionStorage.keySet().toArray(new String[dispersionStorage.size()]);
-		Arrays.sort(keys, (a, b) -> new Double(a).compareTo(new Double(b)));
+		Arrays.sort(keys);
 		for (final String key : keys) {
 			final double val = dispersionStorage.get(key);
 			gd.addNumericField("Spec. Mag: " + key, val, 6, 10, "eV/px");
