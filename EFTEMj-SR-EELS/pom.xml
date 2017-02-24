@@ -17,14 +17,6 @@
 			<groupId>de.m-entrup</groupId>
 			<artifactId>EFTEMj-lib_</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.opencsv</groupId>
-			<artifactId>opencsv</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>sc.fiji</groupId>
-			<artifactId>fiji-lib</artifactId>
-		</dependency>
 	</dependencies>
 	<properties>
 		<enforcer.skip>true</enforcer.skip>
