@@ -1,8 +1,6 @@
 
 package de.m_entrup.EFTEMj_SR_EELS.characterisation;
 
-import com.opencsv.CSVWriter;
-
 import java.awt.Rectangle;
 import java.io.File;
 import java.io.FileWriter;
@@ -12,6 +10,8 @@ import java.util.Arrays;
 import java.util.Date;
 
 import org.apache.commons.configuration.ConfigurationException;
+
+import com.opencsv.CSVWriter;
 
 import de.m_entrup.EFTEMj_SR_EELS.importer.SR_EELS_ImportPlugin;
 import de.m_entrup.EFTEMj_SR_EELS.shared.SR_EELS_ConfigurationManager;
@@ -70,7 +70,7 @@ public class SR_EELS_CharacterisationPlugin implements PlugIn {
 			}
 			DirectoryChooser.setDefaultDirectory(settings.path.getAbsolutePath());
 			final DirectoryChooser dc = new DirectoryChooser("Select folder for characterisation...");
-			String directory = dc.getDirectory();
+			final String directory = dc.getDirectory();
 			if (directory == null)
 				return;
 			settings.path = new File(directory);
