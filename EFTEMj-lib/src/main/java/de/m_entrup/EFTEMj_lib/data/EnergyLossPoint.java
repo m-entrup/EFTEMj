@@ -41,7 +41,9 @@ public class EnergyLossPoint extends Point2D {
 	protected double xVal;
 	protected double yVal;
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.awt.geom.Point2D#getX()
 	 */
 	@Override
@@ -49,7 +51,9 @@ public class EnergyLossPoint extends Point2D {
 		return xVal;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.awt.geom.Point2D#getY()
 	 */
 	@Override
@@ -57,7 +61,9 @@ public class EnergyLossPoint extends Point2D {
 		return yVal;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.awt.geom.Point2D#setLocation(double, double)
 	 */
 	@Override

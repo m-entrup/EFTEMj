@@ -37,11 +37,13 @@ public interface LMAMatrix {
 	public double getElement(int row, int col);
 
 	/**
-	 * Multiplies this matrix with an array (result = this * vector). The lengths
-	 * of the arrays must be equal to the number of rows in the matrix.
+	 * Multiplies this matrix with an array (result = this * vector). The
+	 * lengths of the arrays must be equal to the number of rows in the matrix.
 	 *
-	 * @param vector The array to be multiplied with the matrix.
-	 * @param result The result of the multiplication will be put here.
+	 * @param vector
+	 *            The array to be multiplied with the matrix.
+	 * @param result
+	 *            The result of the multiplication will be put here.
 	 */
 	public void multiply(double[] vector, double[] result);
 }

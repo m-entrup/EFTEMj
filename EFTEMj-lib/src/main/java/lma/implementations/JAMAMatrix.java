@@ -31,8 +31,7 @@ public class JAMAMatrix extends Matrix implements LMAMatrix {
 		try {
 			final Matrix m = inverse();
 			setMatrix(0, this.getRowDimension() - 1, 0, getColumnDimension() - 1, m);
-		}
-		catch (final RuntimeException e) {
+		} catch (final RuntimeException e) {
 			final StringWriter s = new StringWriter();
 			final PrintWriter p = new PrintWriter(s);
 			p.println(e.getMessage());

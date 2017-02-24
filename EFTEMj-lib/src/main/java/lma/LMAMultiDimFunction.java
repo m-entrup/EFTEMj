@@ -25,8 +25,11 @@ public abstract class LMAMultiDimFunction {
 
 	/**
 	 * @return The <i>y</i>-value of the function.
-	 * @param x The <i>x</i>-values for which the <i>y</i>-value is calculated.
-	 * @param a The fitting parameters.
+	 * @param x
+	 *            The <i>x</i>-values for which the <i>y</i>-value is
+	 *            calculated.
+	 * @param a
+	 *            The fitting parameters.
 	 */
 	public abstract double getY(double x[], double[] a);
 
@@ -38,21 +41,26 @@ public abstract class LMAMultiDimFunction {
 	 *
 	 * @return The partial derivate of the function with respect to parameter
 	 *         <code>parameterIndex</code> at <i>x</i>.
-	 * @param x The <i>x</i>-value for which the partial derivate is calculated.
-	 * @param a The fitting parameters.
-	 * @param parameterIndex The parameter index for which the partial derivate is
-	 *          calculated.
+	 * @param x
+	 *            The <i>x</i>-value for which the partial derivate is
+	 *            calculated.
+	 * @param a
+	 *            The fitting parameters.
+	 * @param parameterIndex
+	 *            The parameter index for which the partial derivate is
+	 *            calculated.
 	 */
-	public abstract double getPartialDerivate(double x[], double[] a,
-		int parameterIndex);
+	public abstract double getPartialDerivate(double x[], double[] a, int parameterIndex);
 
 	/**
 	 * A convenience method for the one dimensional case. Not used by the fit
 	 * algorithm.
 	 *
 	 * @return The <i>y</i>-value of the function.
-	 * @param x The <i>x</i> value for which the <i>y</i>-value is calculated.
-	 * @param a The fitting parameters.
+	 * @param x
+	 *            The <i>x</i> value for which the <i>y</i>-value is calculated.
+	 * @param a
+	 *            The fitting parameters.
 	 */
 	public final double getY(final double x, final double a[]) {
 		temp[0] = x;
@@ -60,8 +68,9 @@ public abstract class LMAMultiDimFunction {
 	}
 
 	/**
-	 * @param lma A LMA object from which x- and parameter-values are extracted
-	 *          for calculating function values.
+	 * @param lma
+	 *            A LMA object from which x- and parameter-values are extracted
+	 *            for calculating function values.
 	 * @return Calculated function values with the lma x- and parameter-values,
 	 *         double[function value index].
 	 * @see LMA#generateData()
@@ -71,11 +80,13 @@ public abstract class LMAMultiDimFunction {
 	}
 
 	/**
-	 * @param x The x-arrays for which the y-values are calculated,
-	 *          double[function value index][x-index]
-	 * @param a The fit parameters, double[fit parameter index]
-	 * @return Calculated function values with the given x- and parameter-values,
-	 *         double[function value index].
+	 * @param x
+	 *            The x-arrays for which the y-values are calculated,
+	 *            double[function value index][x-index]
+	 * @param a
+	 *            The fit parameters, double[fit parameter index]
+	 * @return Calculated function values with the given x- and
+	 *         parameter-values, double[function value index].
 	 */
 	public double[] generateData(final double[][] x, final double[] a) {
 		final double[] result = new double[x.length];
@@ -88,9 +99,11 @@ public abstract class LMAMultiDimFunction {
 	/**
 	 * The one dimesional convenience method.
 	 *
-	 * @param x The x-values for which the y-values are calculated,
-	 *          double[function value index]
-	 * @param a The fit parameters, double[fit parameter index]
+	 * @param x
+	 *            The x-values for which the y-values are calculated,
+	 *            double[function value index]
+	 * @param a
+	 *            The fit parameters, double[fit parameter index]
 	 * @return Calculated function values with the given x and parameter-values,
 	 *         double[function value index].
 	 */
@@ -103,9 +116,12 @@ public abstract class LMAMultiDimFunction {
 	}
 
 	/**
-	 * @param x float[function value index][x-index]
-	 * @param a double[fit parameter index]
-	 * @return Calculated function values with the given x- and parameter-values.
+	 * @param x
+	 *            float[function value index][x-index]
+	 * @param a
+	 *            double[fit parameter index]
+	 * @return Calculated function values with the given x- and
+	 *         parameter-values.
 	 */
 	public float[] generateData(final float[][] x, final double[] a) {
 		final float[] result = new float[x.length];
@@ -118,9 +134,11 @@ public abstract class LMAMultiDimFunction {
 	/**
 	 * The one dimesional convenience method.
 	 *
-	 * @param x The x-values for which the y-values are calculated, float[function
-	 *          value index]
-	 * @param a The fit parameters, double[fit parameter index]
+	 * @param x
+	 *            The x-values for which the y-values are calculated,
+	 *            float[function value index]
+	 * @param a
+	 *            The fit parameters, double[fit parameter index]
 	 * @return Calculated function values with the given x and parameter-values,
 	 *         float[function value index].
 	 */
@@ -140,14 +158,14 @@ public abstract class LMAMultiDimFunction {
 	}
 
 	public float[] generateData(final float[][] x, final float[] a) {
-		return ArrayConverter.asFloatArray(generateData(ArrayConverter
-			.asDoubleArray(x), ArrayConverter.asDoubleArray(a)));
+		return ArrayConverter
+				.asFloatArray(generateData(ArrayConverter.asDoubleArray(x), ArrayConverter.asDoubleArray(a)));
 	}
 
 	/** One dimensional convenience method. */
 	public float[] generateData(final float[] x, final float[] a) {
-		return ArrayConverter.asFloatArray(generateData(ArrayConverter
-			.asDoubleArray(x), ArrayConverter.asDoubleArray(a)));
+		return ArrayConverter
+				.asFloatArray(generateData(ArrayConverter.asDoubleArray(x), ArrayConverter.asDoubleArray(a)));
 	}
 
 }

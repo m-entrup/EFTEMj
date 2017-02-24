@@ -19,16 +19,15 @@ public class Polynomial extends LMAFunction {
 	 *         the parameter index.
 	 */
 	@Override
-	public double getPartialDerivate(final double x, final double[] a,
-		final int parameterIndex)
-	{
+	public double getPartialDerivate(final double x, final double[] a, final int parameterIndex) {
 		return pow(x, parameterIndex);
 	}
 
 	/**
 	 * Polynomial y = a_n * x^n + ... + a_2 * x^2 + a_1 * x + a_0
 	 *
-	 * @param a 0: a_0, 1: a_1, 2: a_2, ..., a_n
+	 * @param a
+	 *            0: a_0, 1: a_1, 2: a_2, ..., a_n
 	 */
 	@Override
 	public double getY(final double x, final double[] a) {

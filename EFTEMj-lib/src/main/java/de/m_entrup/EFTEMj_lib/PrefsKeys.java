@@ -39,7 +39,7 @@ import ij.Prefs;
  * @author Michael Entrup b. Epping
  */
 public enum PrefsKeys {
-		cameraWidth("cameraWidth"), cameraHeight("cameraHeight");
+	cameraWidth("cameraWidth"), cameraHeight("cameraHeight");
 
 	/**
 	 * <code>EFTEMj.PREFS_PREFIX</code>
@@ -53,20 +53,20 @@ public enum PrefsKeys {
 	}
 
 	/**
-	 * @return the full key that is used to access the property with {@link Prefs}
-	 *         .
+	 * @return the full key that is used to access the property with
+	 *         {@link Prefs} .
 	 */
 	public String getValue() {
 		switch (this) {
-			/*
-			 * Begin section - default
-			 * All parameters that are not listed get the default EFTEMj prefix.
-			 */
-			default:
-				return PREFS_PREFIX + value;
-			/*
-			 * End section - default
-			 */
+		/*
+		 * Begin section - default All parameters that are not listed get the
+		 * default EFTEMj prefix.
+		 */
+		default:
+			return PREFS_PREFIX + value;
+		/*
+		 * End section - default
+		 */
 		}
 	}
 }

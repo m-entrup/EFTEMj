@@ -34,10 +34,10 @@ import org.apache.commons.math3.analysis.ParametricUnivariateFunction;
  * @author Michael Entrup b. Epping
  *
  */
-public interface EELS_BackgroundFunction extends ParametricUnivariateFunction{
-		
+public interface EELS_BackgroundFunction extends ParametricUnivariateFunction {
+
 	public double[] getInitialParameters();
-	
+
 	public String getFunctionName();
 
 }

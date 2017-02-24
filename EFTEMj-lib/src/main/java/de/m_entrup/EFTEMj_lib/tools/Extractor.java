@@ -37,13 +37,13 @@ import ij.ImageStack;
  * <p>
  * This class is used to extract a Float value from a string.
  * </p>
- * 
+ *
  * <ul>
  * <li>The decimal delimiter is automatically converted from ',' to '.'.</li>
  * <li>By inheriting from this class, a pattern can be defined to extract more
  * specific values using regular expressions.</li>
  * </ul>
- * 
+ *
  * @author Michael Entrup b. Epping
  *
  */

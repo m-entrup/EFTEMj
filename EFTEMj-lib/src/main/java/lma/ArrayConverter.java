@@ -29,7 +29,8 @@ public class ArrayConverter {
 	}
 
 	public static double[] asDoubleArray(final float[] a) {
-		if (a == null) return null;
+		if (a == null)
+			return null;
 		return asDoubleArray(new float[][] { a })[0];
 	}
 
@@ -50,13 +51,10 @@ public class ArrayConverter {
 	 * yDataPoints = y0 y1 y2 ... yN<br>
 	 * xDataPoints[i] = xi0 xi1 xi2 ... xi[K-1]<br>
 	 */
-	public static SeparatedData separateMultiDimDataToXY(
-		final double[][] dataPoints)
-	{
+	public static SeparatedData separateMultiDimDataToXY(final double[][] dataPoints) {
 		final SeparatedData result = new SeparatedData();
 		result.yDataPoints = new double[dataPoints.length];
-		result.xDataPoints = new double[dataPoints.length][dataPoints[0].length -
-			1];
+		result.xDataPoints = new double[dataPoints.length][dataPoints[0].length - 1];
 		for (int i = 0; i < dataPoints.length; i++) {
 			result.yDataPoints[i] = dataPoints[i][0];
 			for (int j = 1; j < dataPoints[i].length; j++) {
@@ -74,11 +72,8 @@ public class ArrayConverter {
 	 * =><br>
 	 * result[j] = yj xj0 xj1 xj2 ... xj[K-1]<br>
 	 */
-	public static double[][] combineMultiDimDataPoints(final double[] yDataPoints,
-		final double[][] xDataPoints)
-	{
-		final double[][] result =
-			new double[yDataPoints.length][xDataPoints.length + 1];
+	public static double[][] combineMultiDimDataPoints(final double[] yDataPoints, final double[][] xDataPoints) {
+		final double[][] result = new double[yDataPoints.length][xDataPoints.length + 1];
 		for (int i = 0; i < result.length; i++) {
 			result[i][0] = yDataPoints[i];
 			for (int j = 1; j < result[i].length; j++) {
@@ -96,11 +91,8 @@ public class ArrayConverter {
 	 * =><br>
 	 * result[j] = yj xj0 xj1 xj2 ... xj[K-1]<br>
 	 */
-	public static double[][] combineMultiDimDataPoints(final float[] yDataPoints,
-		final float[][] xDataPoints)
-	{
-		final double[][] result =
-			new double[yDataPoints.length][xDataPoints.length + 1];
+	public static double[][] combineMultiDimDataPoints(final float[] yDataPoints, final float[][] xDataPoints) {
+		final double[][] result = new double[yDataPoints.length][xDataPoints.length + 1];
 		for (int i = 0; i < result.length; i++) {
 			result[i][0] = yDataPoints[i];
 			for (int j = 1; j < result[i].length; j++) {

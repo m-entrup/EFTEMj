@@ -51,9 +51,7 @@ import ij.gui.WaitForUserDialog;
  * @author Michael Entrup b. Epping
  */
 @SuppressWarnings("serial")
-public class ExtendedWaitForUserDialog extends WaitForUserDialog implements
-	ContainerListener
-{
+public class ExtendedWaitForUserDialog extends WaitForUserDialog implements ContainerListener {
 
 	private static String hint = "\n \nPress [Esc] to abort.";
 	private boolean escPressed = false;
@@ -62,18 +60,20 @@ public class ExtendedWaitForUserDialog extends WaitForUserDialog implements
 	 * The constructor modifies the dialog to show an additional component.
 	 *
 	 * @param title
-	 * @param text A text to describe the task the user has to perform.
-	 * @param container An additional {@link Component} (e.g. a {@link Button})
-	 *          that is placed at the {@link ExtendedWaitForUserDialog}.
+	 * @param text
+	 *            A text to describe the task the user has to perform.
+	 * @param container
+	 *            An additional {@link Component} (e.g. a {@link Button}) that
+	 *            is placed at the {@link ExtendedWaitForUserDialog}.
 	 */
-	public ExtendedWaitForUserDialog(final String title, final String text,
-		final Component container)
-	{
+	public ExtendedWaitForUserDialog(final String title, final String text, final Component container) {
 		super(title, text + hint);
 		addKeyAndContainerListenerRecursively(this);
-		if (container == null) return;
+		if (container == null)
+			return;
 		final GridBagConstraints c = new GridBagConstraints();
-		// The ok-button has to be removed in order to place the new component at
+		// The ok-button has to be removed in order to place the new component
+		// at
 		// gridy = 2.
 		final Component obj = getComponent(1);
 		remove(obj);
@@ -103,7 +103,8 @@ public class ExtendedWaitForUserDialog extends WaitForUserDialog implements
 	/*
 	 * (non-Javadoc)
 	 *
-	 * @see java.awt.event.ContainerListener#componentAdded(java.awt.event.ContainerEvent)
+	 * @see java.awt.event.ContainerListener#componentAdded(java.awt.event.
+	 * ContainerEvent)
 	 */
 	@Override
 	public void componentAdded(final ContainerEvent e) {
@@ -114,7 +115,8 @@ public class ExtendedWaitForUserDialog extends WaitForUserDialog implements
 	 * This method adds a {@link KeyListener} to all added components. This is
 	 * done recursively.
 	 *
-	 * @param c The {@link Component} that is added.
+	 * @param c
+	 *            The {@link Component} that is added.
 	 */
 	private void addKeyAndContainerListenerRecursively(final Component c) {
 		c.addKeyListener(this);
@@ -131,7 +133,8 @@ public class ExtendedWaitForUserDialog extends WaitForUserDialog implements
 	/*
 	 * (non-Javadoc)
 	 *
-	 * @see java.awt.event.ContainerListener#componentRemoved(java.awt.event.ContainerEvent)
+	 * @see java.awt.event.ContainerListener#componentRemoved(java.awt.event.
+	 * ContainerEvent)
 	 */
 	@Override
 	public void componentRemoved(final ContainerEvent e) {
@@ -142,7 +145,8 @@ public class ExtendedWaitForUserDialog extends WaitForUserDialog implements
 	 * This method removes the {@link KeyListener} from all removed components.
 	 * This is done recursively.
 	 *
-	 * @param c The {@link Component} that is removed.
+	 * @param c
+	 *            The {@link Component} that is removed.
 	 */
 	private void removeKeyAndContainerListenerRecursively(final Component c) {
 		c.removeKeyListener(this);
@@ -167,8 +171,7 @@ public class ExtendedWaitForUserDialog extends WaitForUserDialog implements
 		if (code == KeyEvent.VK_ESCAPE) {
 			escPressed = true;
 			close();
-		}
-		else if (code == KeyEvent.VK_ENTER) {
+		} else if (code == KeyEvent.VK_ENTER) {
 			close();
 		}
 	}

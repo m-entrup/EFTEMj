@@ -127,7 +127,7 @@ public class EnergyLossData extends ArrayList<Point2D> {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.AbstractCollection#toString()
 	 */
 	@Override

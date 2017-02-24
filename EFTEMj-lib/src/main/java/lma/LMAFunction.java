@@ -19,8 +19,10 @@ public abstract class LMAFunction {
 
 	/**
 	 * @return The <i>y</i>-value of the function.
-	 * @param x The <i>x</i>-value for which the <i>y</i>-value is calculated.
-	 * @param a The fitting parameters.
+	 * @param x
+	 *            The <i>x</i>-value for which the <i>y</i>-value is calculated.
+	 * @param a
+	 *            The fitting parameters.
 	 */
 	public abstract double getY(double x, double[] a);
 
@@ -32,16 +34,20 @@ public abstract class LMAFunction {
 	 *
 	 * @return The partial derivate of the function with respect to parameter
 	 *         <code>parameterIndex</code> at <i>x</i>.
-	 * @param x The <i>x</i>-value for which the partial derivate is calculated.
-	 * @param a The fitting parameters.
-	 * @param parameterIndex The parameter index for which the partial derivate is
-	 *          calculated.
+	 * @param x
+	 *            The <i>x</i>-value for which the partial derivate is
+	 *            calculated.
+	 * @param a
+	 *            The fitting parameters.
+	 * @param parameterIndex
+	 *            The parameter index for which the partial derivate is
+	 *            calculated.
 	 */
-	public abstract double getPartialDerivate(double x, double[] a,
-		int parameterIndex);
+	public abstract double getPartialDerivate(double x, double[] a, int parameterIndex);
 
 	/**
-	 * @return Calculated function values with the given x- and parameter-values.
+	 * @return Calculated function values with the given x- and
+	 *         parameter-values.
 	 */
 	public double[] generateData(final double[] x, final double[] a) {
 		final double[] result = new double[x.length];
@@ -52,7 +58,8 @@ public abstract class LMAFunction {
 	}
 
 	/**
-	 * @return Calculated function values with the given x- and parameter-values.
+	 * @return Calculated function values with the given x- and
+	 *         parameter-values.
 	 */
 	public float[] generateData(final float[] x, final double[] a) {
 		final float[] result = new float[x.length];
@@ -70,8 +77,8 @@ public abstract class LMAFunction {
 	}
 
 	public float[] generateData(final float[] x, final float[] a) {
-		return ArrayConverter.asFloatArray(generateData(ArrayConverter
-			.asDoubleArray(x), ArrayConverter.asDoubleArray(a)));
+		return ArrayConverter
+				.asFloatArray(generateData(ArrayConverter.asDoubleArray(x), ArrayConverter.asDoubleArray(a)));
 	}
 
 }
