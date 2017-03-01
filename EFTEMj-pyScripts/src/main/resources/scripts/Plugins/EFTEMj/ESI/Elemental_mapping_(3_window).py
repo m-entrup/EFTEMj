@@ -30,7 +30,10 @@ def get_setup():
                       'and the images to process.')
     dialog.addChoice('Mode:', options, options[0])
     image_ids = WindowManager.getIDList()
-    if not image_ids or len(image_ids) < 2:
+    if not image_ids or len(image_ids) < 3:
+        IJ.showMessage("To run the 3-window-method\n" +
+                       "you need to open 3 images:\n" +
+                       "   Pre-edge 1,\n   Pre-edge 2 and\n   Post-edge")
         return [None]*4
     image_titles = [WindowManager.getImage(id).getTitle() for id in image_ids]
     dialog.addMessage('Post-edge is divided by the pre-edge.')
