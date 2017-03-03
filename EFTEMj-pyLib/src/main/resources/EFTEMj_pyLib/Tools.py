@@ -70,13 +70,17 @@ def stack_to_list_of_imp(imp_stack):
     return image_list
 
 
-def get_images(minimum=0, maximum=None, exact=None):
+def get_images(minimum=0, maximum=None, exact=None, no_stack=False):
     ''' Returns a list of ImagePlus objects or None if it failed.
     Passing None as parameter will trigger a dialog to show up to enter the exact number of images.
     :param minimum: The minimum number of images to select (default: 0).
     :param maximum: The maximum number of images to select (default: None).
     :param exact: Set this to get an exact number of images (default: None).
+    :param no_stack: Set this boolean to ban stacks from selection (default: False).
     '''
+    if not (minimum or maximum or exact or no_stack):
+        if WindowManager.getCurrentImage().getStackSize() > 1:
+            return stack_to_list_of_imp(WindowManager.getCurrentImage())
     if not (minimum or maximum or exact):
         exact = int(IJ.getNumber("How many images do you want to process?", 3))
     def check_count(count):
@@ -95,8 +99,9 @@ def get_images(minimum=0, maximum=None, exact=None):
         return True
 
     # Option 1: The selected image is a stack and has the demanded size.
-    if check_count(WindowManager.getCurrentImage().getStackSize()):
-        return stack_to_list_of_imp(WindowManager.getCurrentImage())
+    if not no_stack:
+        if check_count(WindowManager.getCurrentImage().getStackSize()):
+            return stack_to_list_of_imp(WindowManager.getCurrentImage())
 
     # Option 2: The count of open images matches the demanded number.
     image_ids = WindowManager.getIDList()
