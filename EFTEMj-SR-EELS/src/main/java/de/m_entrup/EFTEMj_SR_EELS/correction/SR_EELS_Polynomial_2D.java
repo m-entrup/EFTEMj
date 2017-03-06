@@ -102,6 +102,10 @@ public class SR_EELS_Polynomial_2D extends Polynomial_2D {
 		final double maxPos = -getParam(0, 1) / (2 * getParam(0, 2));
 		final double[] maxPoint = { 0, maxPos };
 		maxWidth = val(maxPoint);
+		inputProcessor.maxPosition = maxPoint[1] + CameraSetup.getFullHeight() / 2;
+		inputProcessor.maxWidth = maxWidth;
+		inputProcessor.leftRoot = rootL + CameraSetup.getFullHeight() / 2;
+		inputProcessor.rightRoot = rootH + CameraSetup.getFullHeight() / 2;
 		if (Double.isNaN(rootL) || rootL < -CameraSetup.getFullHeight() / 2)
 			rootL = -CameraSetup.getFullHeight() / 2;
 		if (Double.isNaN(rootH) || rootH > CameraSetup.getFullHeight() / 2 - 1)

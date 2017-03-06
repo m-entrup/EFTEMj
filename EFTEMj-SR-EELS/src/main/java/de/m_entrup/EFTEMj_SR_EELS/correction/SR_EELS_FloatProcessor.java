@@ -44,6 +44,10 @@ public class SR_EELS_FloatProcessor extends FloatProcessor {
 	private final int originY;
 	private SR_EELS_Polynomial_2D widthFunction;
 	private SR_EELS_Polynomial_2D borderFunction;
+	public double maxWidth;
+	public double maxPosition;
+	public double leftRoot;
+	public double rightRoot;
 
 	public SR_EELS_FloatProcessor(final FloatProcessor fp, final int binning, final int originX, final int originY) {
 		super(fp.getWidth(), fp.getHeight(), (float[]) fp.getPixels());

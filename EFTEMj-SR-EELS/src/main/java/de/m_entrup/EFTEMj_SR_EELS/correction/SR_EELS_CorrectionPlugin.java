@@ -174,6 +174,17 @@ public class SR_EELS_CorrectionPlugin implements ExtendedPlugInFilter {
 		 */
 		outputProcessor = widthFunction.createOutputImage();
 		outputImage = new ImagePlus(title + "_corrected", outputProcessor);
+		String info = (String) outputImage.getProperty("Info");
+		if (info == null) {
+			info = "";
+		} else {
+			info = info + System.lineSeparator();
+		}
+		info = info + String.format("SR-EELS.width.max.position=%f", inputProcessor.maxPosition);
+		info = info + System.lineSeparator() + String.format("SR-EELS.width.max.value=%f", inputProcessor.maxWidth);
+		info = info + System.lineSeparator() + String.format("SR-EELS.width.root.left=%f", inputProcessor.leftRoot);
+		info = info + System.lineSeparator() + String.format("SR-EELS.width.root.right=%f", inputProcessor.rightRoot);
+		outputImage.setProperty("Info", info);
 		final Calibration cal = new Calibration(inputImp);
 		cal.pixelHeight = widthFunction.getPixelHeight();
 		outputImage.setCalibration(cal);
