@@ -1,11 +1,13 @@
 """
 file:       Elemental_mapping_(3-window).py
 author:     Michael Entrup b. Epping (michael.entrup@wwu.de)
-version:    20161017
+version:    20170306
 info:       A script that calculates the elemental map of three images.
             The code is based on an article of A. Berger and H. Kohl.
             Optik 92 (1993), p. 175 - 193
 """
+# pylint: disable-msg=C0103
+# pylint: enable-msg=C0103
 
 from __future__ import with_statement, division
 
@@ -34,7 +36,7 @@ def get_setup():
         IJ.showMessage("To run the 3-window-method\n" +
                        "you need to open 3 images:\n" +
                        "   Pre-edge 1,\n   Pre-edge 2 and\n   Post-edge")
-        return [None]*4
+        return [None] * 4
     image_titles = [WindowManager.getImage(id).getTitle() for id in image_ids]
     dialog.addMessage('Post-edge is divided by the pre-edge.')
     dialog.addChoice('Pre-edge 1', image_titles, image_titles[0])
@@ -42,7 +44,7 @@ def get_setup():
     dialog.addChoice('Post-edge', image_titles, image_titles[2])
     dialog.showDialog()
     if dialog.wasCanceled():
-        return [None]*4
+        return [None] * 4
     mode = modes[dialog.getNextChoiceIndex()]
     img1 = WindowManager.getImage(image_ids[dialog.getNextChoiceIndex()])
     img2 = WindowManager.getImage(image_ids[dialog.getNextChoiceIndex()])
@@ -51,11 +53,13 @@ def get_setup():
 
 
 def run_script():
-    """Function to be run when this file is used as a script"""
+    """Function to be run when this file is used as a script
+    """
     selected_mode, pre1_in, pre2_in, post_in = get_setup()
     if not selected_mode:
         return
-    corrected_stack = drift.get_corrected_stack((pre1_in, pre2_in, post_in), mode=selected_mode)
+    corrected_stack = drift.get_corrected_stack(
+        (pre1_in, pre2_in, post_in), mode=selected_mode)
     pre1_imp, pre2_imp, post_imp = tools.stack_to_list_of_imp(corrected_stack)
 
     mapping = ElementalMapping.ThreeWindow(pre1_imp, pre2_imp, post_imp)
@@ -64,6 +68,7 @@ def run_script():
     for imp in (map_imp, snr_imp, r_imp, lna_imp):
         imp.copyScale(post_in)
         show_imp(imp)
+
 
 def show_imp(imp):
     """Displays the given ImagePlus.

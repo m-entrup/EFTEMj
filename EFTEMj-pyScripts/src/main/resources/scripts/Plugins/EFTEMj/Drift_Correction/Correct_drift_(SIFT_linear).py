@@ -1,11 +1,13 @@
 """
 file:       Correct_drift_(SIFT_linear).py
 author:     Michael Entrup b. Epping (michael.entrup@wwu.de)
-version:    20161017
+version:    20170306
 info:       A script that corrects the drift between any number of images.
             Scale-invariant feature transform (SIFT) is used for drift detection.
             The images are not changed. A stack is created that holds the corrected images.
 """
+# pylint: disable-msg=C0103
+# pylint: enable-msg=C0103
 
 from __future__ import with_statement, division
 

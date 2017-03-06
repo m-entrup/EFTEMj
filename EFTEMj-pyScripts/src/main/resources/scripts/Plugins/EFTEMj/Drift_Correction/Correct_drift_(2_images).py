@@ -1,11 +1,13 @@
 """
 file:       Correct_drift_(2_images).py
 author:     Michael Entrup b. Epping (michael.entrup@wwu.de)
-version:    20161017
+version:    20170306
 info:       A script that corrects the drift between two images.
             The images are not changed. A copy of the second image is shifted.
             The normalized cross correlation used for drift detection is displayed.
 """
+# pylint: disable-msg=C0103
+# pylint: enable-msg=C0103
 
 from __future__ import with_statement, division
 
@@ -32,12 +34,15 @@ def select_images():
             img2 = dup.run(imp, 2, 2)
             img2.setTitle('Slice2')
         elif WindowManager.getImageCount() == 2:
-            img1, img2 = [WindowManager.getImage(id) for id in WindowManager.getIDList()]
+            img1, img2 = [WindowManager.getImage(
+                id) for id in WindowManager.getIDList()]
         elif WindowManager.getImageCount() > 2:
             image_ids = WindowManager.getIDList()
-            image_titles = [WindowManager.getImage(id).getTitle() for id in image_ids]
+            image_titles = [WindowManager.getImage(
+                id).getTitle() for id in image_ids]
             try:
-                sel1, sel2 = dialogs.create_selection_dialog(image_titles, range(2))
+                sel1, sel2 = dialogs.create_selection_dialog(
+                    image_titles, range(2))
             except TypeError:
                 return(None, None)
             img1 = WindowManager.getImage(image_ids[sel1])

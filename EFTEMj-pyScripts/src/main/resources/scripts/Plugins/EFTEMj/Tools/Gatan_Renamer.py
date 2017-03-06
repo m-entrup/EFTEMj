@@ -1,24 +1,33 @@
 """
+@ImagePlus IMP
+
 file:       Gatan_Renamer.py
 author:     Michael Entrup b. Epping (michael.entrup@wwu.de)
-version:    20161216
+version:    20170306
 info:       A script to rename dm3 files using metadata.
 """
+# pylint: disable-msg=C0103
+# pylint: enable-msg=C0103
 
 from __future__ import division
 
+# pylint: disable-msg=E0401
 from java.lang import Double
-from java.lang import NullPointerException
 from java.text import SimpleDateFormat
+from java.text import ParsePosition
 
-from ij import IJ
 from ij.gui import GenericDialog
 from de.m_entrup.EFTEMj_lib.tools import GatanMetadataExtractor
+# pylint: enable-msg=E0401
+
+# pylint: disable-msg=E0602
+IMP = IMP
+# pylint: enable-msg=E0602
 
 # Some general settings:
-default_format_str = '%(date)s_%(mag)s_%(dE)s_%(exp)s_%(name)s'
-field_width = 10
-field_width_long = 40
+DEFAULT_FORMAT_STR = '%(date)s_%(mag)s_%(dE)s_%(exp)s_%(name)s'
+FIELD_WIDTH = 10
+FIELD_WIDTH_LONG = 40
 # End of settings.
 
 
@@ -40,10 +49,7 @@ class ImageProperties:
         else:
             self.energyloss = 0
         self.date = extractor.getDateAndTime()
-        date_formater = SimpleDateFormat('yyyyMMdd')
-        self.date_string = date_formater.format(self.date)
         self.name = extractor.getName()
-        self.prop_dict = {}
 
     def calc_mag(self, mag):
         """Use the magnification factor to calculate the actual magnification.
@@ -53,52 +59,72 @@ class ImageProperties:
     def to_dict(self):
         """Create a dictionary from the metadata to be used for string formating.
         """
-        self.prop_dict['exp'] = '%gs' % (self.exposure,)
-        self.prop_dict['dE'] = '%geV' % (self.energyloss,)
-        self.prop_dict['date'] = self.date_string
+        prop_dict = {}
+        prop_dict['exp'] = '%gs' % (self.exposure,)
+        prop_dict['dE'] = '%geV' % (self.energyloss,)
+        prop_dict['date'] = self.date_to_string()
         mag = self.magnification
         if self.mag_unit.lower() == 'kx':
             mag /= 1000
-            self.prop_dict['mag'] = '%.3g%s' % (mag, self.mag_unit)
+            prop_dict['mag'] = '%.3g%s' % (mag, self.mag_unit)
         else:
-            self.prop_dict['mag'] = '%.0f%s' % (mag, self.mag_unit)
-        self.prop_dict['name'] = self.name
-        return self.prop_dict
+            prop_dict['mag'] = '%.0f%s' % (mag, self.mag_unit)
+        prop_dict['name'] = self.name
+        return prop_dict
+
+    def date_to_string(self):
+        """Returns the date as a formated string.
+        """
+        date_formater = SimpleDateFormat('yyyyMMdd')
+        return date_formater.format(self.date)
+
+    def parse_date(self, date_string):
+        """Reads a date from the given string.
+        :param date_string: String to parse.
+        """
+        date_formater = SimpleDateFormat('yyyyMMdd')
+        self.date = date_formater.parse(date_string, ParsePosition(0))
 
 
-def main(imp):
+def run_script(imp):
+    """Function to be run when this file is used as a script
+    """
     properties = ImageProperties(imp)
     # Create a GenericDialog to configure renaming:
-    gd = GenericDialog('Gatan Reamer')
-    gd.addMessage('Modifying: %s' % (imp.getTitle(),))
-    gd.addMessage('Recorded: %s' % (properties.date.toString(),))
-    gd.addNumericField('Exposure time', properties.exposure, 4, field_width, 's')
-    gd.addNumericField('Magnification:', properties.magnification, 0, field_width, 'x')
+    dialog = GenericDialog('Gatan Reamer')
+    dialog.addMessage('Modifying: %s' % (imp.getTitle(),))
+    dialog.addMessage('Recorded: %s' % (properties.date.toString(),))
+    dialog.addNumericField(
+        'Exposure time', properties.exposure, 4, FIELD_WIDTH, 's')
+    dialog.addNumericField(
+        'Magnification:', properties.magnification, 0, FIELD_WIDTH, 'x')
     mag_units = ('kx', 'x')
-    gd.addChoice('Magnification unit:', mag_units, mag_units[0])
-    gd.addMessage('The actual magnification is %.2f times larger.' % (properties.mag_factor,))
-    gd.addCheckbox('Use actual magnification:', False)
-    gd.addMessage('')
-    gd.addNumericField('Energy loss:', properties.energyloss, 1, field_width, 'eV')
-    gd.addStringField('Date:', properties.date_string, field_width)
-    gd.addStringField('original name:', properties.name, field_width_long)
-    gd.addStringField('Filename format', default_format_str, field_width_long)
-    gd.showDialog()
+    dialog.addChoice('Magnification unit:', mag_units, mag_units[0])
+    dialog.addMessage(
+        'The actual magnification is %.2f times larger.' % (properties.mag_factor,))
+    dialog.addCheckbox('Use actual magnification:', False)
+    dialog.addMessage('')
+    dialog.addNumericField(
+        'Energy loss:', properties.energyloss, 1, FIELD_WIDTH, 'eV')
+    dialog.addStringField('Date:', properties.date_to_string(), FIELD_WIDTH)
+    dialog.addStringField('original name:', properties.name, FIELD_WIDTH_LONG)
+    dialog.addStringField(
+        'Filename format', DEFAULT_FORMAT_STR, FIELD_WIDTH_LONG)
+    dialog.showDialog()
 
-    if not gd.wasCanceled():
+    if not dialog.wasCanceled():
         # Edit the properties to consiter user choices:
-        properties.exposure = gd.getNextNumber()
-        mag = gd.getNextNumber()
-        properties.mag_unit = gd.getNextChoice()
-        if gd.getNextBoolean():
+        properties.exposure = dialog.getNextNumber()
+        mag = dialog.getNextNumber()
+        properties.mag_unit = dialog.getNextChoice()
+        if dialog.getNextBoolean():
             properties.calc_mag(mag)
-        properties.energyloss = gd.getNextNumber()
-        properties.date_string = gd.getNextString()
-        properties.name = gd.getNextString()
-        format_str = gd.getNextString()
+        properties.energyloss = dialog.getNextNumber()
+        properties.parse_date(dialog.getNextString())
+        properties.name = dialog.getNextString()
+        format_str = dialog.getNextString()
         # Chenge the title:
         imp.setTitle(format_str % properties.to_dict())
 
 if __name__ == '__main__':
-    imp = IJ.getImage()
-    main(imp)
+    run_script(IMP)

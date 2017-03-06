@@ -1,11 +1,11 @@
 """
 @File(label='Input directory', style='directory') SRC_DIR
-@boolean(label='Use fast mode', description='calc in fourier space', value=true) FAST_MODE
-@boolean(label='Debug mode', value=false) DEBUG
+@boolean(label='Use fast mode', description='calc in fourier space', value=True) FAST_MODE
+@boolean(label='Debug mode', value=False) DEBUG
 
 file:       EELS_Calibration.py
 author:     Michael Entrup b. Epping (michael.entrup@wwu.de)
-version:    20170123
+version:    20170306
 info:       A script to get the energy dispersion from a series of spectra.
 """
 # pylint: disable-msg=C0103
