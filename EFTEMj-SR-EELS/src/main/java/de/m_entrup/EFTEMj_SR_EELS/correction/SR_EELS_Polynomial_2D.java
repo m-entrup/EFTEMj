@@ -32,12 +32,15 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
+import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
+import org.apache.commons.math3.fitting.PolynomialCurveFitter;
+import org.apache.commons.math3.fitting.WeightedObservedPoints;
+
 import de.m_entrup.EFTEMj_lib.CameraSetup;
 import de.m_entrup.EFTEMj_lib.EFTEMj_Debug;
 import de.m_entrup.EFTEMj_lib.lma.Polynomial_2D;
 import ij.ImagePlus;
 import ij.WindowManager;
-import ij.measure.CurveFitter;
 
 /**
  * @author Michael Entrup b. Epping
@@ -52,6 +55,9 @@ public class SR_EELS_Polynomial_2D extends Polynomial_2D {
 	private static SR_EELS_FloatProcessor transformWidth;
 	private static SR_EELS_FloatProcessor transformY1;
 
+	private final int polynomialOrder = 7;
+	private final PolynomialCurveFitter fitter = PolynomialCurveFitter.create(polynomialOrder);
+
 	private double maxWidth;
 
 	public SR_EELS_Polynomial_2D(final int m, final int n) {
@@ -64,6 +70,15 @@ public class SR_EELS_Polynomial_2D extends Polynomial_2D {
 
 	public void setInputProcessor(final SR_EELS_FloatProcessor inputProcessor) {
 		this.inputProcessor = inputProcessor;
+	}
+
+	private PolynomialFunction getFitFunction(final double[] xValues, final double[] yValues) {
+		final WeightedObservedPoints obs = new WeightedObservedPoints();
+		for (int i = 0; i < xValues.length; i++) {
+			obs.add(xValues[i], yValues[i]);
+		}
+		final double[] fitParams = fitter.fit(obs.toList());
+		return new PolynomialFunction(fitParams);
 	}
 
 	public void setupWidthCorrection() {
@@ -128,13 +143,6 @@ public class SR_EELS_Polynomial_2D extends Polynomial_2D {
 		 */
 		rootL = xc[0];
 		rootH = xc[xc.length - 1];
-		final CurveFitter fit = new CurveFitter(xc, x);
-		try {
-			fit.doFit(CurveFitter.POLY7);
-		} catch (final ArrayIndexOutOfBoundsException exc) {
-			fit.doFit(CurveFitter.STRAIGHT_LINE);
-		}
-		final double[] fitParams = fit.getParams();
 		transformWidth = new SR_EELS_FloatProcessor(inputProcessor.getWidth(),
 				(int) (2 * Math.max(-rootL, rootH) / inputProcessor.getBinningY()), inputProcessor.getBinningX(),
 				inputProcessor.getBinningY(), inputProcessor.getOriginX(),
@@ -148,9 +156,10 @@ public class SR_EELS_Polynomial_2D extends Polynomial_2D {
 				transformWidth.getOriginY());
 
 		transformY1.set(Float.NaN);
+		final PolynomialFunction fit = getFitFunction(xc, x);
 		for (int x2 = 0; x2 < transformWidth.getHeight(); x2++) {
 			final double x2_func = transformWidth.convertToFunctionCoordinates(0, x2)[1];
-			final float value = (float) fit.f(fitParams, x2_func);
+			final float value = (float) fit.value(x2_func);
 			for (int x1 = 0; x1 < transformWidth.getWidth(); x1++) {
 				transformWidth.setf(x1, x2, value);
 			}
@@ -160,41 +169,6 @@ public class SR_EELS_Polynomial_2D extends Polynomial_2D {
 			imp.show();
 		}
 	}
-
-	/*
-	 * public String compareWithGnuplot(final int functionType) { String
-	 * filename = ""; String using = ""; final String offsetX1 = "offsetX1 = " +
-	 * CameraSetup.getFullWidth() / 2; final String offsetX2 = "offsetX2 = " +
-	 * CameraSetup.getFullHeight() / 2; switch (functionType) { case BORDERS:
-	 * filename = "Borders.txt"; using =
-	 * "using ($1-offsetX1):($2-offsetX2):($3-offsetX2):4"; break; case
-	 * WIDTH_VS_POS: filename = "Width.txt"; using =
-	 * "using ($1-offsetX1):($2-offsetX2):3:(1)"; break; default: break; }
-	 * String functionGnu = "f(x,y) = "; String fit = "fit f(x,y) '" + filename
-	 * + "' " + using + " zerror via "; for (int i = 0; i <= m; i++) { for (int
-	 * j = 0; j <= n; j++) { functionGnu += String.format(Locale.UK,
-	 * "a%d%d*x**%d*y**%d", i, j, i, j); fit += String.format(Locale.UK,
-	 * "a%d%d", i, j); if (i != m | j != n) { functionGnu += " + "; fit += ",";
-	 * } } } final String title = String.format(Locale.UK,
-	 * "%n#####%n# Fit of '%s':%n#####%n", filename); fit = title + "\n" +
-	 * offsetX1 + "\n" + offsetX2 + "\n" + functionGnu + "\n" + fit; String
-	 * residuals = ""; switch (functionType) { case BORDERS: filename =
-	 * "Borders.txt"; using = "using ($1-offsetX1):($2-offsetX2):($3-offsetX2)";
-	 * residuals =
-	 * "using ($1-offsetX1):($2-offsetX2):(abs( $3 - offsetX2 - fJ($1-offsetX1,$2-offsetX2))**2)"
-	 * ; break; case WIDTH_VS_POS: filename = "Width.txt"; using =
-	 * "using ($1-offsetX1):($2-offsetX2):3"; residuals =
-	 * "using ($1-offsetX1):($2-offsetX2):(abs( $3 - fJ($1-offsetX1,$2-offsetX2))**2)"
-	 * ; break; default: break; } final String splot = String.format(
-	 * "splot '%s' %s notitle,\\%nf(x,y) title 'Gnuplot', fJ(x,y) title 'Java LMA',\\%n'%1$s' %s title 'residuals'"
-	 * , filename, using, residuals); String functionJava = "fJ(x,y) = "; String
-	 * compare = "#Java LMA"; for (int i = 0; i <= m; i++) { for (int j = 0; j
-	 * <= n; j++) { compare += String.format(Locale.UK, "\naJ%d%d = %+6e", i, j,
-	 * params[(n + 1) * i + j]); functionJava += String.format(Locale.UK,
-	 * "aJ%d%d*x**%d*y**%d", i, j, i, j); if (i != m | j != n) { functionJava +=
-	 * " + "; } } } return fit + "\n\n" + functionJava + "\n\n" + compare +
-	 * "\n\n" + splot; }
-	 */
 
 	public float getY1(final float[] x2) {
 		final float[] x2_img = transformY1.convertToImageCoordinates(x2);
@@ -225,16 +199,11 @@ public class SR_EELS_Polynomial_2D extends Polynomial_2D {
 				xc[index] = map.get(key);
 				index++;
 			}
-			final CurveFitter fit = new CurveFitter(xc, x);
-			try {
-				fit.doFit(CurveFitter.POLY7);
-			} catch (final ArrayIndexOutOfBoundsException exc) {
-				fit.doFit(CurveFitter.STRAIGHT_LINE);
-			}
-			final double[] fitParams = fit.getParams();
+
+			final PolynomialFunction fit = getFitFunction(xc, x);
 			for (int i = 0; i < transformY1.getWidth(); i++) {
 				final float[] x2_func = transformY1.convertToFunctionCoordinates(i, x2[1]);
-				final float value = (float) fit.f(fitParams, x2_func[0]);
+				final float value = (float) fit.value(x2_func[0]);
 				transformY1.setf(i, (int) x2_img[1], value);
 			}
 			if (EFTEMj_Debug.getDebugLevel() >= EFTEMj_Debug.DEBUG_SHOW_IMAGES) {
