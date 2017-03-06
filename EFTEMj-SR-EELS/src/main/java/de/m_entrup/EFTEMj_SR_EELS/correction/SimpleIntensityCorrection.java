@@ -47,7 +47,7 @@ public class SimpleIntensityCorrection extends IntensityCorrector {
 			point_0 = coordinateCorrector.transformCoordinate(x1, x2);
 			point_1 = coordinateCorrector.transformCoordinate(x1 + 1, x2 + 1);
 		} catch (final SR_EELS_Exception exc1) {
-			return 0f;
+			return Float.NaN;
 		}
 		final float y1_0 = point_0[0];
 		final int start1 = (int) Math.floor(y1_0);
@@ -76,7 +76,7 @@ public class SimpleIntensityCorrection extends IntensityCorrector {
 			}
 			return sum;
 		} catch (final ArrayIndexOutOfBoundsException exc) {
-			return 0f;
+			return Float.NaN;
 		}
 	}
 
