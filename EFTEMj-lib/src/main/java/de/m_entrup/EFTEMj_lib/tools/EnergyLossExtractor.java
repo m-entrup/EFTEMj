@@ -34,8 +34,8 @@ public class EnergyLossExtractor extends Extractor {
 
 	public EnergyLossExtractor() {
 		pattern = new String[2];
-		pattern[0] = "^(.*\\D)*\\[(\\d{1,4}[\\.]?[,]?\\d*)eV\\].*$";
-		pattern[1] = "^(.*\\D)*(\\d{1,4}[\\.]?[,]?\\d*)eV.*$";
+		pattern[0] = "^(.*[^\\d,\\.])*(\\d{1,4}[\\.]?[,]?\\d*)eV.*$";
+		pattern[1] = "^(.*[^\\d,\\.])*\\[(\\d{1,4}[\\.]?[,]?\\d*)eV\\].*$";
 		replace = "$2";
 	}
 }
