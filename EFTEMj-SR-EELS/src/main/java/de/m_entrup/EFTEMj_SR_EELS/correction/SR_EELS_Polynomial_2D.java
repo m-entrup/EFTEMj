@@ -124,8 +124,8 @@ public class SR_EELS_Polynomial_2D extends Polynomial_2D {
 		int index = 0;
 		for (int x = (int) Math.ceil(rootL); x <= rootH; x++) {
 			final double num = 3 * Math.pow(2 * x + a01 / a02, 2);
-			final double denum = (4 * a02 * Math.pow(x, 3) + 6 * a01 * Math.pow(x, 2) + 12 * a00 * x
-					- Math.pow(a01, 3) / Math.pow(a02, 2) + 6 * a00 * a01 / a02);
+			final double denum = 4 * a02 * Math.pow(x, 3) + 6 * a01 * Math.pow(x, 2) + 12 * a00 * x
+					+ 12 * a00 * a01 / a02 - Math.pow(a01, 3) / Math.pow(a02, 2);
 			final double sum1 = num / denum;
 			final double sum2 = -a01 / (2 * a02);
 			map.put(x, sum1 + sum2);
