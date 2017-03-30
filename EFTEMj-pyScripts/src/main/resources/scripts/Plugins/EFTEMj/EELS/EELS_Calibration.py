@@ -242,6 +242,13 @@ def error_of_dispersion(fit, x_values):
                                          * sum(x_squares) - sum(x_values)**2)
     return delta_m / fit.getParams()[1]**2
 
+def error_of_gatandispersion(dispersion, uncertainty):
+    """ Calculate the statistical error of the gatandispersion.
+    """
+    rel_uncertainty = uncertainty / dispersion
+    gatan_dispersion = 15 / dispersion
+    return rel_uncertainty * gatan_dispersion
+
 
 def run_script():
     """Function to be run when this file is used as a script
@@ -275,10 +282,11 @@ def run_script():
                    (fit.getParams()[1], fit.getParams()[0], fit.getRSquared()))
     plot.addLabel(0.6,
                   0.4,
-                  'dispersion = %feV/px\n uncertainty: %feV/px\nGatan dispersion: %f' %
+                  'dispersion = %feV/px\n uncertainty: %feV/px\nGatan dispersion: %f\n uncertainty: %f' %
                   (-1 / fit.getParams()[1],
                    error_of_dispersion(fit, x_values),
-                   -15 * fit.getParams()[1]
+                   -15 * fit.getParams()[1],
+                   error_of_gatandispersion(-1 / fit.getParams()[1], error_of_dispersion(fit, x_values))
                   )
                  )
     plot.show()
