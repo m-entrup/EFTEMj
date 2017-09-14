@@ -298,7 +298,7 @@ def shift_images(img_list, shift_vector):
 '''
 Testing section:
 '''
-if __name__ == '__main__':
+if __name__ in ('__main__', '__builtin__'):
     # pylint: disable-msg=C0103
     print('Testing the function get_drift_vector() for CC and SIFT...')
     imp1 = IJ.openImage("http://imagej.nih.gov/ij/images/TEM_filter_sample.jpg")

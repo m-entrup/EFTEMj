@@ -237,7 +237,7 @@ def scale_to_power_of_two(images):
 '''
 Testing section:
 '''
-if __name__ == '__main__':
+if __name__ in ('__main__', '__builtin__'):
     # pylint: disable-msg=C0103
     print('Testing the function scale_to_power_of_two()...')
     imp1 = IJ.openImage("http://imagej.nih.gov/ij/images/TEM_filter_sample.jpg")

@@ -126,5 +126,5 @@ def run_script(imp):
         # Chenge the title:
         imp.setTitle(format_str % properties.to_dict())
 
-if __name__ == '__main__':
+if __name__ in ('__main__', '__builtin__'):
     run_script(IMP)

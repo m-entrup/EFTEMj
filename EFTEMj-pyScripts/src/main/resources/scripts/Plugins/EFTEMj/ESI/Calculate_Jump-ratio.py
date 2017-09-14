@@ -76,6 +76,5 @@ def run_script():
             img_ratio.getProcessor().setMinAndMax(0, maximum)
         img_ratio.updateAndDraw()
 
-
-if __name__ == '__main__':
+if __name__ == '__builtin__':
     run_script()

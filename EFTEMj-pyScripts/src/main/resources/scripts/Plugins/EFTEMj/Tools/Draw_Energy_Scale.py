@@ -187,5 +187,5 @@ def run_script():
     imp_extended.show()
 
 
-if __name__ == '__main__':
+if __name__ in ('__main__', '__builtin__'):
     run_script()

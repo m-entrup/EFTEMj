@@ -80,5 +80,5 @@ def show_imp(imp):
     IJ.run(imp, 'Enhance Contrast', 'saturated=0.35')
     imp.show()
 
-if __name__ == '__main__':
+if __name__ in ('__main__', '__builtin__'):
     run_script()

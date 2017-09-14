@@ -78,5 +78,5 @@ def run_script():
         img_ratio.updateAndDraw()
 
 
-if __name__ == '__main__':
+if __name__ in ('__main__', '__builtin__'):
     run_script()

@@ -60,5 +60,5 @@ def run_script():
                 if not label is None:
                     target.getImageStack().setSliceLabel(label, index + 1)
 
-if __name__ == '__main__':
+if __name__ in ('__main__', '__builtin__'):
     run_script()

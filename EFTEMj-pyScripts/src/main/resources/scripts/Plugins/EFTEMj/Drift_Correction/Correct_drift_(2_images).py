@@ -71,5 +71,5 @@ def run_script():
     correct_drift_gui()
 
 
-if __name__ == '__main__':
+if __name__ in ('__main__', '__builtin__'):
     run_script()

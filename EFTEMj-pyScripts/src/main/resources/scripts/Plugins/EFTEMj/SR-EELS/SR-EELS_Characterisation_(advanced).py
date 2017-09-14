@@ -88,5 +88,5 @@ def run_script():
     # pylint: enable-msg=E0602
 
 
-if __name__ == '__main__':
+if __name__ in ('__main__', '__builtin__'):
     run_script()

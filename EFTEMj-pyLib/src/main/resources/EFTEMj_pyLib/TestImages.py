@@ -115,7 +115,7 @@ class DriftTestImageCreator:
 '''
 Testing section:
 '''
-if __name__ == '__main__':
+if __name__ in ('__main__', '__builtin__'):
     # pylint: disable-msg=C0103
     creator = DriftTestImageCreator()
     from random import randrange

@@ -296,5 +296,5 @@ def run_script():
             for error in ERRORS:
                 IJ.log(error)
 
-if __name__ == '__main__':
+if __name__ in ('__main__', '__builtin__'):
     run_script()
